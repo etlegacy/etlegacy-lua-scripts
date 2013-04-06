@@ -1,4 +1,4 @@
-lua_scripts
+Lua scripts
 ===========
 
 Lua scripts for the Legacy mod

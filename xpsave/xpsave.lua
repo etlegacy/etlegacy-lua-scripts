@@ -117,10 +117,10 @@ function et_ClientBegin(cno)
 	
 	if not player then
 		-- First time we see this player
-		et.trap_SendServerCommand (cno, "cpm \"" .. "Welcome, " .. name .. "! You are playing on an XP save server.\n\"")
+		et.trap_SendServerCommand (cno, "cpm \"" .. "Welcome, " .. name .. "^7! You are playing on an XP save server.\n\"")
 		cur = assert (con:execute(string.format("INSERT INTO users VALUES ('%s', '%s', 0, 0, 0, 0, 0, 0, 0)", guid, os.date("%Y-%m-%d %H:%M:%S"))))
 	else
-		et.trap_SendServerCommand (cno, "cpm \"" .. "Welcome back, " .. name .. "! Your last connection was on " .. player.last_seen .. "\n\"") -- in db: player.name
+		et.trap_SendServerCommand (cno, "cpm \"" .. "Welcome back, " .. name .. "^7! Your last connection was on " .. player.last_seen .. "\n\"") -- in db: player.name
 
 		--et.G_Print ("Loading XP from database: " .. player.xp_battlesense .. " | " .. player.xp_engineering .. " | " .. player.xp_medic .. " | " .. player.xp_fieldops .. " | " .. player.xp_lightweapons .. " | " .. player.xp_heavyweapons .. " | " .. player.xp_covertops .. "\n\n")
 		

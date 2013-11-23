@@ -1,8 +1,8 @@
 --[[
 	Author: Jan Šimek [Radegast]
-	Version 0.1
+	Version 0.2
 	License: MIT
-	Released on 17.11.2013
+	Released on 23.11.2013
 	Website: http://www.etlegacy.com
 	Mod: intended for Legacy, but might also work in NoQuarter
 
@@ -58,6 +58,47 @@ function validateGUID(cno, guid)
 	return true
 end
 
+-- saves XP values of a player with id 'cno' into sqlite database
+function saveXP(cno)
+	local name = et.Info_ValueForKey( et.trap_GetUserinfo( cno ), "name" )
+	local guid = et.Info_ValueForKey( et.trap_GetUserinfo( cno ), "cl_guid" )
+	
+	if not validateGUID(cno, guid) then return end
+	
+	cur = assert (con:execute(string.format("SELECT * FROM users WHERE guid='%s' LIMIT 1", guid)))
+	local player = cur:fetch({}, 'a')
+	
+	if not player then
+		-- This should not happen	
+		et.G_Print ("^1ERROR: (XP Save) user was not found in the database!\n")
+		return
+	else
+		et.trap_SendServerCommand (cno, "cpm \"" .. "See you again soon, " .. name .. "\n\"")
+		--for id, name in pairs(skills) do et.G_Print (name .. ": " .. et.gentity_get (cno, "sess.skillpoints", id) .. " XP\n") end
+		
+		cur = assert (con:execute(string.format([[UPDATE users SET 
+			last_seen='%s', 
+			xp_battlesense='%s',
+			xp_engineering='%s', 
+			xp_medic='%s', 
+			xp_fieldops='%s', 
+			xp_lightweapons='%s', 
+			xp_heavyweapons='%s', 
+			xp_covertops='%s' 
+			WHERE guid='%s']], 
+			os.date("%Y-%m-%d %H:%M:%S"), 
+			et.gentity_get (cno, "sess.skillpoints", BATTLESENSE), 
+			et.gentity_get (cno, "sess.skillpoints", ENGINEERING), 
+			et.gentity_get (cno, "sess.skillpoints", MEDIC), 
+			et.gentity_get (cno, "sess.skillpoints", FIELDOPS), 
+			et.gentity_get (cno, "sess.skillpoints", LIGHTWEAPONS), 
+			et.gentity_get (cno, "sess.skillpoints", HEAVYWEAPONS), 
+			et.gentity_get (cno, "sess.skillpoints", COVERTOPS), 
+			guid
+		)))
+	end
+end
+
 -- init db on game start
 function et_InitGame(levelTime, randomSeed, restart)
 	-- name of this module
@@ -98,7 +139,19 @@ function et_InitGame(levelTime, randomSeed, restart)
 	--end
 end -- et_InitGame
 
-function et_ShutdownGame(restart) 
+function et_ShutdownGame(restart)
+	local cno = 0
+	            
+	-- iterate through clients and save their XP
+	while true do
+		local cs = et.trap_GetConfigstring(et.CS_PLAYERS + cno)
+
+		if not cs or cs == "" then break end
+		
+		saveXP(cno)
+		cno = cno + 1
+	end
+	
 	-- clean up 
 	cur:close() 
 	con:close() 
@@ -140,41 +193,5 @@ function et_ClientBegin(cno)
 end -- et_ClientBegin
 
 function et_ClientDisconnect(cno)
-	local name = et.Info_ValueForKey( et.trap_GetUserinfo( cno ), "name" )
-	local guid = et.Info_ValueForKey( et.trap_GetUserinfo( cno ), "cl_guid" )
-	
-	if not validateGUID(cno, guid) then return end
-	
-	cur = assert (con:execute(string.format("SELECT * FROM users WHERE guid='%s' LIMIT 1", guid)))
-	local player = cur:fetch({}, 'a')
-	
-	if not player then
-		-- This should not happen	
-		et.G_Print ("^1ERROR: (XP Save) user was not found in the database!\n")
-		return
-	else
-		et.trap_SendServerCommand (cno, "cpm \"" .. "See you again soon, " .. name .. "\n\"")
-		--for id, name in pairs(skills) do et.G_Print (name .. ": " .. et.gentity_get (cno, "sess.skillpoints", id) .. " XP\n") end
-		
-		cur = assert (con:execute(string.format([[UPDATE users SET 
-			last_seen='%s', 
-			xp_battlesense='%s',
-			xp_engineering='%s', 
-			xp_medic='%s', 
-			xp_fieldops='%s', 
-			xp_lightweapons='%s', 
-			xp_heavyweapons='%s', 
-			xp_covertops='%s' 
-			WHERE guid='%s']], 
-			os.date("%Y-%m-%d %H:%M:%S"), 
-			et.gentity_get (cno, "sess.skillpoints", BATTLESENSE), 
-			et.gentity_get (cno, "sess.skillpoints", ENGINEERING), 
-			et.gentity_get (cno, "sess.skillpoints", MEDIC), 
-			et.gentity_get (cno, "sess.skillpoints", FIELDOPS), 
-			et.gentity_get (cno, "sess.skillpoints", LIGHTWEAPONS), 
-			et.gentity_get (cno, "sess.skillpoints", HEAVYWEAPONS), 
-			et.gentity_get (cno, "sess.skillpoints", COVERTOPS), 
-			guid
-		)))
-	end
+	saveXP(cno)
 end -- et_ClientDisconnect

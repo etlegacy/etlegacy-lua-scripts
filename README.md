@@ -5,7 +5,7 @@ Lua scripts for the Legacy mod
 
 ## CONSTANTS
 
-** Scipts with useful constants for custom scripts
+* Scripts with useful constants for custom scripts
 
 
 ## dynamite
@@ -15,9 +15,7 @@ Lua scripts for the Legacy mod
 
 ## xpsave
 
-*In development and not intended to be used for public servers yet*
-
-* This script is intended for Legacy mod, but may work in NoQuarter too
-* luasql module with sqlite3 driver is required, but other database drivers may be used instead with a small change
-* it could be tweaked to use file backend instead
+* This script is intended for Legacy mod, but may work in NoQuarter 1.2.9 and above
+* luasql module with sqlite3 driver is required
+* the script could be tweaked to use file backend or other database drivers instead of sqlite3
 

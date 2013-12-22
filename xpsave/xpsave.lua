@@ -141,9 +141,10 @@ end -- et_InitGame
 
 function et_ShutdownGame(restart)
 	local cno = 0
-	            
+	local maxclients = tonumber(et.trap_Cvar_Get("sv_maxclients"))
+
 	-- iterate through clients and save their XP
-	while true do
+	while cno < maxclients do
 		local cs = et.trap_GetConfigstring(et.CS_PLAYERS + cno)
 
 		if not cs or cs == "" then break end

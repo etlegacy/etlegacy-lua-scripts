@@ -25,7 +25,7 @@
 --		SQLite will create a file "noquarter.sqlite" at this location.
 --
 -- - Copy the content of this path to fs_homepath/fs_game/nq/noq
--- - for example /home/<USER>/.etwolf/nq/noq (default case if fs_homepath is not set by admin)
+-- - for example /home/<USER>/.etlegacy/legacy/noq (default case if fs_homepath is not set by admin)
 -- 
 -- - Set lua_modules "noq/noq.lua noq/noq_i.lua"
 --   
@@ -154,22 +154,26 @@ end
 -- at first we need to check for the modversion
 
 modname = et.trap_Cvar_Get( "gamename" ) 
+modprefix = ""
 
 if modname == "nq" then
 -- TODO: check for version incompatibilities...
 --version = et.trap_Cvar_Get( cvarname ) 
+	modprefix = "noq"
 elseif modname == "etpro" then
 --TODO:
 -- only commands may work - no loadlib:/
+elseif modname == "legacy" then
+	modprefix = "legacy"
 end
 
 et.G_LogPrint("Loading NOQ config from ".. scriptpath.."\n")
 noqvartable		= assert(table.load( scriptpath .. "noq_config.cfg"))
 -- TODO: check if we can do this in 2 tables 
-meansofdeath 	= assert(table.load( scriptpath .. "noq_mods.cfg")) -- all MODS 
-weapons 		= assert(table.load( scriptpath .. "noq_weapons.cfg")) -- all weapons
-mod				= assert(table.load( scriptpath .. "noq_mods_names.cfg")) -- mods by name
-w				= assert(table.load( scriptpath .. "noq_weapons_names.cfg")) -- weapons by name
+meansofdeath 	= assert(table.load( scriptpath .. modprefix .. "_mods.cfg")) -- all MODS 
+weapons 		= assert(table.load( scriptpath .. modprefix .. "_weapons.cfg")) -- all weapons
+mod				= assert(table.load( scriptpath .. modprefix .. "_mods_names.cfg")) -- mods by name
+w				= assert(table.load( scriptpath .. modprefix .. "_weapons_names.cfg")) -- weapons by name
 -- end TODO
 greetings		= assert(table.load( scriptpath .. "noq_greetings.cfg")) -- all greetings, customize as wished
 

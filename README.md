@@ -19,3 +19,7 @@ Lua scripts for the Legacy mod
 * luasql module with sqlite3 driver is required
 * the script could be tweaked to use file backend or other database drivers instead of sqlite3
 
+## noq (under construction)
+
+* Game manager
+* luasql module with sqlite3 or mysql driver is required

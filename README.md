@@ -16,10 +16,10 @@ Lua scripts for the Legacy mod
 ## xpsave
 
 * This script is intended for Legacy mod, but may work in NoQuarter 1.2.9 and above
-* luasql module with sqlite3 driver is required
-* the script could be tweaked to use file backend or other database drivers instead of sqlite3
+* LuaSQL module with sqlite3 driver is required
+* The script could be tweaked to use file backend or other database drivers instead of sqlite3
 
 ## noq (under construction)
 
-* Game manager
-* luasql module with sqlite3 or mysql driver is required
+* Game manager, shrubbot and/or ET admin mod replacement
+* LuaSQL module with sqlite3 or mysql driver are required

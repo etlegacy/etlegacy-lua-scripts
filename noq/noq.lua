@@ -235,7 +235,7 @@ debug_getInfoFromTable(noqvartable)
 -- ["pkey"] = 0
 -- ["conname"] = row.conname
 -- ["regname"] = row.regname
--- ["netname"] = row.netnameet.G_Print("warning, invalid config value for " .. varname .. "\n")
+-- ["netname"] = row.netname
 -- ["isBot"] = 0	
 -- ["clan"] = 0
 -- ["level"] = 0

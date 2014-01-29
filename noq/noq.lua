@@ -33,25 +33,28 @@
 -- - Restart the server and check if all lua_modules noq_i.lua, noq_c.lua (optional) and noq.lua are registered.
 -- - Call /rcon !sqlcreate - Done. Your system is set up - you should remove noq_i.lua from lua_modules now.
 --
--- Files:
+-- NOQ basic files:
 -- noq_i.lua 				- Install script remove after install
 -- noq_c.lua 				- Additional tool to enter sql cmds on the ET console
 -- noq_config.cfg 			- Stores all data to run & control the NOQ. Make this file your own!
 -- noq_commands.cfg 		- Commands definition file - Make this file your own! 
 --
--- noq_mods_names_<NQ_VERSION>.cfg 		- Methods of death enum file - never touch!
--- noq_mods_<NQ_VERSION>.cfg 			- Methods of death enum file - never touch!
--- noq_weapons_<NQ_VERSION>.cfg 		- Weapon enum config file - never touch!
--- noq_weapons_names_<NQ_VERSION>.cfg	- Weapon enum config file - never touch!
--- Note: Delete files not matching your version. Example: If you run NQ 1.2.9 delete the files with suffix 130
+-- legacy_mods_names_<NQ_VERSION>.cfg 		- Methods of death enum file - never touch!
+-- legacy_mods_<NQ_VERSION>.cfg 		- Methods of death enum file - never touch!
+-- legacy_weapons_<NQ_VERSION>.cfg 		- Weapon enum config file - never touch!
+-- legacy_weapons_names_<NQ_VERSION>.cfg	- Weapon enum config file - never touch!
 --
 -- nqconst.lua 				- No Quarter constants
+-- legacyconst.lua 			- legacy constants
 -- noq_db.lua 				- No Quarter DB functions
 --
 
 -- Note: 	
 -- Again - you don't have to modyfiy any code in this script. If you disagree contact the dev team.
 
+
+-- FIXME legacy mod
+-- et.G_shrubbot_level(_clientNum) (keep for NQ)
 
 -------------------------------------------------------------------------------
 -------------------------------------------------------------------------------
@@ -160,24 +163,21 @@ if modname == "nq" then
 -- TODO: check for version incompatibilities...
 --version = et.trap_Cvar_Get( cvarname ) 
 	modprefix = "noq"
-elseif modname == "etpro" then
---TODO:
--- only commands may work - no loadlib:/
 elseif modname == "legacy" then
 	modprefix = "legacy"
 end
 
-et.G_LogPrint("Loading NOQ config from ".. scriptpath.."\n")
-noqvartable		= assert(table.load( scriptpath .. "noq_config.cfg"))
--- TODO: check if we can do this in 2 tables 
+et.G_LogPrint("Loading NOQ config files from ".. scriptpath.."\n")
+noqvartable	= assert(table.load( scriptpath .. "noq_config.cfg"))
+-- TODO: check if we can do this in total 2 tables 
 meansofdeath 	= assert(table.load( scriptpath .. modprefix .. "_mods.cfg")) -- all MODS 
-weapons 		= assert(table.load( scriptpath .. modprefix .. "_weapons.cfg")) -- all weapons
-mod				= assert(table.load( scriptpath .. modprefix .. "_mods_names.cfg")) -- mods by name
-w				= assert(table.load( scriptpath .. modprefix .. "_weapons_names.cfg")) -- weapons by name
+weapons 	= assert(table.load( scriptpath .. modprefix .. "_weapons.cfg")) -- all weapons
+mod		= assert(table.load( scriptpath .. modprefix .. "_mods_names.cfg")) -- mods by name
+w		= assert(table.load( scriptpath .. modprefix .. "_weapons_names.cfg")) -- weapons by name
 -- end TODO
-greetings		= assert(table.load( scriptpath .. "noq_greetings.cfg")) -- all greetings, customize as wished
-
-tkweight		= {} -- TODO: external table
+greetings	= assert(table.load( scriptpath .. "noq_greetings.cfg")) -- all greetings, customize as wished
+et.G_LogPrint("NOQ config files loaded.\n")
+tkweight	= {} -- TODO: external table
 
 -- Gets varvalue else null
 function getConfig ( varname )
@@ -190,7 +190,6 @@ function getConfig ( varname )
 	  	return "null"
 	end
 end
-
 
 -- don't get often used vars from noqvartable ...
 
@@ -236,7 +235,7 @@ debug_getInfoFromTable(noqvartable)
 -- ["pkey"] = 0
 -- ["conname"] = row.conname
 -- ["regname"] = row.regname
--- ["netname"] = row.netname
+-- ["netname"] = row.netnameet.G_Print("warning, invalid config value for " .. varname .. "\n")
 -- ["isBot"] = 0	
 -- ["clan"] = 0
 -- ["level"] = 0
@@ -518,7 +517,7 @@ function et_ClientCommand( _clientNum, _command )
 	local arg0 = string.lower(et.trap_Argv(0))
 	local arg1 = string.lower(et.trap_Argv(1))
 	local arg2 = string.lower(et.trap_Argv(2))
-	callershrublvl = et.G_shrubbot_level(_clientNum)
+	callershrublvl = 1 -- FIXME !!! et.G_shrubbot_level(_clientNum)
 	
 	debugPrint("print","Got a Clientcommand: ".. arg0)
 	
@@ -746,6 +745,7 @@ function et_ClientCommand( _clientNum, _command )
 	
 end
 
+-- FIXME: this crashes in legacy mod
 function et_ShutdownGame( _restart )
 	if databasecheck == 1 then
 		-- We write only the informations from a session that gone till intermission end
@@ -765,7 +765,7 @@ function et_ShutdownGame( _restart )
 			for i=0, maxclients, 1 do
 				-- TODO: check slot[] if its existingreco
 				if et.gentity_get(i,"classname") == "player" then
-					-- TODO : check if this works. Is the output from 'D' option in the needed format for the database?
+					-- TODO : check if this works. Is the output from 'D' option in the required format for the database?
 					local timediff = timehandle('D',endgametime,slot[i]["start"])
 					et.G_LogPrint( "Noq: saved player "..i.." to Database\n" ) 
 					WriteClientDisconnect( i , endgametime, timediff )
@@ -774,7 +774,7 @@ function et_ShutdownGame( _restart )
 			end
 		end
 		
-		DBCon:DoDisconnect()
+		--DBCon:DoDisconnect()
 	end
 		
 	-- delete old sessions if set in config
@@ -984,7 +984,7 @@ function initClient ( _clientNum, _FirstTime, _isBot)
 	a, b, slot[_clientNum]["ip"]= string.find(slot[_clientNum]["ip"],"(%d+%.%d+%.%d+%.%d+)")
 	slot[_clientNum]["isBot"] 	= _isBot
 	slot[_clientNum]["conname"] = et.Info_ValueForKey( et.trap_GetUserinfo( _clientNum ), "name" )
-	slot[_clientNum]["level"]	= et.G_shrubbot_level(_clientNum)
+	slot[_clientNum]["level"]	= 1 -- FIXME !!! et.G_shrubbot_level(_clientNum)
 	slot[_clientNum]["flags"]	= "" -- TODO
 	slot[_clientNum]["start"] 	= timehandle('N') 		-- Get the start connection time
 

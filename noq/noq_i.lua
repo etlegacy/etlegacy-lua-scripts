@@ -195,7 +195,7 @@ function createTablesDBMS()
 				regdate 	DATE 			DEFAULT NULL,		\
 				updatedate 	DATE 			DEFAULT CURRENT_DATE,	\
 				createdate 	DATE 			DEFAULT CURRENT_DATE)" )
-			et.G_Print(res .. "\n")
+			et.G_Print("CREATE TABLE IF NOT EXISTS player res: " .. res .. "\n")
 			
 			res = assert(con:execute"CREATE TABLE IF NOT EXISTS log ( 		\
 				id		INTEGER			PRIMARY KEY, 		\
@@ -204,7 +204,7 @@ function createTablesDBMS()
 				type		INTEGER			DEFAULT NULL,		\
 				textxml		TEXT			DEFAULT NULL,		\
 				createdate	DATE			DEFAULT CURRENT_DATE)")
-			et.G_Print(res .. "\n")
+			et.G_Print("CREATE TABLE IF NOT EXISTS log res: " ..  res .. "\n")
 
 			res = assert(con:execute"CREATE TABLE IF NOT EXISTS session ( 		\
 				id 		INTEGER 		PRIMARY KEY,		\
@@ -236,7 +236,7 @@ function createTablesDBMS()
 				death 		INTEGER 		DEFAULT 0,		\
 				revives		INTEGER 		DEFAULT 0,		\
 				uci 		INTEGER 		DEFAULT 0)" )
-			et.G_Print(res .. "\n")
+			et.G_Print("CREATE TABLE IF NOT EXISTS session res: " ..  res .. "\n")
 
 			res = assert(con:execute"CREATE TABLE IF NOT EXISTS level ( 		\
 				id		INTEGER 	PRIMARY KEY,			\
@@ -244,33 +244,33 @@ function createTablesDBMS()
 				name		TEXT 		NOT NULL,			\
 				greetings	TEXT		DEFAULT '',			\
 				flags 		TEXT		NOT NULL)" )
-			et.G_Print(res .. "\n")
+			et.G_Print("CREATE TABLE IF NOT EXISTS level res: " .. res .. "\n")
 			
 			res = assert(con:execute"CREATE TABLE IF NOT EXISTS version ( 		\
 				id 		INTEGER 		PRIMARY KEY,		\
 				version 	INTEGER 		NOT NULL UNIQUE )" )
-			et.G_Print(res .. "\n")
+			et.G_Print("CREATE TABLE IF NOT EXISTS version res: " ..  res .. "\n")
 		
 			-- SQLite needs exra cmds for setting up an index (anybody knows syntax for create table stmd?)
 			-- player
-			res = assert(con:execute"CREATE INDEX p_regname ON player( regname )" )
-			et.G_Print(res .. "\n")
-			res = assert(con:execute"CREATE INDEX p_netname ON player( netname )" )
-			et.G_Print(res .. "\n")
+			res = assert(con:execute"CREATE INDEX p_regname ON player(regname)" )
+			et.G_Print("CREATE INDEX p_regname ON player(regname) res: " ..  res .. "\n")
+			res = assert(con:execute"CREATE INDEX p_netname ON player(netname)" )
+			et.G_Print("CREATE INDEX p_netname ON player(netname) res: " ..  res .. "\n")
 			--log
-			res = assert(con:execute"CREATE INDEX l_guid ON log (guid1, guid2)" )
-			et.G_Print(res .. "\n")
+			res = assert(con:execute"CREATE INDEX l_guid ON log(guid1, guid2)" )
+			et.G_Print("CREATE INDEX l_guid ON log(guid1, guid2) res: " ..  res .. "\n")
 			-- session
-			res = assert(con:execute"CREATE INDEX s_pkey ON session ( pkey )" )
-			et.G_Print(res .. "\n")
-			res = assert(con:execute"CREATE INDEX s_ip ON session ( ip )" )
-			et.G_Print(res .. "\n")
-			res = assert(con:execute"CREATE INDEX s_end ON session ( end )" )
-			et.G_Print(res .. "\n")
+			res = assert(con:execute"CREATE INDEX s_pkey ON session(pkey)" )
+			et.G_Print("CREATE INDEX s_pkey ON session(pkey) res: " ..  res .. "\n")
+			res = assert(con:execute"CREATE INDEX s_ip ON session(ip)" )
+			et.G_Print("CREATE INDEX s_ip ON session(ip) res: " ..  res .. "\n")
+			res = assert(con:execute"CREATE INDEX s_end ON session(end)" )
+			et.G_Print("CREATE INDEX s_end ON session(end) res: " ..  res .. "\n")
 
 			-- insert data
    			res = assert(con:execute("INSERT INTO version VALUES ( '1', '" .. version .. "' )"))
-			et.G_Print(res .. "\n")
+			et.G_Print("Version res: " .. res .. " - Database version is " .. version .. "\n")
 			
 			-- TODO: create level entries
 			

@@ -1,37 +1,23 @@
 --------------------------------------------------------------------------
 -- dynamite.lua - a server side dynamite timer script                    -
 --------------------------------------------------------------------------
+-- 1.41:
+--   - pheno: made the script ETpub (and other mod?) compatible
+--   - pheno: made the script Lua 5.2 compatible
 --
--- $Date: 2007-02-18 20:00:45 +0100 (So, 18 Feb 2007) $
--- $Revision: 93 $
-local version = "1.4"
+-- 1.4:
+--   - first release
+--------------------------------------------------------------------------
+local version = "1.41"
 
--- Benny: 
 -- Config:
 -- where to place the timer message, see
 --   http://wolfwiki.anime.net/index.php/SendServerCommand#Printing 
 -- for valid locations
 -- local announce_pos   = "b 128"
+-- local announce_pos   = "b 8"
+local announce_pos   = "cpm"
 
-
-local announce_pos   = "b 8"
-local pattern = "^etpro%s+popup:%s+(%w+)%s+(%w+)%s+\"(.+)\""
-
-gamename = et.trap_Cvar_Get("gamename")
-if (gamename == "noquarter" or gamename == "nq")  then
-  announce_pos   = "chat"
-  pattern = "^nq%s+popup:%s+(%w+)%s+(%w+)%s+\"(.+)\""
-end
-gamename = et.trap_Cvar_Get("gamename")
-if (gamename == "etpub")  then
-  announce_pos   = "chat"
-  pattern = "^etpub%s+popup:%s+(%w+)%s+(%w+)%s+\"(.+)\""
-end
-gamename = et.trap_Cvar_Get("gamename")
-if (gamename == "legacy")  then
-  announce_pos   = "chat"
-  pattern = "^legacy%s+popup:%s+(%w+)%s+(%w+)%s+\"(.+)\""
-end
 
 -- print "Dynamite planted at LOCATION"? This only affects this message,
 -- not the countdown messages
@@ -42,23 +28,23 @@ local announce_plant = true
 local cl_default = true
 
 -- for 20, 10, 5, 3, 2, 1, NOW use:
--- local steps = { -- [step] = { next step, diff to next step }
---                [20]   =  { 10,        10 }, 
---                [10]   =  {  5,         5 }, 
---                 [5]   =  {  3,         2 }, 
---                 [3]   =  {  2,         1 }, 
---                 [2]   =  {  1,         1 }, 
---                 [1]   =  {  0,         1 },
---                 [0]   =  {  0,         0 } -- delete if diff to next == 0
---            }
+local steps = { -- [step] = { next step, diff to next step }
+                   [20]   =  { 10,        10 }, 
+                   [10]   =  {  5,         5 }, 
+                    [5]   =  {  3,         2 }, 
+                    [3]   =  {  2,         1 }, 
+                    [2]   =  {  1,         1 }, 
+                    [1]   =  {  0,         1 },
+                    [0]   =  {  0,         0 } -- delete if diff to next == 0
+              }
 ----------------------------------------------------------------------------
 -- [!!!] Hirnlos settings:
-   local steps = { -- [step] = { next step, diff to next step }
-                     [20]   =  { 10,        10 }, 
-                     [10]   =  {  5,         5 }, 
-                      [5]   =  {  2,         3 },
-                      [2]   =  {  0,         0 } -- no BOOM
-                }
+-- local steps = { -- [step] = { next step, diff to next step }
+--                   [20]   =  { 10,        10 }, 
+--                   [10]   =  {  5,         5 }, 
+--                    [5]   =  {  2,         3 },
+--                    [2]   =  {  0,         0 } -- no BOOM
+--              }
 ----------------------------------------------------------------------------
 -- -- for 25, 15, 5, 3, 2, 1 use:
 -- local steps = {
@@ -91,7 +77,7 @@ local T_LOCATION = 3
 
 -- called when game inits
 function et_InitGame(levelTime, randomSeed, restart)
-    et.RegisterModname("dynamite.lua" .. version .. " " .. et.FindSelf())
+    et.RegisterModname("dynamite.lua " .. version .. " " .. et.FindSelf())
     sv_maxclients = tonumber(et.trap_Cvar_Get("sv_maxclients"))
     sv_fps        = tonumber(et.trap_Cvar_Get("sv_fps"))
     local i = 0
@@ -100,9 +86,11 @@ function et_InitGame(levelTime, randomSeed, restart)
         table.insert(client_msg, i, false) 
     end
     first_step = 0
-    table.foreach(steps,
-        function(i, data) if i > first_step then first_step = i end end
-    )
+    for i, data in pairs(steps) do
+        if i > first_step then
+            first_step = i
+        end
+    end
     et.G_Print("Vetinari's dynamite.lua version "..version.." activated...\n")
 end
 
@@ -111,6 +99,7 @@ end
 function et_Print(text)
     -- etpro popup: allies planted "the Old City Wall"
     -- etpro popup: axis defused "the Old City Wall"
+    local pattern = "^" .. et.trap_Cvar_Get("gamename") .. "%s+popup:%s+(%w+)%s+(%w+)%s+\"(.+)\""
     local junk1,junk2,team,action,location = string.find(text, pattern)
     if team ~= nil and action ~= nil and location ~= nil then
         if action == "planted" then
@@ -136,20 +125,18 @@ end
 -- check if we have to print the countdown messages
 function et_RunFrame(lvltime)
     levelTime = lvltime
-    table.foreach(timers, -- usually this is empty, so nothing is done
-        function(i, timer)
-            if timer[T_TIME] <= levelTime then 
-                printTimer(timer[T_STEP], timer[T_LOCATION])
-                local step = steps[timer[T_STEP]]
-                if step[ST_DIFF] == 0 then
-                    removeTimer(timer[T_LOCATION])
-                else
-                    timer[T_STEP] = step[ST_NEXT]
-                    timer[T_TIME] = levelTime + (step[ST_DIFF] * 1000)
-                end
+    for i, timer in pairs(timers) do
+        if timer[T_TIME] <= levelTime then 
+            printTimer(timer[T_STEP], timer[T_LOCATION])
+            local step = steps[timer[T_STEP]]
+            if step[ST_DIFF] == 0 then
+                removeTimer(timer[T_LOCATION])
+            else
+                timer[T_STEP] = step[ST_NEXT]
+                timer[T_TIME] = levelTime + (step[ST_DIFF] * 1000)
             end
         end
-    )
+	end
 end
 
 -- \dynatimer client command, switch on/off, get status about the setting
@@ -163,9 +150,7 @@ function et_ClientCommand(id, command)
             if client_msg[id] == false then
                 status = "^8off^7"
             end
-            et.trap_SendServerCommand(id, 
-                    string.format("b 8 \"^#(dynatimer):^7 Dynatimer is %s\"", 
-                            status))
+            et.trap_SendServerCommand(id, string.format("%s \"^#(dynatimer):^7 Dynatimer is %s\"", announce_pos, status))
         elseif tonumber(arg) == 0 then
             setTimerMessages(id, false)
             et.trap_SendServerCommand(id,
@@ -183,13 +168,11 @@ end
 -- print messages... just to the clients, who want them
 function sayClients(pos, msg) 
     local message = string.format("%s \"%s^7\"", pos, msg)
-    table.foreach(client_msg,
-        function(id, timer_wanted)
-            if timer_wanted then
-                et.trap_SendServerCommand(id, message)
-            end
+    for id, timer_wanted in pairs(client_msg) do
+        if timer_wanted then
+            et.trap_SendServerCommand(id, message)
         end
-    )
+    end
 end
 
 function printTimer(seconds, loc) 
@@ -210,18 +193,13 @@ function addTimer(location)
     table.insert(timers, { levelTime + diff, first_step, location })
 end
 
-function removeTimer(location) 
-    local delete = table.foreach(timers,
-        function(i, timer) 
-            -- problem with 2 or more planted dynas at one location
-            -- ... remove the one which was planted first
-            if timer[T_LOCATION] == location then
-                return(i)
-            end
+function removeTimer(location)
+    for i, timer in pairs(timers) do 
+        -- problem with 2 or more planted dynas at one location
+        -- ... remove the one which was planted first
+        if timer[T_LOCATION] == location then
+            table.remove(timers, i)
         end
-    )
-    if delete ~= nil then
-        table.remove(timers, delete)
     end
 end
 

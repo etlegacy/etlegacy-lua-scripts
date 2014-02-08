@@ -6,18 +6,22 @@ function et_ClientCommand(id, command)
 
 		if recipient_name then
 			for i=0, tonumber( et.trap_Cvar_Get( "sv_maxclients" ) )-1 do
-				local player_name = string.lower( et.Q_CleanStr( et.gentity_get( i, "pers.netname" ) ) )
+				local player_name = et.gentity_get( i, "pers.netname" )
 
 				if recipient_name then
 					local sender_name = et.gentity_get( id, "pers.netname" )
-					s, e = string.find( player_name, recipient_name )
+					s, e = string.find( string.lower( et.Q_CleanStr( player_name ) ), recipient_name )
 					if s and e then
-						et.trap_SendServerCommand( i, "chat \"" .. sender_name .. "^7: ^5" .. et.ConcatArgs(2) .. "\" " .. i  .. " 0")
+						if i ~= id then -- PMing yourself?
+							et.trap_SendServerCommand( i, "chat \"" .. sender_name .. "^7 -> " .. player_name .. "^7: ^5" .. et.ConcatArgs(2) .. "\"" )
+						end
+						et.trap_SendServerCommand( id, "chat \"" .. sender_name .. "^7 -> " .. player_name .. "^7: ^5" .. et.ConcatArgs(2) .. "\"" )
 						return(1) -- send only to the first player matched				
 					end
 				end
 			end
+			et.trap_SendServerCommand( id, "chat \"No player whose name matches the pattern \'" .. recipient_name .. "\' was found.\"" )
+			return(1)
 		end
 	end
 end
-	

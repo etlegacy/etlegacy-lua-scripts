@@ -23,3 +23,10 @@ Lua scripts for the Legacy mod
 
 * Game manager, shrubbot and/or ET admin mod replacement
 * LuaSQL module with sqlite3 or mysql driver are required
+
+## pm - private messages
+
+* use ```pm``` console command to send a private message to another player
+* message is sent to the first matched player name
+* player name is a colour and case-insensitive pattern, e.g. ton will match player /-^321ToN-/
+* usage: pm player Hello, how are you?

@@ -30,3 +30,8 @@ Lua scripts for the Legacy mod
 * message is sent to the first matched player name
 * player name is a colour and case-insensitive pattern, e.g. ton will match player /-^321ToN-/
 * usage: pm player Hello, how are you?
+
+## ladm - lightweight administration suite
+
+* NOTE: not even alpha state. Do not use.
+* manage users on your server

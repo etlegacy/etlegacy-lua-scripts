@@ -3,7 +3,7 @@ env = {}     -- environment object
 con = {}     -- database connection
 cur = {}     -- cursor
 
-dofile("ladm.cfg")
+dofile("legacy/ladm/ladm.cfg")
 
 -- 1) load the chosen driver
 -- 2) create environement object
@@ -19,6 +19,9 @@ function db_init ( )
 		luasql = require "luasql.sqlite3"
 		env = assert ( luasql.sqlite3() )
 		con = assert ( env:connect( dbdatabase .. ".sqlite" ) ) 
+	else
+		print ( "Unsupported database driver. Please set either mysql or sqlite in the config file." )
+		return
 	end
 
 	if not installed then db_create() end
@@ -39,6 +42,7 @@ function db_rows ( connection, sql_statement )
 	end 
 end -- rows
 
+-- called only the first time ladm starts
 function db_create ()
 	print ( "INSTALLING DATABASE RECORDS" )
 	--cur = assert (con:execute( "DROP TABLE users" ))
@@ -79,9 +83,8 @@ function db_create ()
 	local configfile = io.open ( "ladm.cfg", "a" )
 	configfile:write ( "\ninstalled = true\n" )
 	configfile:close()
-	--print ( "Done. Please remember to change the 'installed' variable in the ladm.cfg file to 'false'." )
 	
-	--et.G_Print ("^4List of users in XP Save database:\n")
+	--et.G_Print ("^4List of users in the database:\n")
 	--for guid, date in rows (con, "SELECT * FROM users") do
 	--	et.G_Print (string.format ("\tGUID %s was last seen on %s\n", guid, date))
 	--end

@@ -12,17 +12,16 @@
 -- load the config file
 dofile "ladm.cfg"
 
-require "core/db"
-
-db_init()
+require "ladm/core/db"
+require "ladm/core/user"
+require "ladm/core/commands"
 
 function et_InitGame(levelTime, randomSeed, restart)
 	-- name of this module
 	et.RegisterModname ( "Lightweight administration suite for the Legacy mod" )
 	
 	-- init db on game start
-
-
+	db_init()
 end -- et_InitGame
 
 function et_ShutdownGame(restart)
@@ -49,21 +48,16 @@ end -- et_ShutdownGame
 function et_ClientBegin(cno)
 	local name = et.Info_ValueForKey( et.trap_GetUserinfo( cno ), "name" ) 
 	local guid = et.Info_ValueForKey( et.trap_GetUserinfo( cno ), "cl_guid" )
-	
-	if not validateGUID(cno, guid) then return end
 
-	cur = assert (con:execute(string.format("SELECT * FROM users WHERE guid='%s'", guid)))
-	local player = cur:fetch({}, 'a')
+	local player = getPlayerByGUID(guid)
 	
 	if not player then
 		-- First time we see this player
 		et.trap_SendServerCommand (cno, "cpm \"" .. "Welcome, " .. name .. "^7! You are playing on an XP save server.\n\"")
-		cur = assert (con:execute(string.format("INSERT INTO users VALUES ('%s', '%s', '%s', 0, 0, 0, 0, 0, 0, 0)", guid, os.date("%Y-%m-%d %H:%M:%S"), os.date("%Y-%m-%d %H:%M:%S"))))
+		cur = assert (con:execute(string.format("INSERT INTO %susers VALUES ('%s', '%s', '%s', 0, 0, 0, 0, 0, 0, 0)", dbprefix, guid, os.date("%Y-%m-%d %H:%M:%S"), os.date("%Y-%m-%d %H:%M:%S"))))
 	else
 		et.trap_SendServerCommand (cno, "cpm \"" .. "Welcome back, " .. name .. "^7! Your last connection was on " .. player.last_seen .. "\n\"") -- in db: player.name
 
-		--et.G_Print ("Loading XP from database: " .. player.xp_battlesense .. " | " .. player.xp_engineering .. " | " .. player.xp_medic .. " | " .. player.xp_fieldops .. " | " .. player.xp_lightweapons .. " | " .. player.xp_heavyweapons .. " | " .. player.xp_covertops .. "\n\n")
-		
 		et.G_XP_Set (cno, player.xp_battlesense, BATTLESENSE, 0) 
 		et.G_XP_Set (cno, player.xp_engineering, ENGINEERING, 0) 
 		et.G_XP_Set (cno, player.xp_medic, MEDIC, 0) 
@@ -74,7 +68,8 @@ function et_ClientBegin(cno)
 		
 		et.G_Print (name .. "'s current XP levels:\n")
 		for id, skill in pairs(skills) do 
-			et.G_Print ("\t" .. skill .. ": " .. et.gentity_get (cno, "sess.skillpoints", id) .. " XP\n") 
+			et.G_Print ("| " .. skill .. ": " .. et.gentity_get (cno, "sess.skillpoints", id) .. " XP ") 
+			et.G_Print ("|\n")
 		end
 	end
 end -- et_ClientBegin
@@ -82,3 +77,18 @@ end -- et_ClientBegin
 function et_ClientDisconnect(cno)
 	saveXP(cno)
 end -- et_ClientDisconnect
+
+function et_ClientCommand(cno, cmd)
+	for cmd_name, cmd_function in pairs(Command) do
+		-- string.lower(et.trap_Argv(0))
+		if cmd == cmd_name then
+			cmd_function()
+			return 1
+		end
+	end
+end -- et_ClientCommand
+
+-- testing
+function et_ConsoleCommand(cmd)
+	et_ClientCommand(nil, cmd)
+end -- et_ConsoleCommand

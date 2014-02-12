@@ -1,7 +1,13 @@
 
+-- Private message
 function et_ClientCommand(id, command)
-	-- Private message
 	if string.lower( et.trap_Argv(0) ) == "pm" then
+
+		if tonumber( et.trap_Argc ) < 3 then
+				et.trap_SendServerCommand( id, "chat \"Usage: pm name message\"" )
+				return(1)
+		end
+
 		local recipient_name = string.lower( et.Q_CleanStr( et.trap_Argv(1) ) )
 
 		if recipient_name then

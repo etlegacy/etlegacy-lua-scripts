@@ -3,13 +3,13 @@ env = {}     -- environment object
 con = {}     -- database connection
 cur = {}     -- cursor
 
-dofile("legacy/ladm/ladm.cfg")
+dofile("./" .. et.trap_Cvar_Get("fs_game") .. "/ladm/ladm.cfg")
 
 -- 1) load the chosen driver
 -- 2) create environement object
 -- 3) connect to database
 function db_init ( )
-	print ( "Connecting to " .. dbdriver .. " database..." )
+	et.G_Print ( "Connecting to " .. dbdriver .. " database..." )
 
 	if ( dbdriver == "mysql" ) then
 		luasql = require "luasql.mysql"
@@ -19,6 +19,10 @@ function db_init ( )
 		luasql = require "luasql.sqlite3"
 		env = assert ( luasql.sqlite3() )
 		con = assert ( env:connect( dbdatabase .. ".sqlite" ) ) 
+	--elseif ( dbdriver == "postgres") then
+	--	luasql = require "luasql.postgres"	
+	--	env = assert ( luasql.postgres() )	
+	--	con = assert ( env:connect( dbdatabase, ... ) ) 
 	else
 		print ( "Unsupported database driver. Please set either mysql or sqlite in the config file." )
 		return
@@ -27,10 +31,10 @@ function db_init ( )
 	if not installed then db_create() end
 	
 	cur = assert ( con:execute ( string.format ( "SELECT COUNT(*) FROM %susers", dbprefix ) ) )
-	print("There are " .. tonumber(cur:fetch(row, 'a')) .. " users in the database.\n")
+	et.G_Print("There are " .. tonumber(cur:fetch(row, 'a')) .. " users in the database.\n")
 
 	cur = assert ( con:execute ( string.format ( "SELECT COUNT(*) FROM %svariables", dbprefix ) ) )
-	print("There are " .. tonumber(cur:fetch(row, 'a')) .. " variables in the database.\n")
+	et.G_Print("There are " .. tonumber(cur:fetch(row, 'a')) .. " variables in the database.\n")
 end
 
 -- database  helper function  

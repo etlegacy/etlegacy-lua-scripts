@@ -9,12 +9,14 @@
 	Description: lightweight user administration suite
 ]]--
 
+package.path = "./" .. et.trap_Cvar_Get("fs_game") .. "/ladm/?.lua;" .. package.path
+
 -- load the config file
 dofile "ladm.cfg"
 
-require "ladm/core/db"
-require "ladm/core/user"
-require "ladm/core/commands"
+require "core/db"
+require "core/user"
+require "core/commands"
 
 function et_InitGame(levelTime, randomSeed, restart)
 	-- name of this module
@@ -54,7 +56,7 @@ function et_ClientBegin(cno)
 	if not player then
 		-- First time we see this player
 		et.trap_SendServerCommand (cno, "cpm \"" .. "Welcome, " .. name .. "^7! You are playing on an XP save server.\n\"")
-		cur = assert (con:execute(string.format("INSERT INTO %susers VALUES ('%s', '%s', '%s', 0, 0, 0, 0, 0, 0, 0)", dbprefix, guid, os.date("%Y-%m-%d %H:%M:%S"), os.date("%Y-%m-%d %H:%M:%S"))))
+		cur = assert (con:execute(string.format("INSERT INTO %susers VALUES ('%s', '%s', '%s', 0, 0, 0, 0, 0, 0, 0, 0)", dbprefix, guid, os.date("%Y-%m-%d %H:%M:%S"), os.date("%Y-%m-%d %H:%M:%S"))))
 	else
 		et.trap_SendServerCommand (cno, "cpm \"" .. "Welcome back, " .. name .. "^7! Your last connection was on " .. player.last_seen .. "\n\"") -- in db: player.name
 

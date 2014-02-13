@@ -3,13 +3,13 @@ env = {}     -- environment object
 con = {}     -- database connection
 cur = {}     -- cursor
 
-dofile("./" .. et.trap_Cvar_Get("fs_game") .. "/ladm/ladm.cfg")
+dofile(et.trap_Cvar_Get("fs_basepath") .. "/" .. et.trap_Cvar_Get("fs_game") .. "/ladm/ladm.cfg")
 
 -- 1) load the chosen driver
 -- 2) create environement object
 -- 3) connect to database
 function db_init ( )
-	et.G_Print ( "Connecting to " .. dbdriver .. " database..." )
+	et.G_Print ( "Connecting to " .. dbdriver .. " database...\n" )
 
 	if ( dbdriver == "mysql" ) then
 		luasql = require "luasql.mysql"
@@ -48,15 +48,16 @@ end -- rows
 
 -- called only the first time ladm starts
 function db_create ()
-	print ( "INSTALLING DATABASE RECORDS" )
+	et.G_Print ( "^5INSTALLING DATABASE RECORDS\n" )
 	--cur = assert (con:execute( "DROP TABLE users" ))
 	
 	cur = assert ( con:execute ( string.format ( [[
 		CREATE TABLE IF NOT EXISTS %susers(
-			id INT(11) NOT NULL AUTO_INCREMENT,
 			guid VARCHAR(64),
 			first_seen VARCHAR(64),
 			last_seen VARCHAR(64),
+
+			privilege INT(11),
 
 			xp_battlesense REAL,
 			xp_engineering REAL,
@@ -66,7 +67,6 @@ function db_create ()
 			xp_heavyweapons REAL,
 			xp_covertops REAL,	
 
-			PRIMARY KEY (id),
 			UNIQUE (guid)
 		);
 	]], dbprefix ) ) )
@@ -84,9 +84,21 @@ function db_create ()
 		);
 	]], dbprefix ) ) )
 	
-	local configfile = io.open ( "ladm.cfg", "a" )
-	configfile:write ( "\ninstalled = true\n" )
-	configfile:close()
+	local file, len = et.trap_FS_FOpenFile( "ladm/ladm.cfg", 2 )
+
+	if len == -1 then
+		-- TODO: log this
+		et.G_Printf("failed to open %s\n", file)
+		return
+	end
+
+	local text = "\ninstalled = true\n"
+	et.trap_FS_Write(text, string.len(text), file)
+	et.trap_FS_FCloseFile(file)
+
+	--local configfile = io.open ( "ladm.cfg", "a" )
+	--configfile:write ( "\ninstalled = true\n" )
+	--configfile:close()
 	
 	--et.G_Print ("^4List of users in the database:\n")
 	--for guid, date in rows (con, "SELECT * FROM users") do

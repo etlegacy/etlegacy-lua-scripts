@@ -1,14 +1,14 @@
 
 -- skill identifiers
-local BATTLESENSE 	= 0
-local ENGINEERING 	= 1
-local MEDIC 		= 2
-local FIELDOPS 		= 3
-local LIGHTWEAPONS	= 4
-local HEAVYWEAPONS	= 5
-local COVERTOPS		= 6
+BATTLESENSE 	= 0
+ENGINEERING 	= 1
+MEDIC 			= 2
+FIELDOPS 		= 3
+LIGHTWEAPONS	= 4
+HEAVYWEAPONS	= 5
+COVERTOPS		= 6
 
-local skills = {}
+skills = {}
 skills[BATTLESENSE]		= "Battlesense"
 skills[ENGINEERING]		= "Engineering"
 skills[MEDIC]			= "Medic"
@@ -89,4 +89,20 @@ function getPlayerByGUID(guid)
 
 	cur = assert (con:execute(string.format("SELECT * FROM %susers WHERE guid='%s'", dbprefix, guid)))
 	return cur:fetch({}, 'a') -- player table or nil
+end
+
+function getPlayerName(id)
+	local name
+
+	if not id or not (id >= 0 or id < tonumber(et.trap_Cvar_Get("sv_maxclients"))) and not (id == 999) then 
+		return nil 
+	end
+ 
+ 	if id == 999 then
+ 		name = "^JServer" 
+	else
+		name = et.gentity_get( id, "pers.netname" )
+	end
+
+	return name
 end

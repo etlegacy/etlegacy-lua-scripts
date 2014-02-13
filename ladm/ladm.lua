@@ -12,7 +12,7 @@
 package.path = "./" .. et.trap_Cvar_Get("fs_game") .. "/ladm/?.lua;" .. package.path
 
 -- load the config file
-dofile "ladm.cfg"
+dofile ("./" .. et.trap_Cvar_Get("fs_game") .. "/ladm/ladm.cfg")
 
 require "core/db"
 require "core/user"
@@ -56,17 +56,20 @@ function et_ClientBegin(cno)
 	if not player then
 		-- First time we see this player
 		et.trap_SendServerCommand (cno, "cpm \"" .. "Welcome, " .. name .. "^7! You are playing on an XP save server.\n\"")
-		cur = assert (con:execute(string.format("INSERT INTO %susers VALUES ('%s', '%s', '%s', 0, 0, 0, 0, 0, 0, 0, 0)", dbprefix, guid, os.date("%Y-%m-%d %H:%M:%S"), os.date("%Y-%m-%d %H:%M:%S"))))
+		cur = assert (con:execute(string.format([[
+			INSERT INTO %susers VALUES (
+				'%s', '%s', '%s', 0, 0, 0, 0, 0, 0, 0, 0
+			)]], dbprefix, guid, os.date("%Y-%m-%d %H:%M:%S"), os.date("%Y-%m-%d %H:%M:%S"))))
 	else
 		et.trap_SendServerCommand (cno, "cpm \"" .. "Welcome back, " .. name .. "^7! Your last connection was on " .. player.last_seen .. "\n\"") -- in db: player.name
 
-		et.G_XP_Set (cno, player.xp_battlesense, BATTLESENSE, 0) 
-		et.G_XP_Set (cno, player.xp_engineering, ENGINEERING, 0) 
-		et.G_XP_Set (cno, player.xp_medic, MEDIC, 0) 
-		et.G_XP_Set (cno, player.xp_fieldops, FIELDOPS, 0) 
+		et.G_XP_Set (cno, player.xp_battlesense,  BATTLESENSE,  0) 
+		et.G_XP_Set (cno, player.xp_engineering,  ENGINEERING,  0) 
+		et.G_XP_Set (cno, player.xp_medic,        MEDIC,        0) 
+		et.G_XP_Set (cno, player.xp_fieldops,     FIELDOPS,     0) 
 		et.G_XP_Set (cno, player.xp_lightweapons, LIGHTWEAPONS, 0) 
 		et.G_XP_Set (cno, player.xp_heavyweapons, HEAVYWEAPONS, 0) 
-		et.G_XP_Set (cno, player.xp_covertops, COVERTOPS, 0)
+		et.G_XP_Set (cno, player.xp_covertops,    COVERTOPS,    0)
 		
 		et.G_Print (name .. "'s current XP levels:\n")
 		for id, skill in pairs(skills) do 
@@ -84,7 +87,7 @@ function et_ClientCommand(cno, cmd)
 	for cmd_name, cmd_function in pairs(Command) do
 		-- string.lower(et.trap_Argv(0))
 		if cmd == cmd_name then
-			cmd_function()
+			cmd_function(cno, cmd)
 			return 1
 		end
 	end
@@ -92,5 +95,5 @@ end -- et_ClientCommand
 
 -- testing
 function et_ConsoleCommand(cmd)
-	et_ClientCommand(nil, cmd)
+	et_ClientCommand(999, cmd)
 end -- et_ConsoleCommand

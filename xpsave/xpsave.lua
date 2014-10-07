@@ -145,7 +145,7 @@ function et_ShutdownGame(restart)
 
 	-- iterate through clients and save their XP
 	while cno < maxclients do
-		local cs = et.trap_GetConfigstring(et.CS_PLAYERS + cno)
+		local cs = et.trap_GetConfigstring(tonumber(et.CS_PLAYERS) + cno)
 
 		if not cs or cs == "" then break end
 		

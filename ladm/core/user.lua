@@ -61,6 +61,7 @@ function saveXP(cno)
 		--for id, name in pairs(skills) do et.G_Print (name .. ": " .. et.gentity_get (cno, "sess.skillpoints", id) .. " XP\n") end
 		
 		cur = assert (con:execute(string.format([[UPDATE %susers SET 
+			nick='%s',
 			last_seen='%s', 
 			xp_battlesense='%s',
 			xp_engineering='%s', 
@@ -71,6 +72,7 @@ function saveXP(cno)
 			xp_covertops='%s' 
 			WHERE guid='%s']], 
 			dbprefix,
+			name,
 			os.date("%Y-%m-%d %H:%M:%S"), 
 			et.gentity_get (cno, "sess.skillpoints", BATTLESENSE), 
 			et.gentity_get (cno, "sess.skillpoints", ENGINEERING), 

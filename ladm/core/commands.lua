@@ -54,3 +54,13 @@ Command["pm"] = function(cno, cmd)
 		return(1)
 	end
 end
+
+-- List users
+Command["users"] = function(cno, cmd)
+	et.G_Print ("^4List of users in the database:\n")
+	for guid, nick, first_seen, last_seen, privilege, xp_battlesense, xp_engineering, xp_medic, xp_fieldops, xp_lightweapons, xp_heavyweapons, xp_covertops 
+	in db_rows ( con, string.format ( [[ SELECT * FROM %susers ORDER BY nick DESC ]], dbprefix ) ) do
+		  et.G_Print (string.format ( "\t%s is a level %i user who was last seen on %s and has a total of %i XP\n", 
+		  nick, privilege, last_seen, (xp_battlesense + xp_engineering + xp_medic + xp_fieldops + xp_lightweapons + xp_heavyweapons + xp_covertops) ) )
+	end
+end

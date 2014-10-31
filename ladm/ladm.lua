@@ -58,8 +58,8 @@ function et_ClientBegin(cno)
 		et.trap_SendServerCommand (cno, "cpm \"" .. "Welcome, " .. name .. "^7! You are playing on an XP save server.\n\"")
 		cur = assert (con:execute(string.format([[
 			INSERT INTO %susers VALUES (
-				'%s', '%s', '%s', 0, 0, 0, 0, 0, 0, 0, 0
-			)]], dbprefix, guid, os.date("%Y-%m-%d %H:%M:%S"), os.date("%Y-%m-%d %H:%M:%S"))))
+				'%s', '%s', '%s', '%s', 0, 0, 0, 0, 0, 0, 0, 0
+			)]], dbprefix, guid, name, os.date("%Y-%m-%d %H:%M:%S"), os.date("%Y-%m-%d %H:%M:%S"))))
 	else
 		et.trap_SendServerCommand (cno, "cpm \"" .. "Welcome back, " .. name .. "^7! Your last connection was on " .. player.last_seen .. "\n\"") -- in db: player.name
 
@@ -71,11 +71,10 @@ function et_ClientBegin(cno)
 		et.G_XP_Set (cno, player.xp_heavyweapons, HEAVYWEAPONS, 0) 
 		et.G_XP_Set (cno, player.xp_covertops,    COVERTOPS,    0)
 		
-		et.G_Print (name .. "'s current XP levels:\n")
-		for id, skill in pairs(skills) do 
-			et.G_Print ("| " .. skill .. ": " .. et.gentity_get (cno, "sess.skillpoints", id) .. " XP ") 
-			et.G_Print ("|\n")
-		end
+		--et.G_Print (name .. "'s current XP levels:\n")
+		--for id, skill in pairs(skills) do 
+		--	et.G_Print ("| " .. skill .. ": " .. et.gentity_get (cno, "sess.skillpoints", id) .. " XP |\n")
+		--end
 	end
 end -- et_ClientBegin
 

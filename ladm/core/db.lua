@@ -15,7 +15,7 @@ function db_init ( )
 		luasql = require "luasql.mysql"
 		env = assert ( luasql.mysql() )
 		con = assert ( env:connect( dbdatabase, dbuser, dbpassword, dbhost, dbport ) )
-	elseif ( dbdriver == "sqlite" or dbdriver == "sqlite3") then
+	elseif ( dbdriver == "sqlite" or dbdriver == "sqlite3" ) then
 		luasql = require "luasql.sqlite3"
 		env = assert ( luasql.sqlite3() )
 		con = assert ( env:connect( dbdatabase .. ".sqlite" ) ) 
@@ -48,12 +48,14 @@ end -- rows
 
 -- called only the first time ladm starts
 function db_create ()
-	et.G_Print ( "^5INSTALLING DATABASE RECORDS\n" )
-	--cur = assert (con:execute( "DROP TABLE users" ))
+	
+	et.G_Print ( "^5ladm(sql): installing initial databases\n" )
+	-- cur = assert ( con:execute ( string.format ( [[ DROP TABLE %susers ]], dbprefix ) ) )
 	
 	cur = assert ( con:execute ( string.format ( [[
 		CREATE TABLE IF NOT EXISTS %susers(
 			guid VARCHAR(64),
+			nick VARCHAR(64),
 			first_seen VARCHAR(64),
 			last_seen VARCHAR(64),
 
@@ -71,19 +73,26 @@ function db_create ()
 		);
 	]], dbprefix ) ) )
 
+	-- incompatible sqlite/mysql syntax
+	if ( dbdriver == "sqlite" or dbdriver == "sqlite3" ) then
+		sql_ai = "" -- no need as the PRIMARY KEY column is incremented automatically
+	else
+		sql_ai = "AUTO_INCREMENT"
+	end
+
 	cur = assert ( con:execute ( string.format ( [[	
 		CREATE TABLE IF NOT EXISTS %svariables(
-			id INT(11) NOT NULL AUTO_INCREMENT,
+			id INT(11) NOT NULL %s,
 			type VARCHAR(128) NOT NULL,
 			name VARCHAR(128) NOT NULL,
 			value VARCHAR(128) NOT NULL,
 			description TEXT NOT NULL,
 
 			PRIMARY KEY (id),
-			UNIQUE KEY name (name)
+			UNIQUE (name)
 		);
-	]], dbprefix ) ) )
-	
+	]], dbprefix, sql_ai ) ) )
+      
 	local file, len = et.trap_FS_FOpenFile( "ladm/ladm.cfg", 2 )
 
 	if len == -1 then

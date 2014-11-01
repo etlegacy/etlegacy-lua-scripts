@@ -17,6 +17,9 @@ qboolean G_LuaHook_SetPlayerSkill( int cno, skillType_t skill );
 void G_LuaHook_Print( char *text );
 qboolean G_LuaHook_Obituary( int victim, int killer, int meansOfDeath );
 
+TODO:
+Check the vars
+
 --]]
 
 ---------------------------------------------------------------------------------------------
@@ -50,18 +53,25 @@ end
 
 function printConstants()
     et.G_Print(color .. "et.HOSTARCH       " .. et.HOSTARCH .. "\n")
+    
+    et.G_Print(color .. "et.EXEC_NOW       " .. et.EXEC_NOW .. "\n")
+    et.G_Print(color .. "et.EXEC_INSERT    " .. et.EXEC_INSERT .. "\n")
+    et.G_Print(color .. "et.EXEC_APPEND    " .. et.EXEC_APPEND .. "\n")
+    
+    et.G_Print(color .. "et.FS_READ        " .. et.FS_READ .. "\n")
+    et.G_Print(color .. "et.FS_WRITE       " .. et.FS_WRITE .. "\n")
+    et.G_Print(color .. "et.FS_APPEND      " .. et.FS_APPEND .. "\n")
+    et.G_Print(color .. "et.FS_APPEND_SYNC " .. et.FS_APPEND_SYNC .. "\n")
+    
+    et.G_Print(color .. "et.SAY_ALL        " .. et.SAY_ALL .. "\n")
+    et.G_Print(color .. "et.SAY_TEAM       " .. et.SAY_TEAM .. "\n")
+    et.G_Print(color .. "et.SAY_BUDDY      " .. et.SAY_BUDDY .. "\n")
+    et.G_Print(color .. "et.SAY_TEAMNL     " .. et.SAY_TEAMNL .. "\n")
+	
+	-- FIXME: add all CS related constants
+    et.G_Print(color .. "et.CS_MODELS      " .. et.CS_MODELS .. "\n")
     et.G_Print(color .. "et.CS_PLAYERS     " .. et.CS_PLAYERS .. "\n")
-	et.G_Print(color .. "et.EXEC_NOW       " .. et.EXEC_NOW .. "\n")
-	et.G_Print(color .. "et.EXEC_INSERT    " .. et.EXEC_INSERT .. "\n")
-	et.G_Print(color .. "et.EXEC_APPEND    " .. et.EXEC_APPEND .. "\n")
-	et.G_Print(color .. "et.FS_READ        " .. et.FS_READ .. "\n")
-	et.G_Print(color .. "et.FS_WRITE       " .. et.FS_WRITE .. "\n")
-	et.G_Print(color .. "et.FS_APPEND      " .. et.FS_APPEND .. "\n")
-	et.G_Print(color .. "et.FS_APPEND_SYNC " .. et.FS_APPEND_SYNC .. "\n")
-	et.G_Print(color .. "et.SAY_ALL        " .. et.SAY_ALL .. "\n")
-	et.G_Print(color .. "et.SAY_TEAM       " .. et.SAY_TEAM .. "\n")
-	et.G_Print(color .. "et.SAY_BUDDY      " .. et.SAY_BUDDY .. "\n")
-	et.G_Print(color .. "et.SAY_TEAMNL     " .. et.SAY_TEAMNL .. "\n")
+    et.G_Print(color .. "et.CS_MAX         " .. et.CS_MAX .. "\n")
 end
 
 function et_InitGame(_levelTime, _randomSeed, _restart)
@@ -69,7 +79,6 @@ function et_InitGame(_levelTime, _randomSeed, _restart)
 	  et.trap_SendServerCommand( -1 ,"cpm \"" .. color .. "InitGame - levelTime: " .. _levelTime .. " randomSeed: " .. _randomSeed .. " restart: " .. _restart)
 	  et.G_Print(color .. "InitGame - levelTime:      " .. _levelTime .. " randomSeed: " .. _randomSeed .. " restart: " .. _restart .."\n" )
 	end
-	
 	et.RegisterModname( "test.lua " .. et.FindSelf() )
 	
 	printConstants()
@@ -167,6 +176,7 @@ function et_Obituary(_victim, _killer, _meansOfDeath)
 	end
 end
 
+-- test
 function et_UpgradeSkill(_clientNum, _skill)
 	if debug == 1 then
 	  et.trap_SendServerCommand( -1 ,"cpm \"" .. color .. "UpgradeSkill - clientNum: " .. _clientNum .. "skill: " .. _skill)
@@ -174,6 +184,7 @@ function et_UpgradeSkill(_clientNum, _skill)
 	end
 end
 
+-- ok
 function et_Print(_text)
 	if debugPrint == 1 then
 	  et.trap_SendServerCommand( -1 ,"cpm \"" .. color .. "Print - text: " .. _text)

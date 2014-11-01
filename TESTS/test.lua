@@ -17,9 +17,6 @@ qboolean G_LuaHook_SetPlayerSkill( int cno, skillType_t skill );
 void G_LuaHook_Print( char *text );
 qboolean G_LuaHook_Obituary( int victim, int killer, int meansOfDeath );
 
-TODO:
-Check the vars
-
 --]]
 
 ---------------------------------------------------------------------------------------------
@@ -30,7 +27,7 @@ color = "^5"
 
 -- Debug 0/1
 debug = 1
-debugRunFrame = 0 -- (popcorn!)
+debugRunFrame = 1 -- (popcorn!)
 debugPrint = 0 
 ---------------------------------------------------------------------------------------------
 
@@ -49,124 +46,111 @@ function test_lua_functions()
        --local ent = "test";
 	   --local ent = et.G_EntitiesFree();
 	   --et.trap_SendConsoleCommand(et.EXEC_APPEND, "chat " .. ent .. " <- Command outputt\n")
-	   
 end
-
 
 function printConstants()
-    et.G_Print( "et.HOSTARCH       ".. et.HOSTARCH .. "\n" )
-    et.G_Print( "et.CS_PLAYERS     ".. et.CS_PLAYERS .. "\n" )
-	et.G_Print( "et.EXEC_NOW       ".. et.EXEC_NOW .. "\n" )
-	et.G_Print( "et.EXEC_INSERT    ".. et.EXEC_INSERT .. "\n" )
-	et.G_Print( "et.EXEC_APPEND    ".. et.EXEC_APPEND .. "\n" )
-	et.G_Print( "et.FS_READ        ".. et.FS_READ .. "\n" )
-	et.G_Print( "et.FS_WRITE       ".. et.FS_WRITE .. "\n" )
-	et.G_Print( "et.FS_APPEND      ".. et.FS_APPEND .. "\n" )
-	et.G_Print( "et.FS_APPEND_SYNC ".. et.FS_APPEND_SYNC .. "\n" )
-	et.G_Print( "et.SAY_ALL        ".. et.SAY_ALL .. "\n" )
-	et.G_Print( "et.SAY_TEAM       ".. et.SAY_TEAM .. "\n" )
-	et.G_Print( "et.SAY_BUDDY      ".. et.SAY_BUDDY .. "\n" )
-	et.G_Print( "et.SAY_TEAMNL     ".. et.SAY_TEAMNL .. "\n" )
+    et.G_Print(color .. "et.HOSTARCH       " .. et.HOSTARCH .. "\n")
+    et.G_Print(color .. "et.CS_PLAYERS     " .. et.CS_PLAYERS .. "\n")
+	et.G_Print(color .. "et.EXEC_NOW       " .. et.EXEC_NOW .. "\n")
+	et.G_Print(color .. "et.EXEC_INSERT    " .. et.EXEC_INSERT .. "\n")
+	et.G_Print(color .. "et.EXEC_APPEND    " .. et.EXEC_APPEND .. "\n")
+	et.G_Print(color .. "et.FS_READ        " .. et.FS_READ .. "\n")
+	et.G_Print(color .. "et.FS_WRITE       " .. et.FS_WRITE .. "\n")
+	et.G_Print(color .. "et.FS_APPEND      " .. et.FS_APPEND .. "\n")
+	et.G_Print(color .. "et.FS_APPEND_SYNC " .. et.FS_APPEND_SYNC .. "\n")
+	et.G_Print(color .. "et.SAY_ALL        " .. et.SAY_ALL .. "\n")
+	et.G_Print(color .. "et.SAY_TEAM       " .. et.SAY_TEAM .. "\n")
+	et.G_Print(color .. "et.SAY_BUDDY      " .. et.SAY_BUDDY .. "\n")
+	et.G_Print(color .. "et.SAY_TEAMNL     " .. et.SAY_TEAMNL .. "\n")
 end
 
--- ok
-function et_InitGame( levelTime, randomSeed, restart )
-	-- debug et_InitGame
+function et_InitGame(_levelTime, _randomSeed, _restart)
 	if debug == 1 then
-	  et.trap_SendServerCommand( -1 ,"cpm \"" .. color .. "InitGame - levelTime: " .. levelTime .. " randomSeed: " .. randomSeed .. " restart: " .. restart )
+	  et.trap_SendServerCommand( -1 ,"cpm \"" .. color .. "InitGame - levelTime: " .. _levelTime .. " randomSeed: " .. _randomSeed .. " restart: " .. _restart)
+	  et.G_Print(color .. "InitGame - levelTime:      " .. _levelTime .. " randomSeed: " .. _randomSeed .. " restart: " .. _restart .."\n" )
 	end
+	
 	et.RegisterModname( "test.lua " .. et.FindSelf() )
 	
 	printConstants()
 end
 
-
--- ok
-function et_ShutdownGame(restart )
-	-- debug et_InitGame
+function et_ShutdownGame(_restart)
 	if debug == 1 then
-	  et.trap_SendServerCommand( -1 ,"cpm \"" .. color .. "ShutdownGame - restart: " .. restart )
+	  et.trap_SendServerCommand(-1 ,"cpm \"" .. color .. "ShutdownGame - restart: " .. _restart)
+	  et.G_Print(color .. "ShutdownGame - restart: " .. _restart .."\n" )
 	end
 end
 
-
--- ok
-function et_RunFrame( levelTime )
+function et_RunFrame(_levelTime)
 	-- debug et_InitGame
 	if debugRunFrame == 1 then
-		if math.mod( levelTime, 1000 ) == 0 then
- 			et.trap_SendServerCommand( -1 ,"cpm \"" .. color .. "RunFrame - levelTime: " .. levelTime )       
+		if _levelTime %10000 == 0 then
+ 			et.trap_SendServerCommand( -1 ,"cpm \"" .. color .. "RunFrame - levelTime: " .. _levelTime) 
+ 			et.G_Print(color .. "RunFrame - levelTime: " .. _levelTime .. "\n")      
  		end
 	end
 end
 
-
--- ok
-function et_ClientCommand( clientNum, command )
+function et_ClientCommand(_clientNum, _command)
 	if debug == 1 then
-	  et.trap_SendServerCommand( -1 ,"cpm \"" .. color .. "ClientCommand - clientNum: " .. clientNum .. " command: " .. command )
+	  et.trap_SendServerCommand( -1 ,"cpm \"" .. color .. "ClientCommand - clientNum: " .. _clientNum .. " command: " .. _command)
+	  et.G_Print(color .. "ClientCommand - clientNum: " .. _clientNum .. " command: " .. _command .. "\n")  
 	end
 end
 
-
--- CHECK
-function et_ClientUserinfoChanged( clientNum)
+function et_ClientUserinfoChanged(_clientNum)
 	if debug == 1 then
-	  et.trap_SendServerCommand( -1 ,"cpm \"" .. color .. "ClientUserinfoChanged - clientNum: " .. clientNum )
+	  et.trap_SendServerCommand( -1 ,"cpm \"" .. color .. "ClientUserinfoChanged - clientNum: " .. _clientNum)
+	  et.G_Print(color .. "ClientUserinfoChanged - clientNum: " .. _clientNum .. "\n")
 	end
 end
 
-
--- ok
-function et_ClientConnect( clientNum, firstTime, isBot, reason)
-
-	-- debug et_ClientConnect
+function et_ClientConnect(_clientNum, _firstTime, _isBot, _reason)
 	if debug == 1 then
-	  et.trap_SendServerCommand( -1 ,"cpm \"" .. color .. "ClientConnect - firstTime: " .. firstTime .. " bot: " .. isBot )
-	end
-
-end
-
-
--- ok
-function et_ClientBegin( clientNum )
-	if debug == 1 then
-	  et.trap_SendServerCommand( -1 ,"cpm \"" .. color .. "ClientBegin - clientNum: " .. clientNum )
+	  et.trap_SendServerCommand( -1 ,"cpm \"" .. color .. "ClientConnect " .. _clientNum .. " - firstTime: " .. _firstTime .. " bot: " .. _isBot )
+	  et.G_Print(color .. "ClientConnect " .. _clientNum .. " - firstTime: " .. _firstTime .. " bot: " .. _isBot .. "\n")
 	end
 end
 
-
--- ok
-function et_ClientSpawn(clientNum, revived, teamChange, restoreHealth)
+function et_ClientBegin(_clientNum)
 	if debug == 1 then
-	  et.trap_SendServerCommand( -1 , "cpm \"" .. color .. "ClientSpawn client: " .. clientNum .. " revived: " .. revived .. " teamChange: " .. teamChange .. " restoreHealth: " .. restoreHealth)
+	  et.trap_SendServerCommand( -1 ,"cpm \"" .. color .. "ClientBegin - clientNum: " .. _clientNum )
+	  et.G_Print(color .. "ClientBegin - clientNum: " .. _clientNum .. "\n")
 	end
 end
 
-
--- ok
-function et_ClientDisconnect( clientNum )
+function et_ClientSpawn(_clientNum, _revived, _teamChange, _restoreHealth)
 	if debug == 1 then
-	  et.trap_SendServerCommand( -1 ,"cpm \"" .. color .. "ClientDisconnect - clientNum: " .. clientNum )
+	  et.trap_SendServerCommand( -1 , "cpm \"" .. color .. "ClientSpawn client: " .. _clientNum .. " revived: " .. _revived .. " teamChange: " .. _teamChange .. " restoreHealth: " .. _restoreHealth)
+	  et.G_Print(color .. "ClientSpawn client: " .. _clientNum .. " revived: " .. _revived .. " teamChange: " .. _teamChange .. " restoreHealth: " .. _restoreHealth .. "\n")
 	end
 end
 
-
--- test
-function et_ConsoleCommand( command )
+function et_ClientDisconnect(_clientNum)
 	if debug == 1 then
-	  et.trap_SendServerCommand( -1 ,"cpm \"" .. color .. "ConsoleCommand - command: " .. command )
+	  et.trap_SendServerCommand( -1 ,"cpm \"" .. color .. "ClientDisconnect - clientNum: " .. _clientNum )
+	  et.G_Print(color .. "ClientDisconnect - clientNum: " .. _clientNum .. "\n")
 	end
-	--et.trap_Argc()
-	--et.trap_Argv(0)
-	et.G_Printf( "et_ConsoleCommand: [%s] [%s]\n", et.trap_Argc(), et.trap_Argv(0) )
+end
+
+function et_ConsoleCommand(_command)
+	if debug == 1 then
+	  et.trap_SendServerCommand( -1 ,"cpm \"" .. color .. "ConsoleCommand - command: " .. _command)
+	  --et.G_Printf(color .. "ConsoleCommand - command: " .. _command .. "\n")
+	end
+
+	-- FIXME: et.trap_Argc() fails on legacy mod
+    --et.G_Printf( "et_ConsoleCommand: [%s] [%s]\n", et.trap_Argc(), et.trap_Argv(0))
+    --et.G_Printf( "et_ConsoleCommand: " .. et.trap_Argc().. " " .. et.trap_Argv(0) .. "\n")
+    
    	if et.trap_Argv(0) == "listmods" then
            i = 1
            repeat
                    modname, signature = et.FindMod( i )
                    if modname and signature then
-                           et.G_Printf( "vm slot [%d] name [%s] signature [%s]\n", i, modname, signature )
-                           et.IPCSend( i, "hello" )
+                           et.G_Printf("vm slot [%d] name [%s] signature [%s]\n", i, modname, signature)
+                           et.IPCSend(i, "hello")
                    end
                    i = i + 1
            until modname == nil or signature == nil
@@ -175,35 +159,32 @@ function et_ConsoleCommand( command )
    	return 0
 end
 
-
 -- Different to ETPub!
--- ok
-function et_Obituary( victim, killer, meansOfDeath )
-
+function et_Obituary(_victim, _killer, _meansOfDeath)
 	if debug == 1 then
-	  et.trap_SendServerCommand( -1 ,"cpm \"" .. color .. "Obituary - victim: " .. victim .. " killer: " .. killer .. " meansOfDeath: " .. meansOfDeath )
-	end
-	
-end
-
-
--- test
-function et_UpgradeSkill(clientNum, skill )
-	if debug == 1 then
-	  et.trap_SendServerCommand( -1 ,"cpm \"" .. color .. "UpgradeSkill - clientNum: " .. clientNum .. "skill: " .. skill )
+	  et.trap_SendServerCommand( -1 ,"cpm \"" .. color .. "Obituary - victim: " .. _victim .. " killer: " .. _killer .. " meansOfDeath: " .. _meansOfDeath)
+	  et.G_Print(color .. color .. "Obituary - victim: " .. _victim .. " killer: " .. _killer .. " meansOfDeath: " .. _meansOfDeath .. "\n")
 	end
 end
 
--- ok
-function et_Print( text )
+function et_UpgradeSkill(_clientNum, _skill)
+	if debug == 1 then
+	  et.trap_SendServerCommand( -1 ,"cpm \"" .. color .. "UpgradeSkill - clientNum: " .. _clientNum .. "skill: " .. _skill)
+	  et.G_Print(color .. "UpgradeSkill - clientNum: " .. _clientNum .. "skill: " .. _skill .. "\n")
+	end
+end
+
+function et_Print(_text)
 	if debugPrint == 1 then
-	  et.trap_SendServerCommand( -1 ,"cpm \"" .. color .. "Print - text: " .. text)
+	  et.trap_SendServerCommand( -1 ,"cpm \"" .. color .. "Print - text: " .. _text)
+	  et.G_Print(color .. "Print - text: " .. _text .. "\n")
 	end
 end
 
 -- ok, but why called so often in game (for bots only?)
-function et_SetPlayerSkill(clientNum, skill )
+function et_SetPlayerSkill(_clientNum, _skill)
 	if debug == 1 then
-	  et.trap_SendServerCommand( -1 ,"cpm \"" .. color .. "SetPlayerSkill - clientNum: " .. clientNum .. " skill: " .. skill )
+	  et.trap_SendServerCommand( -1 ,"cpm \"" .. color .. "SetPlayerSkill - clientNum: " .. _clientNum .. " skill: " .. _skill)
+	  et.G_Print(color .. "SetPlayerSkill - clientNum: " .. _clientNum .. " skill: " .. _skill .. "\n")
 	end
 end

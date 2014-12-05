@@ -1,6 +1,8 @@
 --------------------------------------------------------------------------
 -- dynamite.lua - a server side dynamite timer script                    -
 --------------------------------------------------------------------------
+-- 1.42:
+--   - made the script Lua 5.2.3 compatible
 -- 1.41:
 --   - pheno: made the script ETpub (and other mod?) compatible
 --   - pheno: made the script Lua 5.2 compatible
@@ -8,7 +10,7 @@
 -- 1.4:
 --   - first release
 --------------------------------------------------------------------------
-local version = "1.41"
+local version = "1.42"
 
 -- Config:
 -- where to place the timer message, see
@@ -78,10 +80,10 @@ local T_LOCATION = 3
 -- called when game inits
 function et_InitGame(levelTime, randomSeed, restart)
     et.RegisterModname("dynamite.lua " .. version .. " " .. et.FindSelf())
-    sv_maxclients = tonumber(et.trap_Cvar_Get("sv_maxclients"))
+    sv_maxclients = tonumber(et.trap_Cvar_Get("sv_maxclients")) + 1
     sv_fps        = tonumber(et.trap_Cvar_Get("sv_fps"))
     local i = 0
-    for i=0, sv_maxclients do
+    for i=1, sv_maxclients do
         -- set to false, clients will change it, as soon as they enter the world
         table.insert(client_msg, i, false) 
     end
@@ -147,18 +149,18 @@ function et_ClientCommand(id, command)
         local arg = et.trap_Argv(1)
         if arg == "" then
             local status = "^8on^7"
-            if client_msg[id] == false then
+            if client_msg[id + 1] == false then
                 status = "^8off^7"
             end
             et.trap_SendServerCommand(id, string.format("%s \"^#(dynatimer):^7 Dynatimer is %s\"", announce_pos, status))
         elseif tonumber(arg) == 0 then
             setTimerMessages(id, false)
             et.trap_SendServerCommand(id,
-                    "b 8 \"^#(dynatimer):^7 Dynatimer is now ^8off^7\"")
+                    string.format("%s \"^#(dynatimer):^7 Dynatimer is now ^8off^7\"", announce_pos))
         else
             setTimerMessages(id, true)
             et.trap_SendServerCommand(id, 
-                    "b 8 \"^#(dynatimer):^7 Dynatimer is now ^8on^7\"")
+                    string.format("%s \"^#(dynatimer):^7 Dynatimer is now ^8on^7\"", announce_pos))
         end
         return(1)
     end
@@ -170,7 +172,7 @@ function sayClients(pos, msg)
     local message = string.format("%s \"%s^7\"", pos, msg)
     for id, timer_wanted in pairs(client_msg) do
         if timer_wanted then
-            et.trap_SendServerCommand(id, message)
+            et.trap_SendServerCommand(id - 1, message)
         end
     end
 end
@@ -204,7 +206,7 @@ function removeTimer(location)
 end
 
 function setTimerMessages(id, value) 
-    client_msg[id] = value
+    client_msg[id + 1] = value
     if value then
         value = "1"
     else
@@ -220,9 +222,9 @@ function updateUInfoStatus(id)
     if timer == "" then
         setTimerMessages(id, cl_default)
     elseif tonumber(timer) == 0 then
-        client_msg[id] = false
+        client_msg[id + 1] = false
     else
-        client_msg[id] = true 
+        client_msg[id + 1] = true 
     end
 end
 
@@ -235,7 +237,7 @@ function et_UserinfoChanged(id)
 end
 
 function et_ClientDisconnect(id) 
-    client_msg[id] = false
+    client_msg[id + 1] = false
 end
 
 -- vim: ts=4 sw=4 expandtab syn=lua

@@ -1,14 +1,16 @@
 --[[
 	Author: Jan Šimek [Radegast]
-	Version 0.2
 	License: MIT
 	Released on 23.11.2013
 	Website: http://www.etlegacy.com
-	Mod: intended for Legacy, but might also work in NoQuarter
+	Mod: compatible with Legacy, but might also work with other mods
 
 	Description: this script saves users' experience points into 
 	             a database and thus preserves them between connections
 ]]--
+
+-- Lua module version
+local version = "0.2"
 
 -- load sqlite driver (or mysql..)
 local luasql = require "luasql.sqlite3"
@@ -50,8 +52,8 @@ function validateGUID(cno, guid)
 	-- allow only alphanumeric characters in guid
 	if(string.match(guid, "%W")) then
 		-- Invalid characters detected. We should probably drop this client
-		et.G_Print("^3WARNING: (XP Save) user with id " .. cno .. " has an invalid GUID: " .. guid .. "\n")
-		et.trap_SendServerCommand (cno, "cpm \"" .. "Your XP won't be saved because you have an invalid cl_guid.\n\"")
+		et.G_Print("^3WARNING: (XP Save) user with ID " .. cno .. " has an invalid GUID: " .. guid .. "\n")
+		et.trap_SendServerCommand (cno, "cpm \"" .. "^3Your XP won't be saved because you have an invalid GUID!\n\"")
 		return false
 	end
 	
@@ -73,7 +75,7 @@ function saveXP(cno)
 		et.G_Print ("^1ERROR: (XP Save) user was not found in the database!\n")
 		return
 	else
-		et.trap_SendServerCommand (cno, "cpm \"" .. "See you again soon, " .. name .. "\n\"")
+		et.trap_SendServerCommand (cno, "cpm \"" .. "^3See you again soon, ^7" .. name .. "\n\"")
 		--for id, name in pairs(skills) do et.G_Print (name .. ": " .. et.gentity_get (cno, "sess.skillpoints", id) .. " XP\n") end
 		
 		cur = assert (con:execute(string.format([[UPDATE users SET 
@@ -101,18 +103,18 @@ end
 
 -- init db on game start
 function et_InitGame(levelTime, randomSeed, restart)
-	-- name of this module
-	et.RegisterModname ( "XP Save player database" )
+	-- register name of this module
+	et.RegisterModname ("XP Save Module " .. version)
 	
 	-- create environement object
-	env = assert ( luasql.sqlite3() )
+	env = assert (luasql.sqlite3())
 
 	-- connect to database
-	con = assert ( env:connect( "xpsave.sqlite" ) ) 
+	con = assert (env:connect("xpsave.sqlite")) 
 	
-	--cur = assert (con:execute( "DROP TABLE users" ))
+	--cur = assert (con:execute("DROP TABLE users"))
 	
-	cur = assert ( con:execute[[
+	cur = assert (con:execute[[
 		CREATE TABLE IF NOT EXISTS users(
 			guid VARCHAR(64),
 			last_seen VARCHAR(64),
@@ -129,9 +131,9 @@ function et_InitGame(levelTime, randomSeed, restart)
 		)
 	]])
 	
-	cur = assert ( con:execute("SELECT COUNT(*) FROM users") )
+	cur = assert (con:execute("SELECT COUNT(*) FROM users"))
 	
-	et.G_Print("There are " .. tonumber(cur:fetch(row, 'a')) .. " users in the XP save database.\n")
+	et.G_Print("XP Save: there are " .. tonumber(cur:fetch(row, 'a')) .. " users in the database\n")
 	
 	--et.G_Print ("^4List of users in XP Save database:\n")
 	--for guid, date in rows (con, "SELECT * FROM users") do
@@ -171,10 +173,10 @@ function et_ClientBegin(cno)
 	
 	if not player then
 		-- First time we see this player
-		et.trap_SendServerCommand (cno, "cpm \"" .. "Welcome, " .. name .. "^7! You are playing on an XP save server.\n\"")
+		et.trap_SendServerCommand (cno, "cpm \"" .. "^3Welcome, ^7" .. name .. "^3! You are playing on an XP save server\n\"")
 		cur = assert (con:execute(string.format("INSERT INTO users VALUES ('%s', '%s', 0, 0, 0, 0, 0, 0, 0)", guid, os.date("%Y-%m-%d %H:%M:%S"))))
 	else
-		et.trap_SendServerCommand (cno, "cpm \"" .. "Welcome back, " .. name .. "^7! Your last connection was on " .. player.last_seen .. "\n\"") -- in db: player.name
+		et.trap_SendServerCommand (cno, "cpm \"" .. "^3Welcome back, ^7" .. name .. "^3! Your last connection was on " .. player.last_seen .. "\n\"") -- in db: player.name
 
 		--et.G_Print ("Loading XP from database: " .. player.xp_battlesense .. " | " .. player.xp_engineering .. " | " .. player.xp_medic .. " | " .. player.xp_fieldops .. " | " .. player.xp_lightweapons .. " | " .. player.xp_heavyweapons .. " | " .. player.xp_covertops .. "\n\n")
 		

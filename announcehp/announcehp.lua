@@ -1,4 +1,4 @@
-#Source: http://lua.wolffiles.de/?fileid=32
+//Source: http://lua.wolffiles.de/?fileid=32
 function et_Obituary(victimnum, killernum, meansofdeath) 
 	local victimteam = tonumber(et.gentity_get(victimnum, "sess.sessionTeam")) 
 	local killerteam = tonumber(et.gentity_get(killernum, "sess.sessionTeam")) 

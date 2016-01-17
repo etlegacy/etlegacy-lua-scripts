@@ -35,3 +35,7 @@ Lua scripts for the Legacy mod
 
 * NOTE: not even alpha state. Do not use.
 * manage users on your server
+
+## announcehp
+
+* Killer's HP is displayed to their victims.

@@ -1,4 +1,11 @@
 --Source: http://lua.wolffiles.de/?fileid=32
+modname="AnnounceHP"
+version="1.0"
+
+function et_InitGame()
+        et.RegisterModname(modname.." "..version)
+end
+
 function et_Obituary(victimnum, killernum, meansofdeath) 
 	local victimteam = tonumber(et.gentity_get(victimnum, "sess.sessionTeam")) 
 	local killerteam = tonumber(et.gentity_get(killernum, "sess.sessionTeam")) 

@@ -1,6 +1,6 @@
 # Lua scripts
 
-Lua scripts for the Legacy mod
+* Lua scripts for the Legacy mod.
 
 
 ## CONSTANTS
@@ -39,3 +39,15 @@ Lua scripts for the Legacy mod
 ## announcehp
 
 * Killer's HP is displayed to their victims.
+ 
+# Notes
+* Please always add modname and version to your lua script
+```
+modname="NameofLua"
+version="1.0"
+
+function et_InitGame()
+        et.RegisterModname(modname.." "..version)
+end
+```
+

@@ -16,6 +16,8 @@ qboolean G_LuaHook_UpgradeSkill(int cno, skillType_t skill);
 qboolean G_LuaHook_SetPlayerSkill( int cno, skillType_t skill );
 void G_LuaHook_Print( char *text );
 qboolean G_LuaHook_Obituary( int victim, int killer, int meansOfDeath );
+qboolean G_LuaHook_Damage(int target, int attacker, int damage, int dflags, int mod);
+void G_LuaHook_SpawnEntitiesFromString();
 
 TODO:
 Check the vars
@@ -207,4 +209,10 @@ function et_SetPlayerSkill(_clientNum, _skill)
     et.trap_SendServerCommand( -1 ,"cpm \"" .. color .. "SetPlayerSkill - clientNum: " .. _clientNum .. " skill: " .. _skill)
     et.G_Print(color .. "SetPlayerSkill - clientNum: " .. _clientNum .. " skill: " .. _skill .. "\n")
   end
+end
+
+-- example of spawning and deleting an entity
+function et_LuaSpawnEntitiesFromString()
+  et.G_CreateEntity("scriptname \"dinghy1\" origin \"2650 600 100\" classname \"misc_gamemodel\" modelscale 1 contents 1 mins \"-90 -90 -25\" maxs \"90 90 25\" clipmask 1 model \"models/mapobjects/dinghy_sd/dinghy.md3\"")
+  et.G_DeleteEntity("scriptname \"dinghy1\"")
 end

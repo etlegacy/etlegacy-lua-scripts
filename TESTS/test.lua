@@ -178,6 +178,36 @@ function et_ConsoleCommand(_command)
     return 1
   end
   
+  if string.lower(command) == "shader" then
+	et.G_ShaderRemap("textures/battery/terrain_0", "textures/fueldump/terrain1_2")
+	et.G_ShaderRemap("textures/battery/terrain_1", "textures/fueldump/terrain1_2")
+	et.G_ShaderRemap("textures/battery/terrain_2", "textures/fueldump/terrain1_2")
+	et.G_ShaderRemap("textures/battery/terrain_3", "textures/fueldump/terrain1_2")
+	et.G_ShaderRemap("textures/battery/terrain_4", "textures/fueldump/terrain1_2")
+	et.G_ShaderRemap("textures/battery/terrain_5", "textures/fueldump/terrain1_2")		
+	et.G_ShaderRemap("textures/battery/terrain_0to1", "textures/fueldump/terrain1_2")
+	et.G_ShaderRemap("textures/battery/terrain_0to2", "textures/fueldump/terrain1_2")	
+	et.G_ShaderRemap("textures/battery/terrain_0to3", "textures/fueldump/terrain1_2")		
+	et.G_ShaderRemap("textures/battery/terrain_0to4", "textures/fueldump/terrain1_2")	
+	et.G_ShaderRemap("textures/battery/terrain_0to5", "textures/fueldump/terrain1_2")		
+	et.G_ShaderRemap("textures/battery/terrain_1to2", "textures/fueldump/terrain1_2")
+	et.G_ShaderRemap("textures/battery/terrain_1to3", "textures/fueldump/terrain1_2")		
+	et.G_ShaderRemap("textures/battery/terrain_1to4", "textures/fueldump/terrain1_2")
+	et.G_ShaderRemap("textures/battery/terrain_1to5", "textures/fueldump/terrain1_2")		
+	et.G_ShaderRemap("textures/battery/terrain_2to3", "textures/fueldump/terrain1_2")
+	et.G_ShaderRemap("textures/battery/terrain_2to4", "textures/fueldump/terrain1_2")	
+	et.G_ShaderRemap("textures/battery/terrain_2to5", "textures/fueldump/terrain1_2")		
+	et.G_ShaderRemap("textures/battery/terrain_3to4", "textures/fueldump/terrain1_2")
+	et.G_ShaderRemap("textures/battery/terrain_3to5", "textures/fueldump/terrain1_2")		
+	et.G_ShaderRemap("textures/battery/terrain_4to5", "textures/fueldump/terrain1_2")	
+	et.G_ShaderRemap("textures/battery/ocean_0", "textures/liquids_sd/siwa_water")
+	et.G_ShaderRemap("textures/battery/ocean_1", "textures/liquids_sd/siwa_water")		
+	et.G_ShaderRemap("textures/battery/ocean_0to1", "textures/liquids_sd/siwa_water")
+	et.G_ShaderRemap("textures/skies/sd_batterysky", "textures/skies_sd/sd_siwasky")
+	et.G_ShaderRemapFlush()
+	return 1
+  end
+  
   return 0
 end
 

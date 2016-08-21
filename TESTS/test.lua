@@ -178,7 +178,7 @@ function et_ConsoleCommand(_command)
     return 1
   end
   
-  if string.lower(command) == "shader" then
+  if string.lower(_command) == "shader" then
 	et.G_ShaderRemap("textures/battery/terrain_0", "textures/fueldump/terrain1_2")
 	et.G_ShaderRemap("textures/battery/terrain_1", "textures/fueldump/terrain1_2")
 	et.G_ShaderRemap("textures/battery/terrain_2", "textures/fueldump/terrain1_2")

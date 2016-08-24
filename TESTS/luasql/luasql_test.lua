@@ -35,7 +35,6 @@ while row do
   -- reusing the table of results
   row = cur:fetch (row, "a")
 end
-trap_Printf(text)
 -- close everything
 cur:close() -- already closed because all the result set was consumed
 con:close()

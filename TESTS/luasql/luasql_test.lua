@@ -1,9 +1,9 @@
 -- LuaSQL test script
 -- from https://keplerproject.github.io/luasql/examples.html
 -- load driver
-local driver = require "luasql.postgres"
+local driver = require "luasql.sqlite3"
 -- create environment object
-env = assert (driver.postgres())
+env = assert (driver.sqlite3())
 -- connect to data source
 con = assert (env:connect("luasql-test"))
 -- reset our table
@@ -35,6 +35,7 @@ while row do
   -- reusing the table of results
   row = cur:fetch (row, "a")
 end
+trap_Printf(text)
 -- close everything
 cur:close() -- already closed because all the result set was consumed
 con:close()

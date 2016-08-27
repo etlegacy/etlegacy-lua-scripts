@@ -31,7 +31,7 @@ cur = assert (con:execute"SELECT name, email from people")
 -- print all rows, the rows will be indexed by field names
 row = cur:fetch ({}, "a")
 while row do
-  print(string.format("Name: %s, E-mail: %s", row.name, row.email))
+  et.G_Print("Name:" .. row.name .. ", E-mail: " .. row.email .."\n")
   -- reusing the table of results
   row = cur:fetch (row, "a")
 end

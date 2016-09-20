@@ -11,13 +11,14 @@
 --[[
 	TODO:
 	* 0.1: handle basic rating update functionality
-	* 0.2: handle disconnected clients
-	* 0.3: handle map bias parameter
-	* 0.4: add useful commands
+	* 0.2: handle disconnected then reconnected clients
+	* 0.3: handle clients that left
+	* 0.4: handle map bias parameter
+	* 0.5: add useful commands
 ]]--
 
 -- Lua module version
-local version = "0.1"
+local version = "0.2"
 
 -- load sqlite driver (or mysql..)
 local luasql = require "luasql.sqlite3"
@@ -118,6 +119,15 @@ function et_InitGame(levelTime, randomSeed, restart)
 			UNIQUE (guid)
 		)
 	]])
+
+	cur = assert(con:execute[[
+		CREATE TABLE IF NOT EXISTS match(
+			guid VARCHAR(64),
+			time_axis INT,
+			time_allies INT,
+			UNIQUE (guid)
+		)
+	]])
 	--cur:close()
 end
 
@@ -125,6 +135,8 @@ end
 function et_ShutdownGame(restart)
 	-- check status
 	if g_skillRating < 1 then return end
+	-- drop temporary table
+	cur = assert(con:execute("DROP TABLE match"))
 	-- clean up
 	cur:close()
 	con:close()
@@ -189,9 +201,9 @@ function et_ClientDisconnect(clientNum)
 	if not validateGUID(clientNum, guid) then return end
 
 	cur = assert(con:execute(string.format("SELECT * FROM users WHERE guid='%s' LIMIT 1", guid)))
-	local player = cur:fetch({}, 'a')
+	local user = cur:fetch({}, 'a')
 
-	if not player then
+	if not user then
 		-- should not happen
 		et.G_Print("^1[Skill Rating]:^7 User not found in database!\n")
 		-- cur:close()
@@ -201,6 +213,15 @@ function et_ClientDisconnect(clientNum)
 			last_seen='%s'
 			WHERE guid='%s']],
 			os.date("%Y-%m-%d %H:%M:%S"),
+			guid
+		)))
+
+		cur = assert(con:execute(string.format([[UPDATE match SET
+			time_axis='%i',
+			time_allies='%i'
+			WHERE guid='%s']],
+			et.gentity_get(clientNum, "sess.time_axis"),
+			et.gentity_get(clientNum, "sess.time_allies"),
 			guid
 		)))
 		-- cur:close()
@@ -219,10 +240,10 @@ function et_ClientBegin(clientNum)
 	if not validateGUID(clientNum, guid) then return end
 
 	cur = assert(con:execute(string.format("SELECT * FROM users WHERE guid='%s'", guid)))
-	local player = cur:fetch({}, 'a')
+	local user = cur:fetch({}, 'a')
 
-	if not player then
-		-- first time this player is seen
+	if not user then
+		-- first time this user is seen
 		et.trap_SendServerCommand(clientNum, "cpm \"^2[Skill Rating]:^7 Welcome, " .. name .. "^7! You are playing on an Skill Rating enabled server\n\"")
 
 		-- use default values
@@ -232,24 +253,40 @@ function et_ClientBegin(clientNum)
 			25,
 			25/3
 		)))
+
+		cur = assert(con:execute(string.format("INSERT INTO match VALUES ('%s', '%i', '%i')",
+			guid,
+			0,
+			0
+		)))
 		-- cur:close()
 	else
 		-- load current rating
-		et.gentity_set(clientNum, "sess.mu", tonumber(player.mu))
-		et.gentity_set(clientNum, "sess.sigma", tonumber(player.sigma))
+		et.gentity_set(clientNum, "sess.mu", tonumber(user.mu))
+		et.gentity_set(clientNum, "sess.sigma", tonumber(user.sigma))
 		-- create copy for delta rating
-		et.gentity_set(clientNum, "sess.oldmu", tonumber(player.mu))
-		et.gentity_set(clientNum, "sess.oldsigma", tonumber(player.sigma))
+		et.gentity_set(clientNum, "sess.oldmu", tonumber(user.mu))
+		et.gentity_set(clientNum, "sess.oldsigma", tonumber(user.sigma))
 
 		et.trap_SendServerCommand(clientNum, string.format("cpm \"^2[Skill Rating]:^7 Welcome back, %s^7! Your rating is ^3%s\n\"",
-			name, string.format("%.2f", math.max(player.mu - 3 * player.sigma, 0))
+			name, string.format("%.2f", math.max(user.mu - 3 * user.sigma, 0))
 		))
 		-- et.trap_SendServerCommand(clientNum, string.format("cpm \"^2[Skill Rating]:^7 Welcome back, %s^7! Your rating is ^3%s ^7(^1%s^7,^4%s^7)\n\"",
 		-- 	name,
-		-- 	string.format("%.2f", math.max(player.mu - 3 * player.sigma, 0)),
-		-- 	string.format("%.2f", player.mu),
-		-- 	string.format("%.2f", player.sigma)
+		-- 	string.format("%.2f", math.max(user.mu - 3 * user.sigma, 0)),
+		-- 	string.format("%.2f", user.mu),
+		-- 	string.format("%.2f", user.sigma)
 		-- ))
+
+		-- load current play time, if reconnecting to the same match
+		cur = assert(con:execute(string.format("SELECT * FROM match WHERE guid='%s'", guid)))
+		local player = cur:fetch({}, 'a')
+
+		if player then
+			et.gentity_set(clientNum, "sess.time_axis", tonumber(player.time_axis))
+			et.gentity_set(clientNum, "sess.time_allies", tonumber(player.time_allies))
+		end
+
 	end
 	-- cur:close()
 end
@@ -300,6 +337,15 @@ function et_ConsoleCommand()
 		return 1
 	end
 
+	-- drop match players time
+	if cmd == "!srmatchdrop" then
+		-- FIXME: LuaSQL: database table is locked
+		cur = assert(con:execute("DROP TABLE match"))
+		et.G_Print("^2[Skill Rating]:^7 Dropped match table\n")
+		-- cur:close()
+		return 1
+	end
+
 	-- list all users
 	if cmd == "!srdblist" then
 		cur = assert(con:execute("SELECT COUNT(*) FROM users"))
@@ -312,6 +358,22 @@ function et_ConsoleCommand()
 				string.format("%.2f", mu),
 				string.format("%.2f", sigma),
 				string.format("%.2f", math.max(mu - 3 * sigma, 0))
+			))
+		end
+		-- cur:close()
+		return 1
+	end
+
+	-- list all match players
+	if cmd == "!srmatchlist" then
+		cur = assert(con:execute("SELECT COUNT(*) FROM match"))
+		et.G_Print("^2[Skill Rating]:^3 " .. tonumber(cur:fetch(row, 'a')) .. "^7 players in match\n")
+		local guid, time_axis, time_allies
+		for guid, time_axis, time_allies in rows(con, "SELECT * FROM match") do
+			et.G_Print(string.format("\tGUID %s\tTime Axis: %i\tTime Allies: %i\n",
+				guid,
+				time_axis,
+				time_allies
 			))
 		end
 		-- cur:close()

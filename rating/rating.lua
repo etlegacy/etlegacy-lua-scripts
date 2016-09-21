@@ -76,8 +76,8 @@ function saveSR(clientNum)
 		-- save data
 		cur = assert(con:execute(string.format([[UPDATE users SET
 			last_seen='%s',
-			mu='%s',
-			sigma='%s'
+			mu='%f',
+			sigma='%f'
 			WHERE guid='%s']],
 			os.date("%Y-%m-%d %H:%M:%S"),
 			et.gentity_get(clientNum, "sess.mu"),
@@ -108,6 +108,7 @@ function et_InitGame(levelTime, randomSeed, restart)
 
 	-- drop database
 	-- cur = assert(con:execute("DROP TABLE users"))
+	cur = assert(con:execute("DROP TABLE IF EXISTS match"))
 
 	-- create database
 	cur = assert(con:execute[[
@@ -121,7 +122,7 @@ function et_InitGame(levelTime, randomSeed, restart)
 	]])
 
 	cur = assert(con:execute[[
-		CREATE TABLE IF NOT EXISTS match(
+		CREATE TABLE match(
 			guid VARCHAR(64),
 			time_axis INT,
 			time_allies INT,
@@ -135,8 +136,6 @@ end
 function et_ShutdownGame(restart)
 	-- check status
 	if g_skillRating < 1 then return end
-	-- drop temporary table
-	cur = assert(con:execute("DROP TABLE match"))
 	-- clean up
 	cur:close()
 	con:close()
@@ -247,7 +246,7 @@ function et_ClientBegin(clientNum)
 		et.trap_SendServerCommand(clientNum, "cpm \"^2[Skill Rating]:^7 Welcome, " .. name .. "^7! You are playing on an Skill Rating enabled server\n\"")
 
 		-- use default values
-		cur = assert(con:execute(string.format("INSERT INTO users VALUES ('%s', '%s', '%s', '%s')",
+		cur = assert(con:execute(string.format("INSERT INTO users VALUES ('%s', '%s', '%f', '%f')",
 			guid,
 			os.date("%Y-%m-%d %H:%M:%S"),
 			25,
@@ -268,15 +267,9 @@ function et_ClientBegin(clientNum)
 		et.gentity_set(clientNum, "sess.oldmu", tonumber(user.mu))
 		et.gentity_set(clientNum, "sess.oldsigma", tonumber(user.sigma))
 
-		et.trap_SendServerCommand(clientNum, string.format("cpm \"^2[Skill Rating]:^7 Welcome back, %s^7! Your rating is ^3%s\n\"",
-			name, string.format("%.2f", math.max(user.mu - 3 * user.sigma, 0))
-		))
-		-- et.trap_SendServerCommand(clientNum, string.format("cpm \"^2[Skill Rating]:^7 Welcome back, %s^7! Your rating is ^3%s ^7(^1%s^7,^4%s^7)\n\"",
-		-- 	name,
-		-- 	string.format("%.2f", math.max(user.mu - 3 * user.sigma, 0)),
-		-- 	string.format("%.2f", user.mu),
-		-- 	string.format("%.2f", user.sigma)
-		-- ))
+		et.trap_SendServerCommand(clientNum, string.format("cpm \"^2[Skill Rating]:^7 Welcome back, %s^7! Your rating is ^3%.2f\n\"",
+			name, math.max(user.mu - 3 * user.sigma, 0))
+		)
 
 		-- load current play time, if reconnecting to the same match
 		cur = assert(con:execute(string.format("SELECT * FROM match WHERE guid='%s'", guid)))
@@ -305,14 +298,9 @@ function et_ClientCommand(clientNum, cmd)
 		local mu    = et.gentity_get(clientNum, "sess.mu")
 		local sigma = et.gentity_get(clientNum, "sess.sigma")
 
-		et.trap_SendServerCommand(clientNum, string.format("cpm \"^2[Skill Rating]:^7 Your rating is ^3%s\n\"",
-			string.format("%.2f", math.max(mu - 3 * sigma, 0))
-		))
-		-- et.trap_SendServerCommand(clientNum, string.format("cpm \"^2[Skill Rating]:^7 Your rating is ^3%s^7 (^1%s^7, ^4%s^7)\n\"",
-		-- 	string.format("%.2f", math.max(mu - 3 * sigma, 0)),
-		-- 	string.format("%.2f", mu),
-		-- 	string.format("%.2f", sigma)
-		-- ))
+		et.trap_SendServerCommand(clientNum, string.format("cpm \"^2[Skill Rating]:^7 Your rating is ^3%.2f\n\"",
+			math.max(mu - 3 * sigma, 0))
+		)
 		return 1
 	end
 
@@ -352,13 +340,9 @@ function et_ConsoleCommand()
 		et.G_Print("^2[Skill Rating]:^3 " .. tonumber(cur:fetch(row, 'a')) .. "^7 users in database\n")
 		local guid, lastseen, mu, sigma
 		for guid, lastseen, mu, sigma in rows(con, "SELECT * FROM users") do
-			et.G_Print(string.format("\tGUID %s\tLast seen: %s   mu: ^1%s^:  sigma: ^4%s^:   Rating: ^3%s\n",
-				guid,
-				lastseen,
-				string.format("%.2f", mu),
-				string.format("%.2f", sigma),
-				string.format("%.2f", math.max(mu - 3 * sigma, 0))
-			))
+			et.G_Print(string.format("\tGUID %s\tLast seen: %s   mu: ^1%.2f^:  sigma: ^4%.2f^:   Rating: ^3%.2f\n",
+				guid, lastseen, mu,	sigma, math.max(mu - 3 * sigma, 0))
+			)
 		end
 		-- cur:close()
 		return 1
@@ -371,10 +355,8 @@ function et_ConsoleCommand()
 		local guid, time_axis, time_allies
 		for guid, time_axis, time_allies in rows(con, "SELECT * FROM match") do
 			et.G_Print(string.format("\tGUID %s\tTime Axis: %i\tTime Allies: %i\n",
-				guid,
-				time_axis,
-				time_allies
-			))
+				guid, time_axis, time_allies)
+			)
 		end
 		-- cur:close()
 		return 1

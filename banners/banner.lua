@@ -1,7 +1,7 @@
 modname = "Banners"
-version = "0.1"
+version = "0.2"
 
-welcome = "..." -- Welcome message here when client finished connecting to the server
+welcome = "^WELCOME MESSAGE" -- Welcome message here when client finished connecting to the server
 
 -- Set Banners of you desire
 banner = "..."
@@ -11,7 +11,7 @@ banner3 = "..."
 banner4 = "..."
 banner5 = "..."
 
--- Set a time which
+-- Set time in miliseconds when banners string has to be executed
 timer = 0
 timer1 = 0
 timer2 = 0
@@ -21,23 +21,65 @@ timer5 = 0
 
 
 --------------------	SAMPLE	-----------------------------------------------------------------------------------
---	timer = 100000 
+--	timer = 100000
 --	timer1 = 5000
---	timer2 = 6000
+--	timer2 = 6000			ARE THOSE VALUES CORRECT AND MAKE SENSE HERE
 --	timer3 = 7000			OR ALL THEY SHOULD BE REPLACED BY 1000 ? (BUT THIS WAY MIGHT GET MESSY)
---	timer4 = 8000			ARE THOSE VALUES CORRECT AND MAKE SENSE HERE
---	timer5 = 9000			
+--	timer4 = 8000
+--	timer5 = 9000
 
 -------------------------------------------------------------------------------------------------------------------
 ------------------ TODO! ------------------------------------------------------------------------------------------
 -------------------------------------------------------------------------------------------------------------------
 -- print welcome message to connected client to show gratitude for client 
--- Get millisec value then increase it with timer's values 		IMPORTANT! "timer++" ?? 
+-- Get millisec value then increase it with timer's values
+-- FIND OUT HOW TO MAKE IT INTO LOOP!!
 -- Do a conditional statement if/elseif/else comparing
 -------------------------------------------------------------------------------------------------------------------
--- BEST CHOISE SHOULD BE LOOP FOR WITH DO ? INSIDE FOR DO IF STATEMENTS???? 
 -------------------------------------------------------------------------------------------------------------------
 
 function et_InitGame( levelTime, randomSeed, restart )
-     et.RegisterModname( modname .. " " .. version )
+	et.RegisterModname( modname .. " " .. version )
+	
+	local milliseconds = et.trap_Milliseconds() -- is this right way ?
+
+	if(milliseconds == timer)
+		et.trap_SendServerCommand(clientNum, "cpm \"" .. banner .."^7\n")
+		
+		if(milliseconds == timer1)
+			et.trap_SendServerCommand(clientNum, "cpm \"" .. banner1 .."^7\n")
+			
+			if(miliseconds == timer2)
+				et.trap_SendServerCommand(clientNum, "cpm \"" .. banner2 .."^7\n")
+				
+				if(miliseconds == timer3)
+					et.trap_SendServerCommand(clientNum, "cpm \"" .. banner3 .."^7\n")
+					
+					if(miliseconds == timer4)
+						et.trap_SendServerCommand(clientNum, "cpm \"" .. banner4 .."^7\n")
+						
+							if(miliseconds == timer5)
+								et.trap_SendServerCommand(clientNum, "cpm \"" .. banner5 .."^7\n")
+							end -- is every if() statement needs else() ??
+						
+					end
+					
+				end
+				
+				
+			end
+		end
+	else
+		et.trap_SendServerCommand(clientNum, "cpm \"" .. "NO BANNERS" .."^7\n")
+	end
+
+end
+
+function et_ClientConnect( clientNum, firstTime, isBot )
+	et.trap_SendServerCommand(clientNum, "cpm \"" .. welcome .."^7\n")
+	
+end
+
+function et_ShutdownGame( restart )
+
 end

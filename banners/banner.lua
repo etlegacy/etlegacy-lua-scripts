@@ -33,7 +33,7 @@ timer5 = 0
 -------------------------------------------------------------------------------------------------------------------
 -- print welcome message to connected client to show gratitude for client 
 -- Get millisec value
--- FIND OUT HOW TO MAKE IT INTO LOOP!!
+-- FIND OUT HOW TO MAKE IT INTO LOOP!! OR JUST MILISECONDS (a) = NULL ?
 -- Do a conditional statement if/elseif/else comparing
 -------------------------------------------------------------------------------------------------------------------
 -------------------------------------------------------------------------------------------------------------------

@@ -1,4 +1,4 @@
-modname = "Banners"
+	modname = "Banners"
 version = "0.3"
 
 welcome = "^WELCOME MESSAGE" -- Welcome message here when client finished connecting to the server
@@ -47,7 +47,7 @@ function et_InitGame( levelTime, randomSeed, restart )
 	local a = (milliseconds*1000)/60
 
 	if(a == timer)
-		et.trap_SendServerCommand(clientNum, "cpm \"" .. banner .."^7\n")
+		et.trap_SendServerCommand(clientNum, "cpm \"" .. banner .."^7\n") -- not better to announce it globally instead only to clientnum ?
 	elseif(a == timer1)
 		et.trap_SendServerCommand(clientNum, "cpm \"" .. banner1 .."^7\n")
 	elseif(a == timer2)

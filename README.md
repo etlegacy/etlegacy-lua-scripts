@@ -7,6 +7,9 @@
 
 * Scripts with useful constants for custom scripts
 
+## banners (under construction)
+
+* Banners managment system in lua
 
 ## dynamite
 

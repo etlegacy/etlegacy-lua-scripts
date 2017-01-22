@@ -27,6 +27,9 @@ local env -- environment object
 local con -- database connection
 local cur -- cursor
 
+-- database path
+local dbpath = string.gsub(et.trap_Cvar_Get("fs_homepath"), "\\", "/").."/"..et.trap_Cvar_Get("fs_game").."/"
+
 -- check feature
 local g_skillRating = tonumber(et.trap_Cvar_Get("g_skillRating"))
 
@@ -104,7 +107,7 @@ function et_InitGame(levelTime, randomSeed, restart)
 	env = assert(luasql.sqlite3())
 
 	-- connect to database
-	con = assert(env:connect("rating.sqlite"))
+	con = assert(env:connect(dbpath .. "rating.sqlite"))
 
 	-- drop database
 	-- cur = assert(con:execute("DROP TABLE users"))
@@ -364,3 +367,4 @@ function et_ConsoleCommand()
 
 	return 0
 end
+

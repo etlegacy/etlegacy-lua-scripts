@@ -1,4 +1,0 @@
-[submodule "zelly"]
-	path = zelly
-	url = https://github.com/Zelly/ZellyLuas.git
-	branch = master

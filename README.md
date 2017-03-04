@@ -22,27 +22,10 @@
 * LuaSQL module with sqlite3 driver is required
 * The script could be tweaked to use file backend or other database drivers instead of sqlite3
 
-## noq (under construction)
-
-* Game manager, shrubbot and/or ET admin mod replacement
-* LuaSQL module with sqlite3 or mysql driver are required
-
-## pm - private messages
-
-* use ```pm``` console command to send a private message to another player
-* message is sent to the first matched player name
-* player name is a colour and case-insensitive pattern, e.g. ton will match player /-^321ToN-/
-* usage: pm player Hello, how are you?
-
-## ladm - lightweight administration suite
-
-* NOTE: not even alpha state. Do not use.
-* manage users on your server
-
 ## announcehp
 
 * Killer's HP is displayed to their victims.
- 
+
 # Notes
 * Please always add modname and version to your lua script
 ```

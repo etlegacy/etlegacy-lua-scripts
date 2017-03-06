@@ -3,10 +3,8 @@
 	Description: Ensure the server is connected to IRC - see irc_* cvars. Set irc_mode flag 1 and 2.
 ]]--
 
-modname ="IRC announcer"
-version ="0.2"
-
-usecolor = 0
+modname = "IRC announcer"
+version = "0.3"
 
 function et_InitGame()
   et.RegisterModname(modname.." "..version)
@@ -58,40 +56,38 @@ function getTeamInfo()
   return team_free_cnt, team_ax_cnt, team_al_cnt, team_spec_cnt
 end
 
-function getHumanBotInfo()
+function getBotInfo()
   local cs = et.trap_GetConfigstring(0)
-  local bots = et.Info_ValueForKey(cs, "omnibot_playing")
+  local bots_cnt = et.Info_ValueForKey(cs, "omnibot_playing")
 
-  return bots
+  return bots_cnt
 end
 
-
 function et_ClientConnect(_clientNum, _firstTime, _isBot)
-  if _isBot then
-    return
-  end
+  -- skip bots
+  if _isBot == 1 then return end
 
-  if _firstTime then
+  if _firstTime == 1 then
+    local clientname
     -- note pers.netname is empty on first connect
-    if usecolor then
-      local clientname = ircColorStr(et.Info_ValueForKey(et.trap_GetUserinfo(_clientNum), "name"))
-    else
-      local clientname = et.Q_CleanStr(et.Info_ValueForKey(et.trap_GetUserinfo(_clientNum), "name"))
-    end
+    clientname = ircColorStr(et.Info_ValueForKey(et.trap_GetUserinfo(_clientNum), "name"))
+    -- clientname = et.Q_CleanStr(et.Info_ValueForKey(et.trap_GetUserinfo(_clientNum), "name"))
 
-    -- iterate through clients and count them
+    -- get player type and team count
     local free, axis, allies, spec = 0, 0, 0, 0
     free, axis, allies, spec = getTeamInfo()
 
     -- count humans players
     local bots, humans = 0, 0
-    bots = getHumanBotInfo()
+    bots = getBotInfo()
 
     if bots then
       humans = free + axis + allies + spec - bots
     else
       humans = free + axis + allies + spec
     end
+
+    -- float to int conversion
     humans = math.floor(humans)
 
     -- current player is connecting but doesn't show up in the total yet
@@ -99,24 +95,19 @@ function et_ClientConnect(_clientNum, _firstTime, _isBot)
     humans = humans + 1
 
     -- send message
-    if usecolor then
-      local msg        = "irc_say  \"" .. clientname .. " connected to server. Playing now:^7 " .. humans .. "^9(+" .. bots .. ")\""
-      et.trap_SendConsoleCommand(et.EXEC_NOW , ircColorStr(msg))
-    else
-      local msg        = "irc_say  \"" .. clientname .. " connected to server. Playing now: " .. humans .. "(+" .. bots .. ")\""
-      et.trap_SendConsoleCommand(et.EXEC_NOW , msg)
-    end
+    local msg        = "irc_say  \"" .. clientname .. " connected to server. Playing now:^7 " .. humans .. "^9(+" .. bots .. ")\""
+    et.trap_SendConsoleCommand(et.EXEC_NOW , ircColorStr(msg))
+    -- local msg        = "irc_say  \"" .. clientname .. " connected to server. Playing now: " .. humans .. "(+" .. bots .. ")\""
+    -- et.trap_SendConsoleCommand(et.EXEC_NOW , msg)
   end
 end
 
 -- function et_ClientDisconnect(_clientNum)
---   if usecolor then
---     local clientname = ircColorStr(et.gentity_get(_clientNum ,"pers.netname"))
---     local msg        = "irc_say  \"" .. clientname .. " disconnected from server\""
---     et.trap_SendConsoleCommand(et.EXEC_NOW , ircColorStr(msg))
---   else
---     local clientname = et.Q_CleanStr(et.gentity_get(_clientNum ,"pers.netname"))
---     local msg        = "irc_say  \"" .. clientname .. " disconnected from server\""
---     et.trap_SendConsoleCommand(et.EXEC_NOW , msg)
---   end
+--  local clientname = ircColorStr(et.gentity_get(_clientNum ,"pers.netname"))
+--  local msg        = "irc_say  \"" .. clientname .. " disconnected from server\""
+--  et.trap_SendConsoleCommand(et.EXEC_NOW , ircColorStr(msg))
+--
+--  local clientname = et.Q_CleanStr(et.gentity_get(_clientNum ,"pers.netname"))
+--  local msg        = "irc_say  \"" .. clientname .. " disconnected from server\""
+--  et.trap_SendConsoleCommand(et.EXEC_NOW , msg)
 -- end

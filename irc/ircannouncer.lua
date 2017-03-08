@@ -4,7 +4,7 @@
 ]]--
 
 modname = "IRC announcer"
-version = "0.3"
+version = "1.0"
 
 function et_InitGame()
   et.RegisterModname(modname.." "..version)
@@ -71,7 +71,6 @@ function et_ClientConnect(_clientNum, _firstTime, _isBot)
     local clientname
     -- note pers.netname is empty on first connect
     clientname = ircColorStr(et.Info_ValueForKey(et.trap_GetUserinfo(_clientNum), "name"))
-    -- clientname = et.Q_CleanStr(et.Info_ValueForKey(et.trap_GetUserinfo(_clientNum), "name"))
 
     -- get player type and team count
     local free, axis, allies, spec = 0, 0, 0, 0
@@ -95,10 +94,8 @@ function et_ClientConnect(_clientNum, _firstTime, _isBot)
     humans = humans + 1
 
     -- send message
-    local msg        = "irc_say  \"" .. clientname .. " connected to server. Playing now:^7 " .. humans .. "^9(+" .. bots .. ")\""
+    local msg        = "irc_say  \"" .. clientname .. " connected to server. Now online:^7 " .. humans .. "^9(+" .. bots .. ")\""
     et.trap_SendConsoleCommand(et.EXEC_NOW , ircColorStr(msg))
-    -- local msg        = "irc_say  \"" .. clientname .. " connected to server. Playing now: " .. humans .. "(+" .. bots .. ")\""
-    -- et.trap_SendConsoleCommand(et.EXEC_NOW , msg)
   end
 end
 
@@ -106,8 +103,4 @@ end
 --  local clientname = ircColorStr(et.gentity_get(_clientNum ,"pers.netname"))
 --  local msg        = "irc_say  \"" .. clientname .. " disconnected from server\""
 --  et.trap_SendConsoleCommand(et.EXEC_NOW , ircColorStr(msg))
---
---  local clientname = et.Q_CleanStr(et.gentity_get(_clientNum ,"pers.netname"))
---  local msg        = "irc_say  \"" .. clientname .. " disconnected from server\""
---  et.trap_SendConsoleCommand(et.EXEC_NOW , msg)
 -- end

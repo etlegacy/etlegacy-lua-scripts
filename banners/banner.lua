@@ -1,9 +1,6 @@
 	modname = "Banners"
 version = "0.5"
 
--- Welcome message when client finished connecting to the server
-welcome = "^3WELCOME MESSAGE"
-
 -- Set Banners of you desire
 banner = "..."
 banner1 = "..."
@@ -52,10 +49,6 @@ function et_InitGame( levelTime, randomSeed, restart )
 	
 	end
 
-end
-	
-function et_ClientConnect( clientNum, firstTime, isBot )
-	et.trap_SendServerCommand(clientNum, "cp \"" .. welcome .."^7\n")	
 end
 
 function et_ShutdownGame( restart )

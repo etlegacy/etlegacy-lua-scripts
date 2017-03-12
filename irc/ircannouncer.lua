@@ -4,31 +4,33 @@
 ]]--
 
 modname = "IRC announcer"
-version = "1.0"
+version = "1.1"
 
 function et_InitGame()
   et.RegisterModname(modname.." "..version)
 end
 
+-- see http://etconfig.net/et-color-codes/et-color-codes/
+-- see http://www.mirc.com/colors.html
 function ircColorStr(str)
     local escape = "\003"
     local q3colorescape = "%^"
-    str = str:gsub(q3colorescape .. "[7Ww]", escape .. "0")
-    str = str:gsub(q3colorescape .. "[0Pp]", escape .. "1")
-    str = str:gsub(q3colorescape .. "[4Tt]", escape .. "2")
-    str = str:gsub(q3colorescape .. "[Hh]", escape .. "3")
-    str = str:gsub(q3colorescape .. "[Jj1QqIi]", escape .. "4")
-    str = str:gsub(q3colorescape .. "[Kk@%+%?]", escape .. "5")
-    str = str:gsub(q3colorescape .. "[CcEe]", escape .. "6")
-    str = str:gsub(q3colorescape .. "[Ll8XxAa]", escape .. "7")
-    str = str:gsub(q3colorescape .. "[Mm3%/%-SsOoNn]", escape .. "8")
-    str = str:gsub(q3colorescape .. "[2RrGg]", escape .. "9")
-    str = str:gsub(q3colorescape .. "[Bb]", escape .. "10")
-    str = str:gsub(q3colorescape .. "[5Uu]", escape .. "11")
-    str = str:gsub(q3colorescape .. "[DdFf]", escape .. "12")
-    str = str:gsub(q3colorescape .. "[6Vv]", escape .. "13")
-    str = str:gsub(q3colorescape .. "[9Yy]", escape .. "14")
-    str = str:gsub(q3colorescape .. "[Zz]", escape .. "15")
+    str = str:gsub(q3colorescape .. "[7Ww%.Nn]",         escape .. "0")  -- white
+    str = str:gsub(q3colorescape .. "[0Pp]",             escape .. "1")  -- black
+    str = str:gsub(q3colorescape .. "[4Tt>]",            escape .. "2")  -- blue (no support for double ^ and ~)
+    str = str:gsub(q3colorescape .. "[<\\|%(Hh]",        escape .. "3")  -- green
+    str = str:gsub(q3colorescape .. "[1Qq%)Ii%*Jj]",     escape .. "4")  -- light red
+    str = str:gsub(q3colorescape .. "[%+Kk%?_@`]",       escape .. "5")  -- brown
+    str = str:gsub(q3colorescape .. "[#Cc%%Ee]",         escape .. "6")  -- purple
+    str = str:gsub(q3colorescape .. "[8Xx!Aa,Ll]",       escape .. "7")  -- orange
+    str = str:gsub(q3colorescape .. "[3Ss%/Oo]",         escape .. "8")  -- yellow
+    str = str:gsub(q3colorescape .. "[2Rr'Gg=%]}%-Mm]",  escape .. "9")  -- light green
+    str = str:gsub(q3colorescape .. "[\"Bb]",            escape .. "10") -- cyan
+    str = str:gsub(q3colorescape .. "[5Uu]",             escape .. "11") -- light cyan
+    str = str:gsub(q3colorescape .. "[%$Dd&Ff]",         escape .. "12") -- light blue
+    str = str:gsub(q3colorescape .. "[6Vv]",             escape .. "13") -- pink
+    str = str:gsub(q3colorescape .. "[9Yy]",             escape .. "14") -- grey
+    str = str:gsub(q3colorescape .. "[:Zz;%[{]",         escape .. "15") -- light grey
     return str .. "\015"
 end
 
@@ -70,7 +72,18 @@ function et_ClientConnect(_clientNum, _firstTime, _isBot)
   if _firstTime == 1 then
     local clientname
     -- note pers.netname is empty on first connect
-    clientname = ircColorStr(et.Info_ValueForKey(et.trap_GetUserinfo(_clientNum), "name"))
+    clientname = et.Info_ValueForKey(et.trap_GetUserinfo(_clientNum), "name")
+
+    -- name length sanity check
+    if string.len(clientname) > 36 then return end
+
+    -- name ASCII sanity check
+    local c
+    for c in clientname:gmatch"." do
+      if string.byte(clientname, c) < 32 then return end
+    end
+
+    clientname = ircColorStr(clientname)
 
     -- get player type and team count
     local free, axis, allies, spec = 0, 0, 0, 0
@@ -94,13 +107,13 @@ function et_ClientConnect(_clientNum, _firstTime, _isBot)
     humans = humans + 1
 
     -- send message
-    local msg        = "irc_say  \"" .. clientname .. " connected to server. Now online:^7 " .. humans .. "^9(+" .. bots .. ")\""
+    local msg        = "irc_say  \"" .. clientname .. " connected. Now online:^7 " .. humans .. "^9(+" .. bots .. ")\""
     et.trap_SendConsoleCommand(et.EXEC_NOW , ircColorStr(msg))
   end
 end
 
 -- function et_ClientDisconnect(_clientNum)
 --  local clientname = ircColorStr(et.gentity_get(_clientNum ,"pers.netname"))
---  local msg        = "irc_say  \"" .. clientname .. " disconnected from server\""
+--  local msg        = "irc_say  \"" .. clientname .. " disconnected.\""
 --  et.trap_SendConsoleCommand(et.EXEC_NOW , ircColorStr(msg))
 -- end

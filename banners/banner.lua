@@ -1,4 +1,4 @@
-	modname = "Banners"
+modname = "Banners"
 version = "0.5"
 
 -- Set Banners of you desire

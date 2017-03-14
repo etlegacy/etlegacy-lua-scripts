@@ -17,7 +17,6 @@ timer3 = 25
 timer4 = 30
 timer5 = 35
 
-
 -------------------------------------------------------------------------------------------------------------------
 -------------------------------------------------------------------------------------------------------------------
 -------------------------------------------------------------------------------------------------------------------
@@ -26,8 +25,7 @@ timer5 = 35
 function et_InitGame( levelTime, randomSeed, restart )
 	et.RegisterModname( modname .. " " .. version )
 	
-	local milliseconds = et.trap_Milliseconds() -- is this right way ?
-	local a = (milliseconds*1000)%60
+	local a = (levelTime*1000)%60
 
 	if(a == timer) 
 		then et.trap_SendConsoleCommand( et.EXEC_NOW, "cp \"" .. banner .."^7\n" )
@@ -44,8 +42,6 @@ function et_InitGame( levelTime, randomSeed, restart )
 		local milliseconds = 0 -- we reset it here
 	else
 		et.trap_SendConsoleCommand( et.EXEC_NOW, "cp \"" .. "NO BANNERS" .."^7\n" )
-	
-	return milliseconds 
 	
 	end
 

@@ -107,13 +107,13 @@ function et_ClientConnect(_clientNum, _firstTime, _isBot)
     humans = humans + 1
 
     -- send message
-    local msg        = "irc_say  \"" .. clientname .. " connected. Now online:^7 " .. humans .. "^9(+" .. bots .. ")\""
+    local msg        = "irc_say  \"" .. clientname .. " connecting. Now online:^7 " .. humans .. "^9(+" .. bots .. ")\""
     et.trap_SendConsoleCommand(et.EXEC_NOW , ircColorStr(msg))
   end
 end
 
 -- function et_ClientDisconnect(_clientNum)
 --  local clientname = ircColorStr(et.gentity_get(_clientNum ,"pers.netname"))
---  local msg        = "irc_say  \"" .. clientname .. " disconnected.\""
+--  local msg        = "irc_say  \"" .. clientname .. " disconnecting.\""
 --  et.trap_SendConsoleCommand(et.EXEC_NOW , ircColorStr(msg))
 -- end

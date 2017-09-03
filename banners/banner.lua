@@ -25,28 +25,30 @@ timer5 = 35
 function et_InitGame( levelTime, randomSeed, restart )
 	et.RegisterModname( modname .. " " .. version )
 	
-	local a = (levelTime*1000)%60
-
-	if(a == timer) 
-		then et.trap_SendConsoleCommand( et.EXEC_NOW, "cp \"" .. banner .."^7\n" )
-	elseif(a == timer1)
-		then et.trap_SendConsoleCommand( et.EXEC_NOW, "cp \"" .. banner1 .."^7\n" )
-	elseif(a == timer2)
-		then et.trap_SendConsoleCommand( et.EXEC_NOW, "cp \"" .. banner2 .."^7\n" )
-	elseif(a == timer3)
-		then et.trap_SendConsoleCommand( et.EXEC_NOW, "cp \"" .. banner3 .."^7\n" )
-	elseif(a == timer4)
-		then et.trap_SendConsoleCommand( et.EXEC_NOW, "cp \"" .. banner4 .."^7\n" )
-	elseif(a == timer5)
-		then et.trap_SendConsoleCommand( et.EXEC_NOW, "cp \"" .. banner5 .."^7\n" )
-		local milliseconds = 0 -- we reset it here
-	else
-		et.trap_SendConsoleCommand( et.EXEC_NOW, "cp \"" .. "NO BANNERS" .."^7\n" )
 	
+	
+		if(mil_sec == timer) 
+			then et.trap_SendConsoleCommand( et.EXEC_NOW, "cp \"" .. banner .."^7\n" )
+		elseif(mil_sec == timer1)
+			then et.trap_SendConsoleCommand( et.EXEC_NOW, "cp \"" .. banner1 .."^7\n" )
+		elseif(mil_sec == timer2)
+			then et.trap_SendConsoleCommand( et.EXEC_NOW, "cp \"" .. banner2 .."^7\n" )
+		elseif(mil_sec == timer3)
+			then et.trap_SendConsoleCommand( et.EXEC_NOW, "cp \"" .. banner3 .."^7\n" )
+		elseif(mil_sec == timer4)
+			then et.trap_SendConsoleCommand( et.EXEC_NOW, "cp \"" .. banner4 .."^7\n" )
+		elseif(mil_sec == timer5)
+			then et.trap_SendConsoleCommand( et.EXEC_NOW, "cp \"" .. banner5 .."^7\n" )
+			local mil_sec = 0 -- we reset it here
+		else
+			et.trap_SendConsoleCommand( et.EXEC_NOW, "cp \"" .. "NO BANNERS" .."^7\n" )
+	
+		end
 	end
-
+	
+	return 0
 end
 
 function et_ShutdownGame( restart )
-
+	et.G_Print("Shutting down: " .. modname .. "\n")
 end

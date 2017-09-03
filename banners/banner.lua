@@ -25,7 +25,9 @@ timer5 = 35
 function et_InitGame( levelTime, randomSeed, restart )
 	et.RegisterModname( modname .. " " .. version )
 	
+	local mil_sec = (levelTime*1000)%60
 	
+	while(true) do
 	
 		if(mil_sec == timer) 
 			then et.trap_SendConsoleCommand( et.EXEC_NOW, "cp \"" .. banner .."^7\n" )

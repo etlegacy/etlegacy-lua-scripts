@@ -1,5 +1,6 @@
 --[[
 	Author: Jan Šimek [Radegast]
+	Contributors: Kewin Polok [Sheldar]
 	License: MIT
 	Released on 23.11.2013
 	Website: http://www.etlegacy.com
@@ -10,7 +11,7 @@
 ]]--
 
 -- Lua module version
-local version = "0.2"
+local version = "0.3"
 
 -- load sqlite driver (or mysql..)
 local luasql = require "luasql.sqlite3"
@@ -148,10 +149,11 @@ function et_ShutdownGame(restart)
 	-- iterate through clients and save their XP
 	while cno < maxclients do
 		local cs = et.trap_GetConfigstring(tonumber(et.CS_PLAYERS) + cno)
+		
+		if cs and cs ~= "" then
+			saveXP(cno)
+		end
 
-		if not cs or cs == "" then break end
-
-		saveXP(cno)
 		cno = cno + 1
 	end
 

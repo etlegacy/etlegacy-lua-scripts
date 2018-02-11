@@ -24,6 +24,14 @@ local GODLIKE = 25
 local WICKED_SICK = 30
 local REAL_POTTER = 35
 
+-- local SPREE = 1
+-- local RAMPAGE = 2
+-- local DOMINATION = 3
+-- local UNSTOPPABLE = 5
+-- local GODLIKE = 5
+-- local WICKED_SICK = 6
+-- local REAL_POTTER = 7
+
 local SPREE_ANNOUNCEMENTS = {
     [SPREE] = {
         sound = "/sound/misc/killing-spree.wav",
@@ -74,7 +82,11 @@ end
 function et_ClientBegin(clientNumber)
     local guid = getGuid(clientNumber)
 
-    killingSprees[guid] = 0
+    local spree = killingSprees[guid]
+
+    if not spree then
+        killingSprees[guid] = 0
+    end
 end
 
 function announceSpree(clientNumber, guid)
@@ -101,13 +113,11 @@ function et_Obituary(target, attacker, meansOfDeath)
     killingSprees[targetGuid] = 0
 
     if suicide or teamkill or killerIsNotPlayer then
-        et.G_Print("suicide or teamkill or killerIsNotPlayer\n")
         return 
     end
 
     local attackerGuid = getGuid(attacker)
     killingSprees[attackerGuid] = killingSprees[attackerGuid] + 1
 
-    et.G_Print("target " .. targetGuid .. " killed by " .. attackerGuid .. "\n")
-    et.G_Print("target spree " .. killingSprees[targetGuid] .. "\nattacker spree " .. killingSprees[attackerGuid] .. "\n")
+    announceSpree(attacker, attackerGuid)
 end

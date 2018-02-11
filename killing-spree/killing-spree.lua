@@ -14,6 +14,32 @@ local ENTITYNUM_NONE = 1023
 
 local killingSprees = {}
 
+local SPREE = 5
+local RAMPAGE = 10
+local DOMINATION = 15
+local UNSTOPPABLE = 20
+local GODLIKE = 25
+local WICKED_SICK = 30
+local REAL_POTTER = 35
+
+local killingSpreeSounds = {}
+killingSpreeSounds[SPREE] = "/sound/misc/killing-spree.wav"
+killingSpreeSounds[RAMPAGE] = "/sound/misc/rampage.wav"
+killingSpreeSounds[DOMINATION] = "/sound/misc/domination.wav"
+killingSpreeSounds[UNSTOPPABLE] = "/sound/misc/unstoppable.wav"
+killingSpreeSounds[GODLIKE] = "/sound/misc/godlike.wav"
+killingSpreeSounds[WICKED_SICK] = "/sound/misc/wicked-sick.wav"
+killingSpreeSounds[REAL_POTTER] = "/sound/misc/real-potter.wav"
+
+local killingSpreeMessages = {}
+killingSpreeMessages[SPREE] = "is on a killing spree!"
+killingSpreeMessages[RAMPAGE] = "is on a rampage!!"
+killingSpreeMessages[DOMINATION] = "is dominating!!"
+killingSpreeMessages[UNSTOPPABLE] = "is unstoppable!!!!"
+killingSpreeMessages[GODLIKE] = "is godlike!!!!!"
+killingSpreeMessages[WICKED_SICK] = "is wicked sick!!!!!!"
+killingSpreeMessages[REAL_POTTER] = "is real POTTER!!!!!!!"
+
 function et_InitGame()
     et.RegisterModname(modname .. " ".. version)
 end

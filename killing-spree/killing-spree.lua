@@ -3,7 +3,7 @@
     Contributors:
     License: MIT
 
-    Description: Script for killing spree sounds
+    Description: Killing spree sounds and messages
 ]]--
 
 local modname = "killing-spree"
@@ -12,59 +12,51 @@ local version = "0.1"
 local WORLDSPAWN_ENTITY = 1022
 local ENTITYNUM_NONE = 1023
 
-local killingSprees = {}
-
 local BROADCAST = -1
 
 local SPREE = 5
 local RAMPAGE = 10
-local DOMINATION = 15
+local DOMINATING = 15
 local UNSTOPPABLE = 20
 local GODLIKE = 25
 local WICKED_SICK = 30
 local REAL_POTTER = 35
 
--- local SPREE = 1
--- local RAMPAGE = 2
--- local DOMINATION = 3
--- local UNSTOPPABLE = 5
--- local GODLIKE = 5
--- local WICKED_SICK = 6
--- local REAL_POTTER = 7
-
 local SPREE_ANNOUNCEMENTS = {
     [SPREE] = {
-        sound = "/sound/misc/killing-spree.wav",
-        message = "is on a killing spree!"
+        sound = "/sound/misc/killingspree.wav",
+        message = "%s^7 is on a killing spree!"
     },
     [RAMPAGE] = {
         sound = "/sound/misc/rampage.wav",
-        message = "is on a rampage!!"
+        message = "%s^7 is on a rampage!!"
     },
-    [DOMINATION] = {
-        sound = "/sound/misc/domination.wav",
-        message = "is dominating!!"
+    [DOMINATING] = {
+        sound = "/sound/misc/dominating.wav",
+        message = "%s^7 is dominating!!"
     },
     [UNSTOPPABLE] = {
         sound = "/sound/misc/unstoppable.wav",
-        message = "is unstoppable!!!!"
+        message = "%s^7 is unstoppable!!!!"
     },
     [GODLIKE] = {
         sound = "/sound/misc/godlike.wav",
-        message = "is godlike!!!!!"
+        message = "%s^7 is godlike!!!!!"
     },
     [WICKED_SICK] = {
-        sound = "/sound/misc/wicked-sick.wav",
-        message = "is wicked sick!!!!!!"
+        sound = "/sound/misc/wickedsick.wav",
+        message = "%s^7 is wicked sick!!!!!!"
     },
     [REAL_POTTER] = {
-        sound = "/sound/misc/real-potter.wav",
-        message = "is real POTTER!!!!!!!"
-    },
+        sound = "/sound/misc/realpotter.wav",
+        message = "%s^7 is real POTTER!!!!!!!"
+    }
 }
 
+local killingSprees = {}
+
 function et_InitGame()
-    et.RegisterModname(modname .. " ".. version)
+    et.RegisterModname(modname .. " " .. version)
 end
 
 function getTeam(clientNumber)
@@ -95,9 +87,26 @@ function announceSpree(clientNumber, guid)
     
     if announcement then
         local name = getName(clientNumber)
+        local message = string.format(announcement.message, name)
 
-        et.G_globalSound(announcement.sound);
-        et.trap_SendServerCommand(BROADCAST, "cpm \"" .. name .. " " .. announcement.message .. "\n\"")
+        et.G_globalSound(announcement.sound)
+        et.trap_SendServerCommand(BROADCAST, "cpm \"" .. message .. "\n\"")
+    end
+end
+
+function announceEndOfSpree(target, attacker)
+    local targetGuid = getGuid(target)
+    local spree = killingSprees[targetGuid]
+    
+    if spree >= SPREE then
+        local message = string.format(
+            "%s^7 killing spree ended (^3%d^7), killed by %s^7!",
+            getName(target),
+            spree,
+            getName(attacker)
+        )
+
+        et.trap_SendServerCommand(BROADCAST, "cpm \"" .. message .. "\n\"")
     end
 end
 
@@ -109,6 +118,8 @@ function et_Obituary(target, attacker, meansOfDeath)
     local teamkill = targetTeam == attackerTeam
     local killerIsNotPlayer = killer == WORLDSPAWN_ENTITY or killer == ENTITYNUM_NONE
     
+    announceEndOfSpree(target, attacker)
+
     local targetGuid = getGuid(target)
     killingSprees[targetGuid] = 0
 

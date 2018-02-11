@@ -14,6 +14,8 @@ local ENTITYNUM_NONE = 1023
 
 local killingSprees = {}
 
+local BROADCAST = -1
+
 local SPREE = 5
 local RAMPAGE = 10
 local DOMINATION = 15
@@ -22,23 +24,36 @@ local GODLIKE = 25
 local WICKED_SICK = 30
 local REAL_POTTER = 35
 
-local killingSpreeSounds = {}
-killingSpreeSounds[SPREE] = "/sound/misc/killing-spree.wav"
-killingSpreeSounds[RAMPAGE] = "/sound/misc/rampage.wav"
-killingSpreeSounds[DOMINATION] = "/sound/misc/domination.wav"
-killingSpreeSounds[UNSTOPPABLE] = "/sound/misc/unstoppable.wav"
-killingSpreeSounds[GODLIKE] = "/sound/misc/godlike.wav"
-killingSpreeSounds[WICKED_SICK] = "/sound/misc/wicked-sick.wav"
-killingSpreeSounds[REAL_POTTER] = "/sound/misc/real-potter.wav"
-
-local killingSpreeMessages = {}
-killingSpreeMessages[SPREE] = "is on a killing spree!"
-killingSpreeMessages[RAMPAGE] = "is on a rampage!!"
-killingSpreeMessages[DOMINATION] = "is dominating!!"
-killingSpreeMessages[UNSTOPPABLE] = "is unstoppable!!!!"
-killingSpreeMessages[GODLIKE] = "is godlike!!!!!"
-killingSpreeMessages[WICKED_SICK] = "is wicked sick!!!!!!"
-killingSpreeMessages[REAL_POTTER] = "is real POTTER!!!!!!!"
+local SPREE_ANNOUNCEMENTS = {
+    [SPREE] = {
+        sound = "/sound/misc/killing-spree.wav",
+        message = "is on a killing spree!"
+    },
+    [RAMPAGE] = {
+        sound = "/sound/misc/rampage.wav",
+        message = "is on a rampage!!"
+    },
+    [DOMINATION] = {
+        sound = "/sound/misc/domination.wav",
+        message = "is dominating!!"
+    },
+    [UNSTOPPABLE] = {
+        sound = "/sound/misc/unstoppable.wav",
+        message = "is unstoppable!!!!"
+    },
+    [GODLIKE] = {
+        sound = "/sound/misc/godlike.wav",
+        message = "is godlike!!!!!"
+    },
+    [WICKED_SICK] = {
+        sound = "/sound/misc/wicked-sick.wav",
+        message = "is wicked sick!!!!!!"
+    },
+    [REAL_POTTER] = {
+        sound = "/sound/misc/real-potter.wav",
+        message = "is real POTTER!!!!!!!"
+    },
+}
 
 function et_InitGame()
     et.RegisterModname(modname .. " ".. version)
@@ -52,10 +67,26 @@ function getGuid(clientNumber)
     return et.Info_ValueForKey( et.trap_GetUserinfo(clientNumber), "cl_guid")
 end
 
+function getName(clientNumber)
+    return et.gentity_get(clientNumber, "pers.netname")
+end
+
 function et_ClientBegin(clientNumber)
     local guid = getGuid(clientNumber)
 
     killingSprees[guid] = 0
+end
+
+function announceSpree(clientNumber, guid)
+    local spree = killingSprees[guid]
+    local announcement = SPREE_ANNOUNCEMENTS[spree]
+    
+    if announcement then
+        local name = getName(clientNumber)
+
+        et.G_globalSound(announcement.sound);
+        et.trap_SendServerCommand(BROADCAST, "cpm \"" .. name .. " " .. announcement.message .. "\n\"")
+    end
 end
 
 function et_Obituary(target, attacker, meansOfDeath)

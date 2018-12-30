@@ -3,11 +3,7 @@
 * Lua scripts for the Legacy mod.
 
 
-## CONSTANTS
-
-* Scripts with useful constants for custom scripts
-
-## banners (under construction)
+## banners
 
 * Banners managment system in lua
 

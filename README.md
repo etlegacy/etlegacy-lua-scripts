@@ -9,7 +9,7 @@
 
 ## dynamite
 
-* This Script supports beside legacy mod: ETPro, EtPub & NoQuarter
+* This script supports beside legacy mod: ETPro, EtPub & NoQuarter
 * Clients can toggle dynatimer with `setu v_dynatimer 1/0`
 
 ## xpsave
@@ -21,6 +21,14 @@
 ## announcehp
 
 * Killer's HP is displayed to their victims.
+
+## medic-syringe-heal
+
+Allows medics to heal nearly dead players using syringe.
+
+If player has less than 25% of the health, medic can use syringe to heal the teammates either to full or half health, depending on medic healing skill level (eg. medic level 3 or more, heals teammate to the full health).
+ 
+* This script is intended for legacy `2.77+` mod.
 
 # Notes
 * Please always add modname and version to your lua script

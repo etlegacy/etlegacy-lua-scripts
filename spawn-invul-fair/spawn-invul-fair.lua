@@ -25,6 +25,18 @@ function et_WeaponFire(clientNum, weapNum)
 	et.gentity_set(clientNum, "ps.powerups", et.PW_INVULNERABLE, 0 )
 end
 
+function et_FixedMGFire(clientNum, weapNum)
+	et.gentity_set(clientNum, "ps.powerups", et.PW_INVULNERABLE, 0 )
+end
+
+function et_MountedMGFire(clientNum, weapNum)
+	et.gentity_set(clientNum, "ps.powerups", et.PW_INVULNERABLE, 0 )
+end
+
+function et_AAGunFire(clientNum, weapNum)
+	et.gentity_set(clientNum, "ps.powerups", et.PW_INVULNERABLE, 0 )
+end
+
 function et_InitGame()
     et.RegisterModname(modname .. " " .. version)
 end

@@ -1,7 +1,7 @@
 # Lua scripts
 
-* Lua scripts for the Legacy mod.
-
+* Lua scripts for the Legacy mod. They might or might not work with other mods.
+* Lua API doc: see https://legacy-lua-api.readthedocs.io
 
 ## banners
 
@@ -9,14 +9,12 @@
 
 ## dynamite
 
-* This script supports beside legacy mod: ETPro, EtPub & NoQuarter
 * Clients can toggle dynatimer with `setu v_dynatimer 1/0`
 
 ## xpsave
 
-* This script is intended for Legacy mod, but may work in NoQuarter 1.2.9 and above
+* Save XP between play sessions.
 * LuaSQL module with sqlite3 driver is required
-* The script could be tweaked to use file backend or other database drivers instead of sqlite3
 
 ## announcehp
 
@@ -28,6 +26,12 @@ Allows medics to heal nearly dead players using syringe.
 
 If player has less than 25% of the health, medic can use syringe to heal the teammates either to full or half health, depending on medic healing skill level (eg. medic level 3 or more, heals teammate to the full health).
  
+* This script is intended for legacy `2.77+` mod.
+
+## spawn-invul-fair
+
+Remove spawn shield protection when firing.
+
 * This script is intended for legacy `2.77+` mod.
 
 # Notes

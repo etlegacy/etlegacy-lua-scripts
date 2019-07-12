@@ -142,7 +142,7 @@ function checkMedicSyringeHeal(healer)
 	-- if medic skill is atleast on level 3 give max health, otherwise just a half
 	local finalHealth = healeeMaxHealth * (healerMedSkill >= 3 and 1 or 0.5)
 	et.gentity_set(healee, "health", finalHealth)
-	et.G_Sound(healee, 5) -- GAMESOUND_MISC_REVIVE, todo: import?
+	et.G_Sound(healee, 8) -- GAMESOUND_MISC_REVIVE, todo: import?
 	et.gentity_set(healee, "pers.lasthealth_client", healer) 
 	et.G_AddSkillPoints(healer, et.SK_FIRST_AID, SKILL_POINTS_ADD)
 	return 1

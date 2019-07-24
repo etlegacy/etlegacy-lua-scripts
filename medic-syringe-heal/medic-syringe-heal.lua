@@ -113,7 +113,7 @@ function checkMedicSyringeHeal(healer)
 	-- stuck in solid, offset the origin forward
 	if result.startsolid then
 		endpt = multAddVector(muzzlept, 8, forward)
-		result = et.trap_Trace(muzzlept, nil, nil, healer, et.MASK_SHOT)
+		result = et.trap_Trace(muzzlept, nil, nil, endpt, healer, et.MASK_SHOT)
 	end
 	-- no hit, give back syringe
 	if result.fraction == 1.0 or result.entityNum >= et.MAX_CLIENTS then

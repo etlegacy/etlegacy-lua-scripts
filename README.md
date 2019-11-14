@@ -5,11 +5,11 @@
 
 ## banners
 
-Banner managment system for `legacy` mod.
+Banner management system for `legacy` mod.
 
 Reserves next cvars to configure banners:
 * `g_bannerTime` sets banner change interval (default `5000`)
-* `g_bannerLocation` sets banner print location (default `top`)
+* `g_bannerLocation` sets banner print location (default `top`)  
 	Possible values:
 	* `top` top of the screen, banner print spot (`bp`)
 	* `left` popup messages (`cpm`)

@@ -5,7 +5,21 @@
 
 ## banners
 
-* Banners managment system in lua
+Banner managment system for `legacy` mod.
+
+Reserves next cvars to configure banners:
+* `g_bannerTime` sets banner change interval (default `5000`)
+* `g_bannerLocation` sets banner print location (default `top`)
+	Possible values:
+	* `top` top of the screen, banner print spot (`bp`)
+	* `left` popup messages (`cpm`)
+	* `center` center print (`cp`)
+	* `chat` chat print (`chat`)
+* `g_bannerN` (where N is a number in range of `1` to `5`) sets banner messages
+
+All cvars should be filled before lua module gets initialized.
+
+* This script is intended for legacy `2.77+` mod.
 
 ## dynamite
 

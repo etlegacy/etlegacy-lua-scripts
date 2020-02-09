@@ -25,11 +25,6 @@ All cvars should be filled before lua module gets initialized.
 
 * Clients can toggle dynatimer with `setu v_dynatimer 1/0`
 
-## xpsave
-
-* Save XP between play sessions.
-* LuaSQL module with sqlite3 driver is required
-
 ## announcehp
 
 * Killer's HP is displayed to their victims.

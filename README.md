@@ -15,7 +15,7 @@ Reserves next cvars to configure banners:
 	* `left` popup messages (`cpm`)
 	* `center` center print (`cp`)
 	* `chat` chat print (`chat`)
-* `g_bannerN` (where N is a number in range of `1` to `5`) sets banner messages
+* `g_bannerN` (where N is a number in range of `1` to `10`) sets banner messages
 
 All cvars should be filled before lua module gets initialized.
 

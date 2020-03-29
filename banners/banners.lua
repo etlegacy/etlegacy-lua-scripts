@@ -1,6 +1,6 @@
 --[[
     ET: Legacy
-    Copyright (C) 2012-2019 ET:Legacy team <mail@etlegacy.com>
+    Copyright (C) 2012-2020 ET:Legacy team <mail@etlegacy.com>
     This file is part of ET: Legacy - http://www.etlegacy.com
     ET: Legacy is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
 ]]--
 
 local modname = "banners"
-local version = "0.1"
+local version = "0.2"
 
 -- Map Data Structure
 	
@@ -61,6 +61,7 @@ function BannerSystem(props)
 	obj.interval = props.interval
 	obj.command = props.command
 	obj.banners = {}
+	obj.isPaused = false
 	for _, val in ipairs(props.banners) do
 		if string.len(val) > 0 then
 			table.insert(obj.banners, val)
@@ -71,12 +72,19 @@ function BannerSystem(props)
 end
 
 function BannerSystemPrototype:frame(time)
-	if self.nextUpdateTime > time then
+	if self.isPaused or self.nextUpdateTime > time then
 		return
 	end
 	if #self.banners == 0 then
 		return
 	end
+	-- don't run banners in intermission
+	local g_gamestate = tonumber(et.trap_Cvar_Get("gamestate"))
+	if g_gamestate == et.GS_INTERMISSION then
+		self.isPaused = true
+		return
+	end
+	-- perform work
 	self:update(time)
 	self:render(time)
 end
@@ -107,6 +115,7 @@ local DEFAULT_TIME           = 5000
 local DEFAULT_TIME_THRESHOLD = 2000 
 local DEFAULT_LOCATION       = "top"
 local bannerSystem = nil -- BannerSystem instance global (well, local)
+local MAX_BANNERS            = 10
 
 function et_InitGame(levelTime, randomSeed, restart)
 	et.RegisterModname(modname .. " " .. version)
@@ -137,16 +146,20 @@ function et_InitGame(levelTime, randomSeed, restart)
 		g_bannerLocation = DEFAULT_LOCATION
 	end
 
+	-- find banners by checking the g_bannerN cvars
+	local banners = {}
+	for i = 1, MAX_BANNERS do
+		local banner = et.trap_Cvar_Get("g_banner" .. i)
+		if banner == nil or banner == "" then
+			break
+		end
+		table.insert(banners, banner)
+	end
+
 	bannerSystem = BannerSystem {
 		interval = g_bannerTime,
 		command  = locationMapping:get(g_bannerLocation),
-		banners  = {
-			et.trap_Cvar_Get("g_banner1"),
-			et.trap_Cvar_Get("g_banner2"),
-			et.trap_Cvar_Get("g_banner3"),
-			et.trap_Cvar_Get("g_banner4"),
-			et.trap_Cvar_Get("g_banner5")
-		}
+		banners  = banners
 	}
 
 	if bannerSystem:count() > 0 then

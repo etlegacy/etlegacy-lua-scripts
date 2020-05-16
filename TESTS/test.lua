@@ -147,7 +147,7 @@ function printConstants()
     et.G_Print(color .. "et.CS_CHARGETIMES             " .. et.CS_CHARGETIMES .. "\n")
     et.G_Print(color .. "et.CS_FILTERCAMS              " .. et.CS_FILTERCAMS .. "\n")
 
-    et.G_Print(color .. "et.CS_LEGACYINFO              " .. et.CS_LEGACYINFO .. "\n")
+    et.G_Print(color .. "et.CS_MODINFO                 " .. et.CS_MODINFO .. "\n")
     et.G_Print(color .. "et.CS_SVCVAR                  " .. et.CS_SVCVAR .. "\n")
     et.G_Print(color .. "et.CS_CONFIGNAME              " .. et.CS_CONFIGNAME .. "\n")
 

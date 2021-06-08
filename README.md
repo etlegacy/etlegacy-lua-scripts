@@ -43,6 +43,10 @@ Remove spawn shield protection when firing.
 
 * This script is intended for legacy `2.77+` mod.
 
+## antichat
+
+Disable the chat function except wolfadmin commands.
+
 # Notes
 * Please always add modname and version to your lua script
 ```

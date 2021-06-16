@@ -19,7 +19,7 @@
 ]]--
 
 local modname = "medic-syringe-heal"
-local version = "0.1"
+local version = "0.2"
 
 -- local constants
 
@@ -65,10 +65,6 @@ function toAngleVectors(angles)
 	return forward, right, up
 end
 
-function snapVector(v)
-	return { math.tointeger(v[1]), math.tointeger(v[2]), math.tointeger(v[3]) }
-end
-
 function multAddVector(v, s, b)
 	return { v[1] + b[1] * s, v[2] + b[2] * s, v[3] + b[3] * s }
 end
@@ -89,7 +85,6 @@ end
 function calcMuzzlePoint(base, viewHeight, leanValue, right)
 	local muzzlePoint = copyVector(base)
 	muzzlePoint[3] = muzzlePoint[3] + viewHeight
-	muzzlePoint = snapVector(addLean(right, leanValue, muzzlePoint))
 	return muzzlePoint
 end
 

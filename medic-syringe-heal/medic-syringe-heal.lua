@@ -19,7 +19,7 @@
 ]]--
 
 local modname = "medic-syringe-heal"
-local version = "0.2"
+local version = "0.3"
 
 -- local constants
 
@@ -100,9 +100,9 @@ function checkMedicSyringeHeal(healer)
 	local angles = et.gentity_get(healer, "ps.viewangles")
 	local viewHeight = et.gentity_get(healer, "ps.viewheight")
 	local leanValue = et.gentity_get(healer, "ps.leanf")
-	local trPos = et.gentity_get(healer, "s.pos")
+	local origin = et.gentity_get(healer, "ps.origin")
 	local forward, right, up = toAngleVectors(angles)
-	local muzzlept = calcMuzzlePoint(trPos.trBase, viewHeight, leanValue, right)
+	local muzzlept = calcMuzzlePoint(origin, viewHeight, leanValue, right)
 	local endpt = multAddVector(muzzlept, CH_REVIVE_DIST, forward)
 	local result = et.G_HistoricalTrace(healer, muzzlept, nil, nil, endpt, healer, et.MASK_SHOT)
 	-- stuck in solid, offset the origin forward

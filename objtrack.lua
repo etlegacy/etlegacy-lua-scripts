@@ -207,7 +207,7 @@ function et_Print(text)
 		end
 	end -- end missile_b3
 
-	if mapname == "sp_delivery_te" or mapname == "etl_sp_delivery" then
+	if (string.find(mapname, "sp_delivery")) then
 		if(string.find(text, "team_CTF_redflag")) then
 			local i, j = string.find(text, "%d+")   
 	        local id = tonumber(string.sub(text, i, j))
@@ -840,7 +840,7 @@ function et_Obituary(victim, killer, mod)
 			table.remove(objcarriers_id, 1)
 		end
 	end
-	if mapname == "sp_delivery_te" or mapname == "etl_sp_delivery" then
+	if (string.find(mapname, "sp_delivery")) then
 		goldcarriers[victim] = nil
 		local x = 1
 		for index in pairs(goldcarriers_id) do
@@ -1014,7 +1014,7 @@ function et_ClientDisconnect(i)
 			table.remove(objcarriers_id, 1)
 		end
 	end
-	if mapname == "sp_delivery_te" or mapname == "etl_sp_delivery" then
+	if (string.find(mapname, "sp_delivery")) then
 		goldcarriers[i] = nil
 		local x = 1
 		for index in pairs(goldcarriers_id) do

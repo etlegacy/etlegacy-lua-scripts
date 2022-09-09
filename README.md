@@ -43,6 +43,12 @@ Remove spawn shield protection when firing.
 
 * This script is intended for legacy `2.77+` mod.
 
+## customprefix
+This script adds a server side command to send text to the chat with your own prefix.
+
+- Replace "mycommand" by your custom command.
+- Replace "myprefix" by your custom prefix or remove it for no prefix.
+
 # Notes
 * Please always add modname and version to your lua script
 ```
@@ -53,4 +59,3 @@ function et_InitGame()
         et.RegisterModname(modname.." "..version)
 end
 ```
-

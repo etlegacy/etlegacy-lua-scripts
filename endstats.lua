@@ -729,15 +729,15 @@ function et_Obituary(victim, killer, mod)
         local k_teamid = et.gentity_get(killer, "sess.sessionTeam")
         if (victim == killer) then -- suicide
 
-            if mod == 37 or mod == 64 then
+            if mod == 33 or mod == 59 then
                     checkKSpreeEnd(victim)
-                    if mod == 37 then
+                    if mod == 33 then
                 	    death_sprees[victim] = death_sprees[victim] + 1
                     end
             end
 
             killing_sprees[victim] = 0
-            if mod == 37 then
+            if mod == 33 then
 				deaths[victim] = deaths[victim] + 1
 			end
 
@@ -768,66 +768,57 @@ function et_Obituary(victim, killer, mod)
                 checkDSpreeEnd(killer)
 
 				-- most lightweapons kills
-				if mod==7 or mod==8 or mod==9 or mod==10 or mod==11 or mod==14 or mod==50 or mod==58 or mod==59 or mod==60 or mod==61 then
+				if mod==6 or mod==7 or mod==8 or mod==9 or mod==10 or mod==12 or mod==45 or mod==53 or mod==54 or mod==55 or mod==56 then
 					-- most pistol kills
-					if mod==7 or mod==8 or mod==14 or mod==50 or mod==58 or mod==59 or mod==60 or mod==61 then
+					if mod==6 or mod==7 or mod==12 or mod==45 or mod==53 or mod==54 or mod==55 or mod==56 then
 						topshots[killer][2] = topshots[killer][2] + 1
 					end
 					topshots[killer][1] = topshots[killer][1] + 1
 				end
 				-- most rifle kills
-				if mod == 12 or mod == 55 or mod == 41 or mod == 42 then
+				if mod == 11 or mod == 50 or mod == 37 or mod == 38 then
 					topshots[killer][3] = topshots[killer][3] + 1
 				end
 				-- most riflegrenade kills + farthest riflegrenade kill
-				if mod == 43 or mod == 44 then
+				if mod == 39 or mod == 40 then
 					topshots[killer][4] = topshots[killer][4] + 1
 					if killdist > topshots[killer][16] then
 						topshots[killer][16] = killdist
 					end
 				end
 				-- most sniper kills
-				if mod == 51 or mod == 56 then
+				if mod == 46 or mod == 51 then
 					topshots[killer][5] = topshots[killer][5] + 1
 				end
 				-- most knife kills
-				if mod == 6 then
+				if mod == 5 then
 					topshots[killer][6] = topshots[killer][6] + 1
 				end
 				-- most air support kills
-				if mod == 27 or mod == 30 then
+				if mod == 23 or mod == 26 then
 					topshots[killer][7] = topshots[killer][7] + 1
 				end
 				-- most mine kills
-				if mod == 45 then
+				if mod == 41 then
 					topshots[killer][8] = topshots[killer][8] + 1
 				end
 				-- most grenade kills
-				if mod == 18 then
+				if mod == 16 then
 					topshots[killer][9] = topshots[killer][9] + 1
 				end
-				-- most panzer kills
-				if mod == 17 then
+				-- most panzer kills/deaths
+				if mod == 15 then
 					topshots[killer][10] = topshots[killer][10] + 1
-				end
-				-- most mortar kills
-				if mod == 57 then
-					topshots[killer][11] = topshots[killer][11] + 1
-				end
-				-- most panzer deaths
-				if mod == 17 then
 					topshots[victim][12] = topshots[victim][12] + 1
 				end
-				-- most mortar deaths
-				if mod == 57 then
+				-- most mortar kills/deaths
+				if mod == 52 then
+					topshots[killer][11] = topshots[killer][11] + 1
 					topshots[victim][13] = topshots[victim][13] + 1
 				end
-				-- most mg42 kills
-				if mod == 1 or mod == 2 or mod == 3 or mod == 49 then
+				-- most mg42 kills/deaths
+				if mod == 1 or mod == 2 or mod == 3 or mod == 44 then
 					topshots[killer][18] = topshots[killer][18] + 1
-				end
-				-- most mg42 deaths
-				if mod == 1 or mod == 2 or mod == 3 or mod == 49 then
 					topshots[victim][19] = topshots[victim][19] + 1
 				end
             else

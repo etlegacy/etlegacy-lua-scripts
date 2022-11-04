@@ -955,6 +955,7 @@ function send_table(id, columns, rows, separator)
 
     -- Header separator
     et.trap_SendServerCommand(id, "chat \"^7" .. string.rep('-', width) .. "\"")
+    et.G_LogPrint("Endstats: " .. string.rep('-', width) .. "\"\n")
 
     -- Column names
     local row = "^7|"
@@ -966,11 +967,13 @@ function send_table(id, columns, rows, separator)
 		row = row .. " " .. column.name .. string.rep(' ', lens[index] - string.len(et.Q_CleanStr(column.name))) .. " |"
 	end
     et.trap_SendServerCommand(id, "chat \"" .. row .. "\"")
+    et.G_LogPrint("Endstats: " .. row .. "\"\n")
 
     if #rows > 0 then
 
         -- Data separator
         et.trap_SendServerCommand(id, "chat \"^7" .. string.rep('-', width) .. "\"")
+        et.G_LogPrint("Endstats: " .. string.rep('-', width) .. "\"\n")
 
         -- Rows
         --table.foreach(rows, function(_, r)
@@ -989,9 +992,11 @@ function send_table(id, columns, rows, separator)
             end
 
             et.trap_SendServerCommand(id, "chat \"" .. row .. "\"")                      -- values
+            et.G_LogPrint("Endstats: " .. row .. "\"\n")
 
             if separator then
                 et.trap_SendServerCommand(id, "chat \"^7" .. string.rep('-', width) .. "\"") -- separator
+                et.G_LogPrint("Endstats: " .. string.rep('-', width) .. "\"\n")
             end
 
         --end)
@@ -1002,6 +1007,7 @@ function send_table(id, columns, rows, separator)
     -- Bottom line
     if not separator then
         et.trap_SendServerCommand(id, "chat \"^7" .. string.rep('-', width) .. "\"")
+        et.G_LogPrint("Endstats: " .. string.rep('-', width) .. "\"\n")
     end
 
 end

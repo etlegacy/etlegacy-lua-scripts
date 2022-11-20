@@ -41,7 +41,7 @@ timer = {}
 OLD = os.time()
 
 function et_InitGame(levelTime, randomSeed, restart)
-    et.RegisterModname("dyna.lua" .. et.FindSelf())
+    et.RegisterModname("suddendeath.lua" .. et.FindSelf())
 	mapname = string.lower(et.trap_Cvar_Get("mapname"))
 	gametype = tonumber(et.trap_Cvar_Get("g_gametype"))
 	if tonumber(et.trap_Cvar_Get("g_currentRound")) == 1 then

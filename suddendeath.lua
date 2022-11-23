@@ -1,4 +1,5 @@
 -- x0rnn: added dynamite "sudden death" mode
+-- modified Quake 3 sudden death sound: https://github.com/x0rnn/etpro/blob/master/lua/sudden_death.wav
 
 ---------------------------------
 ------- Dynamite counter --------

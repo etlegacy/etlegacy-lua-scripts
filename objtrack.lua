@@ -81,7 +81,7 @@ function et_Print(text)
 		end
 	end -- end radar
 
-	if mapname == "goldrush" or mapname == "uje_goldrush" then
+	if mapname == "goldrush" or mapname == "uje_goldrush" or mapname == "goldrush-ga" or mapname == "goldrush-gals" then
 		if(string.find(text, "team_CTF_redflag")) then
 			local i, j = string.find(text, "%d+")   
 	        local id = tonumber(string.sub(text, i, j))
@@ -932,7 +932,7 @@ function et_Obituary(victim, killer, mod)
 			x = x + 1
 		end
 	end
-	if mapname == "goldrush" or mapname == "uje_goldrush" then
+	if mapname == "goldrush" or mapname == "uje_goldrush" or mapname == "goldrush-ga" or mapname == "goldrush-gals" then
 		goldcarriers[victim] = nil
 		local x = 1
 		for index in pairs(goldcarriers_id) do
@@ -1112,7 +1112,7 @@ function et_ClientDisconnect(i)
 			x = x + 1
 		end
 	end
-	if mapname == "goldrush" or mapname == "uje_goldrush" then
+	if mapname == "goldrush" or mapname == "uje_goldrush" or mapname == "goldrush-ga" or mapname == "goldrush-gals" then
 		goldcarriers[i] = nil
 		local x = 1
 		for index in pairs(goldcarriers_id) do

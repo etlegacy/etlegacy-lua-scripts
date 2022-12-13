@@ -807,17 +807,17 @@ function et_Obituary(victim, killer, mod)
 					topshots[killer][9] = topshots[killer][9] + 1
 				end
 				-- most panzer kills/deaths
-				if mod == 15 then
+				if mod == 15 or mod == 64 then
 					topshots[killer][10] = topshots[killer][10] + 1
 					topshots[victim][12] = topshots[victim][12] + 1
 				end
 				-- most mortar kills/deaths
-				if mod == 52 then
+				if mod == 52 or mod == 63 then
 					topshots[killer][11] = topshots[killer][11] + 1
 					topshots[victim][13] = topshots[victim][13] + 1
 				end
 				-- most mg42 kills/deaths
-				if mod == 1 or mod == 2 or mod == 3 or mod == 44 then
+				if mod == 1 or mod == 2 or mod == 3 or mod == 44 or mod == 62 then
 					topshots[killer][18] = topshots[killer][18] + 1
 					topshots[victim][19] = topshots[victim][19] + 1
 				end

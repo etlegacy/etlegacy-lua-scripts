@@ -801,9 +801,9 @@ function et_Print(text)
             else msg = "is now protected!"
             end
     c.spawns[action.spawn].state = action.newstate
-            et.trap_SendServerCommand(-1, "cpm \"^3ATTENTION: ^1The "..
+            et.trap_SendServerCommand(-1, "chat \"^3ATTENTION: ^1The "..
                 c.spawns[action.spawn].name.." "..msg.."\n\"")
---            et.trap_SendServerCommand(-1, "cpm \"^3ATTENTION: ^1The ^4"..
+--            et.trap_SendServerCommand(-1, "chat \"^3ATTENTION: ^1The ^4"..
 --              c.spawns[action.spawn].name.." Spawn ^2"..msg.."\n\"")
 
         end
@@ -977,7 +977,7 @@ function ClientSpawnkill(victim, killer, isheavy)
             et.trap_SendConsoleCommand(et.EXEC_APPEND, "pb_sv_kick "..(killer + 1)..
                 " "..(ETWsk_banval * math.pow(1,kicksb4)).." \"temp ban - "..kicksb4..
                 " former kicks for spawn killing!\"\n")
-            et.trap_SendServerCommand(-1, "cpm \"^3ATTENTION: ^7"..killername..
+            et.trap_SendServerCommand(-1, "chat \"^3ATTENTION: ^7"..killername..
                 " ^2has been temp banned - repeated spawn killing!\"\n")
             spawnkills[killer] = nil
             addPO (killer)
@@ -986,21 +986,21 @@ function ClientSpawnkill(victim, killer, isheavy)
         end
     end
 
-    et.trap_SendServerCommand(-1, "cpm \"^3ATTENTION: ^1WARNING: ^2Spawn kill (#"..
+    et.trap_SendServerCommand(-1, "chat \"^3ATTENTION: ^1WARNING: ^2Spawn kill (#"..
         numsk..") by ^7"..killername.."\"\n" )
     et.trap_SendServerCommand(killer, "cp \""..killername.." : ^1DO NOT SPAWN KILL!!! \"\n")
 
     if(numsk >= ETWsk_putspec and numsk < ETWsk_kick) then
         et.trap_SendConsoleCommand(et.EXEC_APPEND, putspec(killer))
         sinbinhash[killer] = et.trap_Milliseconds() + sinbin_duration
-        et.trap_SendServerCommand(-1, "cpm \"^3ATTENTION: ^7"..killername..
+        et.trap_SendServerCommand(-1, "chat \"^3ATTENTION: ^7"..killername..
             " ^2was set to Spectators - too many Spawnkills!\"\n")
         et.trap_SendServerCommand( killer,
             "b 8 \"^3ATTENTION: ^1WARNING: ^2You were set to Spectator \"\n")
     elseif(numsk == ETWsk_kick) then
         et.trap_SendConsoleCommand(et.EXEC_APPEND, "pb_sv_kick "..(killer + 1)..
             " "..ETWsk_kicklen.." \"too many spawn kills!\"\n")
-        et.trap_SendServerCommand(-1, "cpm \"^3ATTENTION: ^7"..killername..
+        et.trap_SendServerCommand(-1, "chat \"^3ATTENTION: ^7"..killername..
             " ^2has been kicked - too many spawn kills!\"\n")
         addPO(killer)
         savePO(ETWsk_pofile)

@@ -77,7 +77,7 @@ function putspec(id)
 end
 putspec_str = "ref remove %d\n"
 
-heavyweapons = {1, 2, 3, 15, 17, 23, 26, 44, 52}            -- heavy weapon indexes 
+heavyweapons = {1, 2, 3, 15, 17, 23, 26, 44, 52, 62, 63, 64}            -- heavy weapon indexes 
 
 maxcheckpointdist = 800          -- used to detect capturable flag poles
 --------------------------------------------------------------------------------

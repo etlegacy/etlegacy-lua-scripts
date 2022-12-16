@@ -866,12 +866,12 @@ function et_Print(text)
 					et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the ^1Book of Death^7!\"\n")
 				else
 					if third_obj == false then
-						et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the First Sacrifice (Shoe)!\"\n")
+						et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the First Sacrificial Armor piece (Shoe)!\"\n")
 					else
 						if fourth_obj == false then
-							et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the Second Sacrifice (Chest)!\"\n")
+							et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the Second Sacrificial Armor piece (Chest)!\"\n")
 						else
-							et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the Third Sacrifice (Sword)!\"\n")
+							et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the Third Sacrificial Armor piece (Sword)!\"\n")
 						end
 					end
 				end
@@ -880,12 +880,12 @@ function et_Print(text)
 					et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned the ^1Book of Death^7!\"\n")
 				else
 					if third_obj == false then
-						et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned the First Sacrifice (Shoe)!\"\n")
+						et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned the First Sacrificial Armor piece (Shoe)!\"\n")
 					else
 						if fourth_obj == false then
-							et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned the Second Sacrifice (Chest)!\"\n")
+							et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned the Second Sacrificial Armor piece (Chest)!\"\n")
 						else
-							et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned the Third Sacrifice (Sword)!\"\n")
+							et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned the Third Sacrificial Armor piece (Sword)!\"\n")
 						end
 					end
 				end

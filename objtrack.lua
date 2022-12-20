@@ -830,29 +830,6 @@ function et_Print(text)
 		end
 	end -- end warbell
 
-	--if mapname == "etl_warbell" then
-		--if(string.find(text, "team_CTF_blueflag")) then
-			--local i, j = string.find(text, "%d+")   
-	        --local id = tonumber(string.sub(text, i, j))
-			--local team = tonumber(et.gentity_get(id, "sess.sessionTeam"))
-			--local name = et.gentity_get(id, "pers.netname")
-			--if team == 1 then
-				--objcarriers[id] = true
-				--table.insert(objcarriers_id, id)
-				--et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the ^1Book of Death^7!\"\n")
-			--elseif team == 2 then
-				--et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned the ^1Book of Death^7!\"\n")
-			--end
-		--end
-		--if(string.find(text, "Axis have delivered the Book of Death")) then
-			--local name = et.gentity_get(objcarriers_id[1], "pers.netname")
-			--et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7secured the ^1Book of Death^7!\"\n")
-			--objcarriers[objcarriers_id[1]] = nil
-			--table.remove(objcarriers_id, 1)
-		--end
-	--end -- end etl_warbell
-
-	-- etl_warbell alternate script
 	if mapname == "etl_warbell" then
 		if(string.find(text, "team_CTF_blueflag")) then
 			local i, j = string.find(text, "%d+")   
@@ -918,7 +895,7 @@ function et_Print(text)
 			objcarriers[objcarriers_id[1]] = nil
 			table.remove(objcarriers_id, 1)
 		end
-	end -- end etl_warbell alternate script
+	end -- end etl_warbell
 end
 
 function et_Obituary(victim, killer, mod)

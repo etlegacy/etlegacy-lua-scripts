@@ -974,9 +974,7 @@ function ClientSpawnkill(victim, killer, isheavy)
         local kicksb4 = isPO(killer)
 
         if kicksb4 > 0 then
-            et.trap_SendConsoleCommand(et.EXEC_APPEND, "pb_sv_kick "..(killer + 1)..
-                " "..(ETWsk_banval * math.pow(1,kicksb4)).." \"temp ban - "..kicksb4..
-                " former kicks for spawn killing!\"\n")
+            et.trap_DropClient(killer, "temp ban - "..kicksb4.." former kicks for spawn killing!", (ETWsk_banval * math.pow(1,kicksb4)))
             et.trap_SendServerCommand(-1, "chat \"^3ATTENTION: ^7"..killername..
                 " ^2has been temp banned - repeated spawn killing!\"\n")
             spawnkills[killer] = nil
@@ -998,8 +996,7 @@ function ClientSpawnkill(victim, killer, isheavy)
         et.trap_SendServerCommand( killer,
             "b 8 \"^3ATTENTION: ^1WARNING: ^2You were set to Spectator \"\n")
     elseif(numsk == ETWsk_kick) then
-        et.trap_SendConsoleCommand(et.EXEC_APPEND, "pb_sv_kick "..(killer + 1)..
-            " "..ETWsk_kicklen.." \"too many spawn kills!\"\n")
+        et.trap_DropClient(killer, "too many spawn kills!", ETWsk_kicklen)
         et.trap_SendServerCommand(-1, "chat \"^3ATTENTION: ^7"..killername..
             " ^2has been kicked - too many spawn kills!\"\n")
         addPO(killer)

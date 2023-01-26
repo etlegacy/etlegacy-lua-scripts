@@ -140,6 +140,15 @@ function checkMedicSyringeHeal(healer)
 	et.G_Sound(healee, 8) -- GAMESOUND_MISC_REVIVE, todo: import?
 	et.gentity_set(healee, "pers.lasthealth_client", healer) 
 	et.G_AddSkillPoints(healer, et.SK_FIRST_AID, SKILL_POINTS_ADD)
+
+	-- calculate how much health was given and push the stats --
+	local healAmount = finalHealth - healeeHealth
+	local healingDone = et.gentity_get(healer, "sess.team_health_given")
+	local healingReceived = et.gentity_get(healee, "sess.team_health_received")
+	healingDone = healingDone + healAmount
+	healingReceived = healingReceived + healAmount
+	et.gentity_set(healer, "sess.team_health_given", healingDone);
+	et.gentity_set(healee, "sess.team_health_received", healingReceived);
 	return 1
 end
 

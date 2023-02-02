@@ -426,7 +426,68 @@ function et_Print(text)
 		end
 	end -- end pirates
 
-	if mapname == "karsiah_te2" then
+	--if mapname == "karsiah_te2" then
+		--if(string.find(text, "team_CTF_redflag")) then
+			--local i, j = string.find(text, "%d+")   
+	        --local id = tonumber(string.sub(text, i, j))
+			--local team = tonumber(et.gentity_get(id, "sess.sessionTeam"))
+			--local name = et.gentity_get(id, "pers.netname")
+			--if team == 2 then
+				--objcarriers[id] = true
+				--table.insert(objcarriers_id, id)
+				--if firstflag == true then
+					--et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the South Documents!\"\n")
+				--elseif secondflag == true then
+					--et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the North Documents!\"\n")
+				--else
+					--et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole a stack of Documents!\"\n")
+				--end
+			--elseif team == 1 then
+				--if firstflag == true then
+					--et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned the South Documents!\"\n")
+				--elseif secondflag == true then
+					--et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned the North Documents!\"\n")
+				--else
+					--et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned a stack of Documents\"\n")
+				--end
+			--end
+		--end
+		--if(string.find(text, "Allies have transmitted the North Documents")) then
+			--local x = 1
+			--for index in pairs(objcarriers_id) do
+				--if objcarriers[objcarriers_id[x]] == true then
+					--local redflag = et.gentity_get(objcarriers_id[x], "ps.powerups", 6)
+					--if redflag == 0 then
+						--local name = et.gentity_get(objcarriers_id[x], "pers.netname")
+						--et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7secured the North Documents!\"\n")
+						--objcarriers[objcarriers_id[x]] = nil
+						--table.remove(objcarriers_id, x)
+					--end
+				--end
+				--x = x + 1
+			--end
+			--firstflag = true
+		--end
+		--if(string.find(text, "Allies have transmitted the South Documents")) then
+			--local x = 1
+			--for index in pairs(objcarriers_id) do
+				--if objcarriers[objcarriers_id[x]] == true then
+					--local redflag = et.gentity_get(objcarriers_id[x], "ps.powerups", 6)
+					--if redflag == 0 then
+						--local name = et.gentity_get(objcarriers_id[x], "pers.netname")
+						--et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7secured the South Documents!\"\n")
+						--objcarriers[objcarriers_id[x]] = nil
+						--table.remove(objcarriers_id, x)
+					--end
+				--end
+				--x = x + 1
+			--end
+			--secondflag = true
+		--end
+	--end -- end karsiah_te2
+
+	-- karsiah_te2 alternate script (karsiah_te3)
+	if (string.find(mapname, "karsiah_te2")) then
 		if(string.find(text, "team_CTF_redflag")) then
 			local i, j = string.find(text, "%d+")   
 	        local id = tonumber(string.sub(text, i, j))
@@ -435,56 +496,70 @@ function et_Print(text)
 			if team == 2 then
 				objcarriers[id] = true
 				table.insert(objcarriers_id, id)
-				if firstflag == true then
-					et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the South Documents!\"\n")
-				elseif secondflag == true then
+				if second_obj == false then
 					et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the North Documents!\"\n")
 				else
-					et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole a stack of Documents!\"\n")
+					et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the South Documents!\"\n")
 				end
 			elseif team == 1 then
-				if firstflag == true then
+				if second_obj == true then
 					et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned the South Documents!\"\n")
-				elseif secondflag == true then
-					et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned the North Documents!\"\n")
 				else
-					et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned a stack of Documents\"\n")
+					et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned the North Documents!\"\n")
 				end
 			end
 		end
 		if(string.find(text, "Allies have transmitted the North Documents")) then
-			local x = 1
-			for index in pairs(objcarriers_id) do
-				if objcarriers[objcarriers_id[x]] == true then
-					local redflag = et.gentity_get(objcarriers_id[x], "ps.powerups", 6)
-					if redflag == 0 then
-						local name = et.gentity_get(objcarriers_id[x], "pers.netname")
-						et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7secured the North Documents!\"\n")
-						objcarriers[objcarriers_id[x]] = nil
-						table.remove(objcarriers_id, x)
-					end
-				end
-				x = x + 1
-			end
-			firstflag = true
+			local name = et.gentity_get(objcarriers_id[1], "pers.netname")
+			et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7secured the North Documents!\"\n")
+			objcarriers[objcarriers_id[1]] = nil
+			table.remove(objcarriers_id, 1)
+			second_obj = true
 		end
 		if(string.find(text, "Allies have transmitted the South Documents")) then
-			local x = 1
-			for index in pairs(objcarriers_id) do
-				if objcarriers[objcarriers_id[x]] == true then
-					local redflag = et.gentity_get(objcarriers_id[x], "ps.powerups", 6)
-					if redflag == 0 then
-						local name = et.gentity_get(objcarriers_id[x], "pers.netname")
-						et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7secured the South Documents!\"\n")
-						objcarriers[objcarriers_id[x]] = nil
-						table.remove(objcarriers_id, x)
-					end
-				end
-				x = x + 1
-			end
-			secondflag = true
+			local name = et.gentity_get(objcarriers_id[1], "pers.netname")
+			et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7secured the South Documents!\"\n")
+			objcarriers[objcarriers_id[1]] = nil
+			table.remove(objcarriers_id, 1)
 		end
-	end -- end karsiah_te2
+	end -- end karsiah_te2 alternate script (karsiah_te3)
+
+	if (string.find(mapname, "karsiah_te3")) then
+		if(string.find(text, "team_CTF_redflag")) then
+			local i, j = string.find(text, "%d+")   
+	        local id = tonumber(string.sub(text, i, j))
+			local team = tonumber(et.gentity_get(id, "sess.sessionTeam"))
+			local name = et.gentity_get(id, "pers.netname")
+			if team == 2 then
+				objcarriers[id] = true
+				table.insert(objcarriers_id, id)
+				if second_obj == false then
+					et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the North Documents!\"\n")
+				else
+					et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7stole the South Documents!\"\n")
+				end
+			elseif team == 1 then
+				if second_obj == true then
+					et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned the South Documents!\"\n")
+				else
+					et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7returned the North Documents!\"\n")
+				end
+			end
+		end
+		if(string.find(text, "Allies have transmitted the North Documents")) then
+			local name = et.gentity_get(objcarriers_id[1], "pers.netname")
+			et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7secured the North Documents!\"\n")
+			objcarriers[objcarriers_id[1]] = nil
+			table.remove(objcarriers_id, 1)
+			second_obj = true
+		end
+		if(string.find(text, "Allies have transmitted the South Documents")) then
+			local name = et.gentity_get(objcarriers_id[1], "pers.netname")
+			et.trap_SendServerCommand(-1, "chat \"" .. name .. " ^7secured the South Documents!\"\n")
+			objcarriers[objcarriers_id[1]] = nil
+			table.remove(objcarriers_id, 1)
+		end
+	end -- end karsiah_te3
 
 	if mapname == "et_ufo_final" then
 		if(string.find(text, "team_CTF_redflag")) then
@@ -987,16 +1062,33 @@ function et_Obituary(victim, killer, mod)
 			x = x + 1
 		end
 	end
+	
+	--if mapname == "karsiah_te2" then
+		--objcarriers[victim] = nil
+		--local x = 1
+		--for index in pairs(objcarriers_id) do
+			--if objcarriers_id[x] == victim then
+				--table.remove(objcarriers_id, x)
+			--end
+			--x = x + 1
+		--end
+	--end
+	
+	-- karsiah_te2 alternate script (karsiah_te3)
 	if mapname == "karsiah_te2" then
 		objcarriers[victim] = nil
-		local x = 1
-		for index in pairs(objcarriers_id) do
-			if objcarriers_id[x] == victim then
-				table.remove(objcarriers_id, x)
-			end
-			x = x + 1
+		if objcarriers_id[1] == victim then
+			table.remove(objcarriers_id, 1)
 		end
 	end
+	
+	if mapname == "karsiah_te3" then
+		objcarriers[victim] = nil
+		if objcarriers_id[1] == victim then
+			table.remove(objcarriers_id, 1)
+		end
+	end
+	
 	if mapname == "et_ufo_final" then
 		doccarriers[victim] = nil
 		if doccarriers_id[1] == victim then
@@ -1167,16 +1259,33 @@ function et_ClientDisconnect(i)
 			x = x + 1
 		end
 	end
+	
+	--if mapname == "karsiah_te2" then
+		--objcarriers[i] = nil
+		--local x = 1
+		--for index in pairs(objcarriers_id) do
+			--if objcarriers_id[x] == i then
+				--table.remove(objcarriers_id, x)
+			--end
+			--x = x + 1
+		--end
+	--end
+	
+	-- karsiah_te2 alternate script (karsiah_te3)
 	if mapname == "karsiah_te2" then
 		objcarriers[i] = nil
-		local x = 1
-		for index in pairs(objcarriers_id) do
-			if objcarriers_id[x] == i then
-				table.remove(objcarriers_id, x)
-			end
-			x = x + 1
+		if objcarriers_id[1] == i then
+			table.remove(objcarriers_id, 1)
 		end
 	end
+	
+	if mapname == "karsiah_te3" then
+		objcarriers[i] = nil
+		if objcarriers_id[1] == i then
+			table.remove(objcarriers_id, 1)
+		end
+	end
+	
 	if mapname == "et_ufo_final" then
 		doccarriers[i] = nil
 		if doccarriers_id[1] == i then

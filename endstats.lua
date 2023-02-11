@@ -803,7 +803,7 @@ function et_Obituary(victim, killer, mod)
 					topshots[killer][8] = topshots[killer][8] + 1
 				end
 				-- most grenade kills
-				if mod == 16 then
+				if mod == 16 or mod == 18 then
 					topshots[killer][9] = topshots[killer][9] + 1
 				end
 				-- most panzer kills/deaths

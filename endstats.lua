@@ -768,7 +768,7 @@ function et_Obituary(victim, killer, mod)
                 checkDSpreeEnd(killer)
 
 				-- most lightweapons kills
-				if mod==6 or mod==7 or mod==8 or mod==9 or mod==10 or mod==12 or mod==45 or mod==53 or mod==54 or mod==55 or mod==56 then
+				if mod==6 or mod==7 or mod==8 or mod==9 or mod==10 or mod==12 or mod==45 or mod==53 or mod==54 or mod==55 or mod==56 or mod=66 then
 					-- most pistol kills
 					if mod==6 or mod==7 or mod==12 or mod==45 or mod==53 or mod==54 or mod==55 or mod==56 then
 						topshots[killer][2] = topshots[killer][2] + 1

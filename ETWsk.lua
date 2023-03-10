@@ -994,7 +994,7 @@ function ClientSpawnkill(victim, killer, isheavy)
         et.trap_SendServerCommand(-1, "chat \"^3ATTENTION: ^7"..killername..
             " ^2was set to Spectators - too many Spawnkills!\"\n")
         et.trap_SendServerCommand( killer,
-            "b 8 \"^3ATTENTION: ^1WARNING: ^2You were set to Spectator \"\n")
+            "bp \"^3ATTENTION: ^1WARNING: ^2You were set to Spectator \"\n")
     elseif(numsk == ETWsk_kick) then
         et.trap_DropClient(killer, "too many spawn kills!", ETWsk_kicklen)
         et.trap_SendServerCommand(-1, "chat \"^3ATTENTION: ^7"..killername..

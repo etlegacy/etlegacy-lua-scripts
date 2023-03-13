@@ -34,7 +34,7 @@ COLOR.PLACE = '^8'
 COLOR.TEXT = '^w'
 COLOR.TIME = '^8' -- this constat is changing in the print_message() function
  
-CHAT = "chat" 
+CHAT = "bp" 
 POPUP = "legacy"
 
 timer = {}

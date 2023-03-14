@@ -791,7 +791,7 @@ function et_Obituary(victim, killer, mod)
 					topshots[killer][5] = topshots[killer][5] + 1
 				end
 				-- most knife kills
-				if mod == 5 or mod == 65 then
+				if mod == 5 or mod == 61 or mod == 65 then
 					topshots[killer][6] = topshots[killer][6] + 1
 				end
 				-- most air support kills

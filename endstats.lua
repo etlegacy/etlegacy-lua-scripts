@@ -1,4 +1,5 @@
 -- endstats.lua by x0rnn, shows some interesting game statistics at the end of a round (highest light weapon acc, highest hs acc, most dynamites planted, most pistol kills, kill/death stats vs. all opponents, etc.)
+-- shows kill assist information upon death (who all shot you, how much HP they took and how many HS they made)
 
 killing_sprees = {}
 death_sprees = {}
@@ -25,8 +26,17 @@ easiest_prey = {}
 vsstats = {}
 vsstats_kills = {}
 vsstats_deaths = {}
+hitters = {}
+assist_weapons = {1,2,3,6,7,8,9,10,11,12,13,14,17,37,38,44,45,46,50,51,53,54,55,56,62,66}
+HR_HEAD = 0
+HR_ARMS = 1
+HR_BODY = 2
+HR_LEGS = 3
+HR_NONE = -1
+HR_TYPES = {HR_HEAD, HR_ARMS, HR_BODY, HR_LEGS}
+hitRegionsData = {}
 
-topshot_names = { [1]="Most damage given", [2]="Most damage received", [3]="Most team damage given", [4]="Most team damage received", [5]="Most teamkills", [6]="Most selfkills", [7]="Most deaths", [8]="Most kills per minute", [9]="Quickest multikill w/ light weapons", [11]="Farthest riflenade kill", [12]="Most light weapon kills", [13]="Most pistol kills", [14]="Most rifle kills", [15]="Most riflenade kills", [16]="Most sniper kills", [17]="Most knife kills", [18]="Most air support kills", [19]="Most mine kills", [20]="Most grenade kills", [21]="Most panzer kills", [22]="Most mortar kills", [23]="Most panzer deaths", [24]="Mortarmagnet", [25]="Most multikills", [26]="Most MG42 kills", [27]="Most MG42 deaths", [28]="Most revives", [29]="Most revived", [30]="Best K/D ratio", [31]="Most dynamites planted", [32]="Most dynamites defused", [33]="Most doublekills", [34]="Longest killing spree", [35]="Longest death spree", [36]="Most objectives stolen", [37]="Most objectives returned" }
+topshot_names = { [1]="Most damage given", [2]="Most damage received", [3]="Most team damage given", [4]="Most team damage received", [5]="Most teamkills", [6]="Most selfkills", [7]="Most deaths", [8]="Most kills per minute", [9]="Quickest multikill w/ light weapons", [11]="Farthest riflenade kill", [12]="Most light weapon kills", [13]="Most pistol kills", [14]="Most rifle kills", [15]="Most riflenade kills", [16]="Most sniper kills", [17]="Most knife kills", [18]="Most air support kills", [19]="Most mine kills", [20]="Most grenade kills", [21]="Most panzer kills", [22]="Most mortar kills", [23]="Most panzer deaths", [24]="Mortarmagnet", [25]="Most multikills", [26]="Most MG42 kills", [27]="Most MG42 deaths", [28]="Most revives", [29]="Most revived", [30]="Best K/D ratio", [31]="Most dynamites planted", [32]="Most dynamites defused", [33]="Most doublekills", [34]="Longest killing spree", [35]="Longest death spree", [36]="Most objectives stolen", [37]="Most objectives returned", [38]="Most corpse gibs", [39]="Most kill assists", [40]="Most killsteals"}
 
 function et_InitGame(levelTime, randomSeed, restart)
 
@@ -38,37 +48,19 @@ function et_InitGame(levelTime, randomSeed, restart)
         killing_sprees[i] = 0
         death_sprees[i] = 0
         kmulti[i] = { [1]=0, [2]=0, }
-        topshots[i] = { [1]=0, [2]=0, [3]=0, [4]=0, [5]=0, [6]=0, [7]=0, [8]=0, [9]=0, [10]=0, [11]=0, [12]=0, [13]=0, [14]=0, [15]=0, [16]=0, [17]=0, [18]=0, [19]=0, [20]=0, [21]=0, [22]=0, [23]=0, [24]=0, [25]=0, [26]=0, [27]=0, [28]=0 }
-	vsstats[i]={[0]=0,[1]=0,[2]=0,[3]=0,[4]=0,[5]=0,[6]=0,[7]=0,[8]=0,[9]=0,[10]=0,[11]=0,[12]=0,[13]=0,[14]=0,[15]=0,[16]=0,[17]=0,[18]=0,[19]=0,[20]=0,[21]=0,[22]=0,[23]=0,[24]=0,[25]=0,[26]=0,[27]=0,[28]=0,[29]=0,[30]=0,[31]=0,[32]=0,[33]=0,[34]=0,[35]=0,[36]=0,[37]=0,[38]=0,[39]=0,[40]=0,[41]=0,[42]=0,[43]=0,[44]=0,[45]=0,[46]=0,[47]=0,[48]=0,[49]=0,[50]=0,[51]=0,[52]=0,[53]=0,[54]=0,[55]=0,[56]=0,[57]=0,[58]=0,[59]=0,[60]=0,[61]=0,[62]=0,[63]=0}
-	vsstats_kills[i]={[0]=0,[1]=0,[2]=0,[3]=0,[4]=0,[5]=0,[6]=0,[7]=0,[8]=0,[9]=0,[10]=0,[11]=0,[12]=0,[13]=0,[14]=0,[15]=0,[16]=0,[17]=0,[18]=0,[19]=0,[20]=0,[21]=0,[22]=0,[23]=0,[24]=0,[25]=0,[26]=0,[27]=0,[28]=0,[29]=0,[30]=0,[31]=0,[32]=0,[33]=0,[34]=0,[35]=0,[36]=0,[37]=0,[38]=0,[39]=0,[40]=0,[41]=0,[42]=0,[43]=0,[44]=0,[45]=0,[46]=0,[47]=0,[48]=0,[49]=0,[50]=0,[51]=0,[52]=0,[53]=0,[54]=0,[55]=0,[56]=0,[57]=0,[58]=0,[59]=0,[60]=0,[61]=0,[62]=0,[63]=0}
-	vsstats_deaths[i]={[0]=0,[1]=0,[2]=0,[3]=0,[4]=0,[5]=0,[6]=0,[7]=0,[8]=0,[9]=0,[10]=0,[11]=0,[12]=0,[13]=0,[14]=0,[15]=0,[16]=0,[17]=0,[18]=0,[19]=0,[20]=0,[21]=0,[22]=0,[23]=0,[24]=0,[25]=0,[26]=0,[27]=0,[28]=0,[29]=0,[30]=0,[31]=0,[32]=0,[33]=0,[34]=0,[35]=0,[36]=0,[37]=0,[38]=0,[39]=0,[40]=0,[41]=0,[42]=0,[43]=0,[44]=0,[45]=0,[46]=0,[47]=0,[48]=0,[49]=0,[50]=0,[51]=0,[52]=0,[53]=0,[54]=0,[55]=0,[56]=0,[57]=0,[58]=0,[59]=0,[60]=0,[61]=0,[62]=0,[63]=0}
-	worst_enemy[i]={[0]=0,[1]=0,[2]=0,[3]=0,[4]=0,[5]=0,[6]=0,[7]=0,[8]=0,[9]=0,[10]=0,[11]=0,[12]=0,[13]=0,[14]=0,[15]=0,[16]=0,[17]=0,[18]=0,[19]=0,[20]=0,[21]=0,[22]=0,[23]=0,[24]=0,[25]=0,[26]=0,[27]=0,[28]=0,[29]=0,[30]=0,[31]=0,[32]=0,[33]=0,[34]=0,[35]=0,[36]=0,[37]=0,[38]=0,[39]=0,[40]=0,[41]=0,[42]=0,[43]=0,[44]=0,[45]=0,[46]=0,[47]=0,[48]=0,[49]=0,[50]=0,[51]=0,[52]=0,[53]=0,[54]=0,[55]=0,[56]=0,[57]=0,[58]=0,[59]=0,[60]=0,[61]=0,[62]=0,[63]=0}
-	easiest_prey[i]={[0]=0,[1]=0,[2]=0,[3]=0,[4]=0,[5]=0,[6]=0,[7]=0,[8]=0,[9]=0,[10]=0,[11]=0,[12]=0,[13]=0,[14]=0,[15]=0,[16]=0,[17]=0,[18]=0,[19]=0,[20]=0,[21]=0,[22]=0,[23]=0,[24]=0,[25]=0,[26]=0,[27]=0,[28]=0,[29]=0,[30]=0,[31]=0,[32]=0,[33]=0,[34]=0,[35]=0,[36]=0,[37]=0,[38]=0,[39]=0,[40]=0,[41]=0,[42]=0,[43]=0,[44]=0,[45]=0,[46]=0,[47]=0,[48]=0,[49]=0,[50]=0,[51]=0,[52]=0,[53]=0,[54]=0,[55]=0,[56]=0,[57]=0,[58]=0,[59]=0,[60]=0,[61]=0,[62]=0,[63]=0}
+        topshots[i] = { [1]=0, [2]=0, [3]=0, [4]=0, [5]=0, [6]=0, [7]=0, [8]=0, [9]=0, [10]=0, [11]=0, [12]=0, [13]=0, [14]=0, [15]=0, [16]=0, [17]=0, [18]=0, [19]=0, [20]=0, [21]=0, [22]=0, [23]=0, [24]=0, [25]=0, [26]=0, [27]=0, [28]=0, [29]=0, [30]=0}
+		vsstats[i]={[0]=0,[1]=0,[2]=0,[3]=0,[4]=0,[5]=0,[6]=0,[7]=0,[8]=0,[9]=0,[10]=0,[11]=0,[12]=0,[13]=0,[14]=0,[15]=0,[16]=0,[17]=0,[18]=0,[19]=0,[20]=0,[21]=0,[22]=0,[23]=0,[24]=0,[25]=0,[26]=0,[27]=0,[28]=0,[29]=0,[30]=0,[31]=0,[32]=0,[33]=0,[34]=0,[35]=0,[36]=0,[37]=0,[38]=0,[39]=0,[40]=0,[41]=0,[42]=0,[43]=0,[44]=0,[45]=0,[46]=0,[47]=0,[48]=0,[49]=0,[50]=0,[51]=0,[52]=0,[53]=0,[54]=0,[55]=0,[56]=0,[57]=0,[58]=0,[59]=0,[60]=0,[61]=0,[62]=0,[63]=0}
+		vsstats_kills[i]={[0]=0,[1]=0,[2]=0,[3]=0,[4]=0,[5]=0,[6]=0,[7]=0,[8]=0,[9]=0,[10]=0,[11]=0,[12]=0,[13]=0,[14]=0,[15]=0,[16]=0,[17]=0,[18]=0,[19]=0,[20]=0,[21]=0,[22]=0,[23]=0,[24]=0,[25]=0,[26]=0,[27]=0,[28]=0,[29]=0,[30]=0,[31]=0,[32]=0,[33]=0,[34]=0,[35]=0,[36]=0,[37]=0,[38]=0,[39]=0,[40]=0,[41]=0,[42]=0,[43]=0,[44]=0,[45]=0,[46]=0,[47]=0,[48]=0,[49]=0,[50]=0,[51]=0,[52]=0,[53]=0,[54]=0,[55]=0,[56]=0,[57]=0,[58]=0,[59]=0,[60]=0,[61]=0,[62]=0,[63]=0}
+		vsstats_deaths[i]={[0]=0,[1]=0,[2]=0,[3]=0,[4]=0,[5]=0,[6]=0,[7]=0,[8]=0,[9]=0,[10]=0,[11]=0,[12]=0,[13]=0,[14]=0,[15]=0,[16]=0,[17]=0,[18]=0,[19]=0,[20]=0,[21]=0,[22]=0,[23]=0,[24]=0,[25]=0,[26]=0,[27]=0,[28]=0,[29]=0,[30]=0,[31]=0,[32]=0,[33]=0,[34]=0,[35]=0,[36]=0,[37]=0,[38]=0,[39]=0,[40]=0,[41]=0,[42]=0,[43]=0,[44]=0,[45]=0,[46]=0,[47]=0,[48]=0,[49]=0,[50]=0,[51]=0,[52]=0,[53]=0,[54]=0,[55]=0,[56]=0,[57]=0,[58]=0,[59]=0,[60]=0,[61]=0,[62]=0,[63]=0}
+		worst_enemy[i]={[0]=0,[1]=0,[2]=0,[3]=0,[4]=0,[5]=0,[6]=0,[7]=0,[8]=0,[9]=0,[10]=0,[11]=0,[12]=0,[13]=0,[14]=0,[15]=0,[16]=0,[17]=0,[18]=0,[19]=0,[20]=0,[21]=0,[22]=0,[23]=0,[24]=0,[25]=0,[26]=0,[27]=0,[28]=0,[29]=0,[30]=0,[31]=0,[32]=0,[33]=0,[34]=0,[35]=0,[36]=0,[37]=0,[38]=0,[39]=0,[40]=0,[41]=0,[42]=0,[43]=0,[44]=0,[45]=0,[46]=0,[47]=0,[48]=0,[49]=0,[50]=0,[51]=0,[52]=0,[53]=0,[54]=0,[55]=0,[56]=0,[57]=0,[58]=0,[59]=0,[60]=0,[61]=0,[62]=0,[63]=0}
+		easiest_prey[i]={[0]=0,[1]=0,[2]=0,[3]=0,[4]=0,[5]=0,[6]=0,[7]=0,[8]=0,[9]=0,[10]=0,[11]=0,[12]=0,[13]=0,[14]=0,[15]=0,[16]=0,[17]=0,[18]=0,[19]=0,[20]=0,[21]=0,[22]=0,[23]=0,[24]=0,[25]=0,[26]=0,[27]=0,[28]=0,[29]=0,[30]=0,[31]=0,[32]=0,[33]=0,[34]=0,[35]=0,[36]=0,[37]=0,[38]=0,[39]=0,[40]=0,[41]=0,[42]=0,[43]=0,[44]=0,[45]=0,[46]=0,[47]=0,[48]=0,[49]=0,[50]=0,[51]=0,[52]=0,[53]=0,[54]=0,[55]=0,[56]=0,[57]=0,[58]=0,[59]=0,[60]=0,[61]=0,[62]=0,[63]=0}
         mkps[i] = { [1]=0, [2]=0, [3]=0 }
         axis_time[i] = 0
         allies_time[i] = 0
         kills[i] = 0
         deaths[i] = 0
+        hitters[i] = {nil, nil, nil, nil}
     end
-end
-
-function n2b(number) -- thanks to adawolfa
-	local bits = {}
-
-	local i = 1
-	while 2 ^ (i + 1) < number do
-		i = i + 1
-	end
-
-	while i >= 0 do
-		if 2 ^ i <= number then
-			table.insert(bits, 2 ^ i)
-			number = number - 2 ^ i
-		end
-		i = i - 1
-	end
-
-	return bits, #bits
 end
 
 local function roundNum(num, n)
@@ -89,9 +81,55 @@ function getKeysSortedByValue(tbl, sortFunction)
 	return keys
 end
 
+function has_value (tab, val)
+	for index, value in ipairs(tab) do
+		if value == val then
+			return true
+		end
+	end
+	return false
+end
+
+function getAllHitRegions(clientNum)
+	local regions = {}
+	for index, hitType in ipairs(HR_TYPES) do
+		regions[hitType] = et.gentity_get(clientNum, "pers.playerStats.hitRegions", hitType)
+	end       
+	return regions
+end     
+
+function hitType(clientNum)
+	local playerHitRegions = getAllHitRegions(clientNum)
+	if hitRegionsData[clientNum] == nil then
+		hitRegionsData[clientNum] = playerHitRegions
+		return 2
+	end
+	for index, hitType in ipairs(HR_TYPES) do
+		if playerHitRegions[hitType] > hitRegionsData[clientNum][hitType] then
+			hitRegionsData[clientNum] = playerHitRegions
+			return hitType
+		end		
+	end
+	hitRegionsData[clientNum] = playerHitRegions
+	return -1
+end
+
+function et_Damage(target, attacker, damage, damageFlags, meansOfDeath)
+	if target ~= attacker and attacker ~= 1022 and attacker ~= 1023 then
+		if has_value(assist_weapons, meansOfDeath) then
+			local hitType = hitType(attacker)
+			if hitType == HR_HEAD then
+				hitters[target][et.trap_Milliseconds()] = {[1]=attacker, [2]=damage, [3]=1}
+			else
+				hitters[target][et.trap_Milliseconds()] = {[1]=attacker, [2]=damage, [3]=0}
+			end
+		end
+	end
+end
+
 function topshots_f(id)
-	local max = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
-	local max_id = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+	local max = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+	local max_id = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 	local i = 0
 	for i=0, sv_maxclients-1 do
 		local team = tonumber(et.gentity_get(i, "sess.sessionTeam"))
@@ -104,6 +142,7 @@ function topshots_f(id)
 			local sk = tonumber(et.gentity_get(i, "sess.self_kills"))
 			local d = tonumber(et.gentity_get(i, "sess.deaths"))
 			local k = tonumber(et.gentity_get(i, "sess.kills"))
+			local gibs = tonumber(et.gentity_get(i, "sess.gibs"))
 			local kd = 0
 			if d ~= 0 then
 				kd = k/d
@@ -318,6 +357,21 @@ function topshots_f(id)
 				max[37] = topshots[i][28]
 				max_id[37] = i
 			end
+			-- most gibs
+			if gibs > max[38] then 
+				max[38] = gibs
+				max_id[38] = i
+			end
+			--most kill assists
+			if topshots[i][29] > max[39] then
+				max[39] = topshots[i][29]
+				max_id[39] = i
+			end
+			--most killsteals
+			if topshots[i][30] > max[40] then
+				max[40] = topshots[i][30]
+				max_id[40] = i
+			end
 		end
 	end
 	if id == -2 then
@@ -354,7 +408,7 @@ function topshots_f(id)
 		end
 		local j = 1
 		local players = {}
-		for j=1, 37 do
+		for j=1, 40 do
 			if max[j] > 1 then
 				if j ~= 10 and j ~= 25 and j ~= 33 then
 					if j == 8 then
@@ -560,82 +614,27 @@ function et_Print(text)
 
     if kendofmap and string.find(text, "^WeaponStats: ") == 1 then
 		if endplayerscnt < tblcount then
-			for id, m, bla in string.gmatch(text, "WeaponStats: ([%d]+) [%d]+ ([%d]+) ([^\n]+)") do
+			for id in string.gmatch(text, "WeaponStats: ([%d]+)[^\n]+") do
 				if endplayers[tonumber(id)] then
 					if weaponstats[tonumber(id)] == nil then
 						endplayerscnt = endplayerscnt + 1
-						if tonumber(m)~=0 and tonumber(m)~=1 and tonumber(m)~=2 and tonumber(m)~=4 and tonumber(m)~=8 and tonumber(m)~=16 and tonumber(m)~=32  and tonumber(m)~=64 and tonumber(m)~=128 and tonumber(m)~=256 and tonumber(m)~=512 and tonumber(m)~=1024 and tonumber(m)~=2048 and tonumber(m)~=4096 and tonumber(m)~=8192 and tonumber(m)~=16384 and tonumber(m)~=32768 and tonumber(m)~=65536 and tonumber(m)~=131072 and tonumber(m)~=262144 and tonumber(m)~=524288 and tonumber(m)~=1048576 and tonumber(m)~=2097152 then
-							bits, bits_len = n2b(tonumber(m))
-							local j = 1
-							local knife = false
-							local w = 0
-							for j = 1,bits_len do
-								if bits[j] == 1 or bits[j] == 2 or bits[j] == 4 or bits[j] == 8 or bits[j] == 16 or bits[j] == 32 then
-									if bits[j] == 1 then
-										knife = true
-									else
-										w = w + 1
-									end
-								end
-							end
-							if w ~= 0 then
-								if knife == true then
-									if w == 1 then
-										for hits, shots, hs in string.gmatch(bla, "[%d]+ [%d]+ [%d]+ [%d]+ [%d]+ ([%d]+) ([%d]+) [%d]+ [%d]+ ([%d]+) [^\n]+") do
-											weaponstats[tonumber(id)] = { [1]=tonumber(hits), [2]=tonumber(shots), [3]=tonumber(hs) }
-										end
-									elseif w == 2 then
-										for hits1,shots1,hs1,hits2,shots2,hs2 in string.gmatch(bla, "[%d]+ [%d]+ [%d]+ [%d]+ [%d]+ ([%d]+) ([%d]+) [%d]+ [%d]+ ([%d]+) ([%d]+) ([%d]+) [%d]+ [%d]+ ([%d]+) [^\n]+") do
-											weaponstats[tonumber(id)] = { [1]=tonumber(hits1)+tonumber(hits2), [2]=tonumber(shots1)+tonumber(shots2), [3]=tonumber(hs1)+tonumber(hs2) }
-										end
-									elseif w == 3 then
-										for hits1,shots1,hs1,hits2,shots2,hs2,hits3,shots3,hs3 in string.gmatch(bla, "[%d]+ [%d]+ [%d]+ [%d]+ [%d]+ ([%d]+) ([%d]+) [%d]+ [%d]+ ([%d]+) ([%d]+) ([%d]+) [%d]+ [%d]+ ([%d]+) ([%d]+) ([%d]+) [%d]+ [%d]+ ([%d]+) [^\n]+") do
-											weaponstats[tonumber(id)] = { [1]=tonumber(hits1)+tonumber(hits2)+tonumber(hits3), [2]=tonumber(shots1)+tonumber(shots2)+tonumber(shots3), [3]=tonumber(hs1)+tonumber(hs2)+tonumber(hs3) }
-										end
-									elseif w == 4 then
-										for hits1,shots1,hs1,hits2,shots2,hs2,hits3,shots3,hs3,hits4,shots4,hs4 in string.gmatch(bla, "[%d]+ [%d]+ [%d]+ [%d]+ [%d]+ ([%d]+) ([%d]+) [%d]+ [%d]+ ([%d]+) ([%d]+) ([%d]+) [%d]+ [%d]+ ([%d]+) ([%d]+) ([%d]+) [%d]+ [%d]+ ([%d]+) ([%d]+) ([%d]+) [%d]+ [%d]+ ([%d]+) [^\n]+") do
-											weaponstats[tonumber(id)] = { [1]=tonumber(hits1)+tonumber(hits2)+tonumber(hits3)+tonumber(hits4), [2]=tonumber(shots1)+tonumber(shots2)+tonumber(shots3)+tonumber(shots4), [3]=tonumber(hs1)+tonumber(hs2)+tonumber(hs3)+tonumber(hs4) }
-										end
-									elseif w == 5 then
-										for hits1,shots1,hs1,hits2,shots2,hs2,hits3,shots3,hs3,hits4,shots4,hs4,hits5,shots5,hs5 in string.gmatch(bla, "[%d]+ [%d]+ [%d]+ [%d]+ [%d]+ ([%d]+) ([%d]+) [%d]+ [%d]+ ([%d]+) ([%d]+) ([%d]+) [%d]+ [%d]+ ([%d]+) ([%d]+) ([%d]+) [%d]+ [%d]+ ([%d]+) ([%d]+) ([%d]+) [%d]+ [%d]+ ([%d]+) ([%d]+) ([%d]+) [%d]+ [%d]+ ([%d]+) [^\n]+") do
-											weaponstats[tonumber(id)] = { [1]=tonumber(hits1)+tonumber(hits2)+tonumber(hits3)+tonumber(hits4)+tonumber(hits5), [2]=tonumber(shots1)+tonumber(shots2)+tonumber(shots3)+tonumber(shots4)+tonumber(shots5), [3]=tonumber(hs1)+tonumber(hs2)+tonumber(hs3)+tonumber(hs4)+tonumber(hs5) }
-										end
-									end
-								else
-									if w == 1 then
-										for hits, shots, hs in string.gmatch(bla, "([%d]+) ([%d]+) [%d]+ [%d]+ ([%d]+) [^\n]+") do
-											weaponstats[tonumber(id)] = { [1]=tonumber(hits), [2]=tonumber(shots), [3]=tonumber(hs) }
-										end
-									elseif w == 2 then
-										for hits1,shots1,hs1,hits2,shots2,hs2 in string.gmatch(bla, "([%d]+) ([%d]+) [%d]+ [%d]+ ([%d]+) ([%d]+) ([%d]+) [%d]+ [%d]+ ([%d]+) [^\n]+") do
-											weaponstats[tonumber(id)] = { [1]=tonumber(hits1)+tonumber(hits2), [2]=tonumber(shots1)+tonumber(shots2), [3]=tonumber(hs1)+tonumber(hs2) }
-										end
-									elseif w == 3 then
-										for hits1,shots1,hs1,hits2,shots2,hs2,hits3,shots3,hs3 in string.gmatch(bla, "([%d]+) ([%d]+) [%d]+ [%d]+ ([%d]+) ([%d]+) ([%d]+) [%d]+ [%d]+ ([%d]+) ([%d]+) ([%d]+) [%d]+ [%d]+ ([%d]+) [^\n]+") do
-											weaponstats[tonumber(id)] = { [1]=tonumber(hits1)+tonumber(hits2)+tonumber(hits3), [2]=tonumber(shots1)+tonumber(shots2)+tonumber(shots3), [3]=tonumber(hs1)+tonumber(hs2)+tonumber(hs3) }
-										end
-									elseif w == 4 then
-										for hits1,shots1,hs1,hits2,shots2,hs2,hits3,shots3,hs3,hits4,shots4,hs4 in string.gmatch(bla, "([%d]+) ([%d]+) [%d]+ [%d]+ ([%d]+) ([%d]+) ([%d]+) [%d]+ [%d]+ ([%d]+) ([%d]+) ([%d]+) [%d]+ [%d]+ ([%d]+) ([%d]+) ([%d]+) [%d]+ [%d]+ ([%d]+) [^\n]+") do
-											weaponstats[tonumber(id)] = { [1]=tonumber(hits1)+tonumber(hits2)+tonumber(hits3)+tonumber(hits4), [2]=tonumber(shots1)+tonumber(shots2)+tonumber(shots3)+tonumber(shots4), [3]=tonumber(hs1)+tonumber(hs2)+tonumber(hs3)+tonumber(hs4) }
-										end
-									elseif w == 5 then
-										for hits1,shots1,hs1,hits2,shots2,hs2,hits3,shots3,hs3,hits4,shots4,hs4,hits5,shots5,hs5 in string.gmatch(bla, "([%d]+) ([%d]+) [%d]+ [%d]+ ([%d]+) ([%d]+) ([%d]+) [%d]+ [%d]+ ([%d]+) ([%d]+) ([%d]+) [%d]+ [%d]+ ([%d]+) ([%d]+) ([%d]+) [%d]+ [%d]+ ([%d]+) ([%d]+) ([%d]+) [%d]+ [%d]+ ([%d]+) [^\n]+") do
-											weaponstats[tonumber(id)] = { [1]=tonumber(hits1)+tonumber(hits2)+tonumber(hits3)+tonumber(hits4)+tonumber(hits5), [2]=tonumber(shots1)+tonumber(shots2)+tonumber(shots3)+tonumber(shots4)+tonumber(shots5), [3]=tonumber(hs1)+tonumber(hs2)+tonumber(hs3)+tonumber(hs4)+tonumber(hs5) }
-										end
-									end
-								end
-							else
-								weaponstats[tonumber(id)] = { [1]=0, [2]=0, [3]=0 }
-							end
-						else
-							if tonumber(m) == 2 or tonumber(m) == 4 or tonumber(m) == 8 or tonumber(m) == 16 or tonumber(m) == 32 then
-								for hits, shots, hs in string.gmatch(bla, "([%d]+) ([%d]+) [%d]+ [%d]+ ([%d]+) [^\n]+") do
-									weaponstats[tonumber(id)] = { [1]=tonumber(hits), [2]=tonumber(shots), [3]=tonumber(hs) }
-								end
-							else
-								weaponstats[tonumber(id)] = { [1]=0, [2]=0, [3]=0 }
+						local ws
+						local hits = 0
+						local shots = 0
+						local hs = 0
+						for j = 2, 6 do
+							ws = et.gentity_get(tonumber(id), "sess.aWeaponStats", j)
+							hits = hits + ws[4]
+							shots = shots + ws[1]
+							hs = hs + ws[3]
+							if j == 6 then
+								ws = et.gentity_get(tonumber(id), "sess.aWeaponStats", 26)
+								hits = hits + ws[4]
+								shots = shots + ws[1]
+								hs = hs + ws[3]
 							end
 						end
+						weaponstats[tonumber(id)] = { [1]=hits, [2]=shots, [3]=hs }
 					end
 				end
 			end
@@ -723,6 +722,7 @@ function et_Obituary(victim, killer, mod)
     if gamestate == 0 then
         local v_teamid = et.gentity_get(victim, "sess.sessionTeam")
         local k_teamid = et.gentity_get(killer, "sess.sessionTeam")
+
         if (victim == killer) then -- suicide
 
             if mod == 33 or mod == 59 then
@@ -737,31 +737,32 @@ function et_Obituary(victim, killer, mod)
 				deaths[victim] = deaths[victim] + 1
 			end
 
-        elseif (v_teamid == k_teamid) then -- team kill
+		else
+       	if (v_teamid == k_teamid) then -- team kill
 
-            checkKSpreeEnd(victim)
-            killing_sprees[victim] = 0
-            --death_sprees[victim] = death_sprees[victim] + 1
+       	    checkKSpreeEnd(victim)
+     	      killing_sprees[victim] = 0
+     	      --death_sprees[victim] = death_sprees[victim] + 1
 
-        else -- nomal kill
-            if killer ~= 1022 and killer ~= 1023 then -- no world / unknown kills
+   	    else -- nomal kill
+   	        if killer ~= 1022 and killer ~= 1023 then -- no world / unknown kills
 
-                killing_sprees[killer] = killing_sprees[killer] + 1
-                death_sprees[victim] = death_sprees[victim] + 1
+      	         killing_sprees[killer] = killing_sprees[killer] + 1
+ 	              death_sprees[victim] = death_sprees[victim] + 1
 
-				vsstats[killer][victim] = vsstats[killer][victim] + 1
-                kills[killer] = kills[killer] + 1
-                deaths[victim] = deaths[victim] + 1
-                worst_enemy[victim][killer] = worst_enemy[victim][killer] + 1
-                easiest_prey[killer][victim] = easiest_prey[killer][victim] + 1 
-                local posk = et.gentity_get(victim, "ps.origin")
-			    local posv = et.gentity_get(killer, "ps.origin")
-                local killdist = dist(posk, posv)
+					vsstats[killer][victim] = vsstats[killer][victim] + 1
+        	       kills[killer] = kills[killer] + 1
+    	           deaths[victim] = deaths[victim] + 1
+    	           worst_enemy[victim][killer] = worst_enemy[victim][killer] + 1
+   	            easiest_prey[killer][victim] = easiest_prey[killer][victim] + 1 
+      	         local posk = et.gentity_get(victim, "ps.origin")
+				    local posv = et.gentity_get(killer, "ps.origin")
+     	          local killdist = dist(posk, posv)
 
-                checkMultiKill(killer, mod)
+      	         checkMultiKill(killer, mod)
 
-                checkKSpreeEnd(victim)
-                checkDSpreeEnd(killer)
+    	           checkKSpreeEnd(victim)
+    	           checkDSpreeEnd(killer)
 
 				-- most lightweapons kills
 				if mod==6 or mod==7 or mod==8 or mod==9 or mod==10 or mod==12 or mod==45 or mod==53 or mod==54 or mod==55 or mod==56 or mod=66 then
@@ -817,14 +818,116 @@ function et_Obituary(victim, killer, mod)
 					topshots[killer][18] = topshots[killer][18] + 1
 					topshots[victim][19] = topshots[victim][19] + 1
 				end
-            else
-                checkKSpreeEnd(victim)
-                if killer ~= 1022 then
-					death_sprees[victim] = death_sprees[victim] + 1
-                end
-            end
-            killing_sprees[victim] = 0
-            death_sprees[killer] = 0
+             else
+                 checkKSpreeEnd(victim)
+                 if killer ~= 1022 then
+					 death_sprees[victim] = death_sprees[victim] + 1
+                 end
+             end
+             killing_sprees[victim] = 0
+             death_sprees[killer] = 0
+           end
+           
+           if has_value(assist_weapons, mod) then
+			local names = ""
+			local killer_dmg = 0
+			local killer_hs = 0
+			local assist_dmg = {}
+			local assist_hs = {}
+			local ms = et.trap_Milliseconds()
+			for m=ms, ms-15000, -1 do
+				if hitters[victim][m] then
+					if hitters[victim][m][1] == killer then
+						killer_dmg = killer_dmg + hitters[victim][m][2]
+						killer_hs = killer_hs + hitters[victim][m][3]
+					else
+						if assist_dmg[hitters[victim][m][1]] == nil then
+							assist_dmg[hitters[victim][m][1]] = hitters[victim][m][2]
+						else
+							assist_dmg[hitters[victim][m][1]] = assist_dmg[hitters[victim][m][1]] + hitters[victim][m][2]
+						end
+						if assist_hs[hitters[victim][m][1]] == nil then
+							assist_hs[hitters[victim][m][1]] = hitters[victim][m][3]
+						else
+							assist_hs[hitters[victim][m][1]] = assist_hs[hitters[victim][m][1]] + hitters[victim][m][3]
+						end
+					end
+				end
+			end
+			local keyset={}
+			local n=0
+			for k,v in pairs(assist_dmg) do
+				n=n+1
+				keyset[n]=k
+			end
+			local max = 0
+			local max_id = 0
+			for j=1,#keyset do
+				if v_teamid ~= et.gentity_get(keyset[j], "sess.sessionTeam") then
+					topshots[keyset[j]][29] = topshots[keyset[j]][29] + 1
+				end
+				if assist_dmg[keyset[j]] > killer_dmg then
+					if v_teamid ~= et.gentity_get(keyset[j], "sess.sessionTeam") and v_teamid ~= k_teamid then 
+						topshots[killer][30] = topshots[killer][30] + 1
+					end
+					if assist_dmg[keyset[j]] > max then
+						max = assist_dmg[keyset[j]]
+						max_id = keyset[j]
+					end
+				end
+				local C
+				if et.gentity_get(keyset[j], "sess.sessionTeam") == 1 then
+					C = 1
+				else
+					C = 4
+				end
+				if names == "" then
+					if assist_hs[keyset[j]] == 0 then
+						names = et.gentity_get(keyset[j], "pers.netname") .. " ^z(^" .. C .. assist_dmg[keyset[j]] .. "^z)"
+					else
+						names = et.gentity_get(keyset[j], "pers.netname") .. " ^z(^" .. C .. assist_dmg[keyset[j]] .. "^z, ^" .. C .. assist_hs[keyset[j]] .. " ^zHS)"
+					end
+				else
+					if assist_hs[keyset[j]] == 0 then
+						names = names .. ", " .. et.gentity_get(keyset[j], "pers.netname") .. " ^z(^" .. C .. assist_dmg[keyset[j]] .. "^z)"
+					else
+						names = names .. ", " .. et.gentity_get(keyset[j], "pers.netname") .. " ^z(^" .. C .. assist_dmg[keyset[j]] .. "^z, ^" .. C .. assist_hs[keyset[j]] .. " ^zHS)"
+					end
+				end
+			end
+			if max > 0 then
+				if v_teamid ~= et.gentity_get(max_id, "sess.sessionTeam") and v_teamid ~= k_teamid then 
+					et.trap_SendServerCommand(killer, "bp \"^zKill stolen from: " .. et.gentity_get(max_id, "pers.netname") .. "\";")
+					et.trap_SendServerCommand(max_id, "bp \"^zKill stolen by: " .. et.gentity_get(killer, "pers.netname") .. "\";")
+				end
+			end
+			local C
+			if k_teamid == 1 then
+				C = 1
+			else
+				C = 4
+			end
+			if v_teamid ~= k_teamid then
+				if names == "" then
+					if killer_hs == 0 then
+						et.trap_SendServerCommand(victim, "cp \"^zDamage received last 1.5s: " .. et.gentity_get(killer, "pers.netname") .. "^z(^" .. C .. killer_dmg .. "^z)\";")
+						et.trap_SendServerCommand(victim, "chat \"^zDamage received last 1.5s: " .. et.gentity_get(killer, "pers.netname") .. "^z(^" .. C .. killer_dmg .. "^z)\";")
+					else
+						et.trap_SendServerCommand(victim, "cp \"^zDamage received last 1.5s: " .. et.gentity_get(killer, "pers.netname") .. "^z(^" .. C .. killer_dmg .. "^z, ^" .. C .. killer_hs .. " ^zHS)\";")
+						et.trap_SendServerCommand(victim, "chat \"^zDamage received last 1.5s: " .. et.gentity_get(killer, "pers.netname") .. "^z(^" .. C .. killer_dmg .. "^z, ^" .. C .. killer_hs .. " ^zHS)\";")
+					end
+				else
+					if killer_hs == 0 then
+						et.trap_SendServerCommand(victim, "cp \"^zKill Assists: " .. et.gentity_get(killer, "pers.netname") .. " ^z(^" .. C .. killer_dmg .. "^z)\n" .. names .. "\";")
+						et.trap_SendServerCommand(victim, "chat \"^zKill Assists: " .. et.gentity_get(killer, "pers.netname") .. " ^z(^" .. C .. killer_dmg .. "^z), " .. names .. "\";")
+					else
+						et.trap_SendServerCommand(victim, "cp \"^zKill Assists: " .. et.gentity_get(killer, "pers.netname") .. " ^z(^" .. C .. killer_dmg .. "^z, ^" .. C .. killer_hs .. " ^zHS)\n" .. names .. "\";")
+						et.trap_SendServerCommand(victim, "chat \"^zKill Assists: " .. et.gentity_get(killer, "pers.netname") .. " ^z(^" .. C .. killer_dmg .. "^z, ^" .. C .. killer_hs .. " ^zHS), " .. names .. "\";")
+					end
+				end
+			end
+		end
+           
         end
     end -- gamestate
 end
@@ -879,12 +982,14 @@ function et_ClientSpawn(id, revived)
 			allies_time[id] = 0
 		end
 	end
+	hitters[id] = {nil, nil, nil, nil}
+	hitRegionsData[id] = getAllHitRegions(id)
 end
 
 function et_ClientDisconnect(id)
     killing_sprees[id] = 0
     death_sprees[id] = 0
-    topshots[id] = { [1]=0, [2]=0, [3]=0, [4]=0, [5]=0, [6]=0, [7]=0, [8]=0, [9]=0, [10]=0, [11]=0, [12]=0, [13]=0, [14]=0, [15]=0, [16]=0, [17]=0, [18]=0, [19]=0, [20]=0, [21]=0, [22]=0, [23]=0, [24]=0, [25]=0, [26]=0, [27]=0, [28]=0 }
+    topshots[id] = { [1]=0, [2]=0, [3]=0, [4]=0, [5]=0, [6]=0, [7]=0, [8]=0, [9]=0, [10]=0, [11]=0, [12]=0, [13]=0, [14]=0, [15]=0, [16]=0, [17]=0, [18]=0, [19]=0, [20]=0, [21]=0, [22]=0, [23]=0, [24]=0, [25]=0, [26]=0, [27]=0, [28]=0, [29]=0, [30]=0}
     axis_time[id] = 0
     allies_time[id] = 0
     mkps[id] = { [1]=0, [2]=0, [3]=0 }
@@ -903,6 +1008,7 @@ function et_ClientDisconnect(id)
 		vsstats_kills[j][id] = 0
 		vsstats_deaths[j][id] = 0
 	end
+	hitters[id] = {nil, nil, nil, nil}
 end
 
 --- Sends a nice table to a client.

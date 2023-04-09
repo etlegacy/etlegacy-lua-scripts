@@ -852,14 +852,11 @@ function printSpawns(cno)
     protect[1] = "^1PROTECT_AXIS"
     protect[2] = "^4PROTECT_ALLIES"
     if cno >= 0 then
-        et.trap_SendServerCommand(cno,
-            "print \"^3ATTENTION:^7 Mapname: ^3"..mapname.."\n\"")
+        et.trap_SendServerCommand(cno,"chat \"^3ATTENTION:^7 Mapname: ^3"..mapname.."\n\"")
     end
     for i,spawn in pairs(c.spawns) do
-        if cno == -1 then et.G_Printf(
-            "ETWsk> Spawn %d \"%s\" %s \n", i, spawn.name, protect[spawn.state])
-        else et.trap_SendServerCommand(cno, "print \"^3ATTENTION:^7 Spawn ^3"..
-            i.."^7 "..spawn.name.." "..protect[spawn.state].."\n\"")
+        if cno == -1 then et.G_Print("ETWsk> Spawn %d \"%s\" %s \n", i, spawn.name, protect[spawn.state])
+        else et.trap_SendServerCommand(cno, "chat \"^3ATTENTION:^7 Spawn ^3"..i.."^7 "..spawn.name.." "..protect[spawn.state].."\n\"")
         end
     end
 end
@@ -1007,13 +1004,6 @@ function ClientSpawnkill(victim, killer, isheavy)
         et.gentity_set(killer, "health", -511)
     end
 
-end
-
---------------------------------------------------------------------------------
--- printf wrapper
-function et.G_Printf(...)
---------------------------------------------------------------------------------
-    et.G_Print(string.format(table.unpack(arg)))
 end
 
 --------------------------------------------------------------------------------

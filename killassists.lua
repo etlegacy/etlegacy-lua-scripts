@@ -84,6 +84,8 @@ function roundNum(num, n)
 end
 
 function et_Obituary(victim, killer, mod)
+	local v_teamid = et.gentity_get(victim, "sess.sessionTeam")
+        local k_teamid = et.gentity_get(killer, "sess.sessionTeam")
 	if victim ~= killer and killer ~= 1022 and killer ~= 1023 then
 		if has_value(assist_weapons, mod) then
 			local names = ""

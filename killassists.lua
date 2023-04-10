@@ -1,3 +1,5 @@
+-- killassists.lua by x0rnn, shows kill assist information upon death (who all shot you, how much HP they took and how many HS they made)
+
 hp_announce = true -- announce HP and distance of killer upon dying
 hitters = {}
 assists = {}
@@ -85,10 +87,11 @@ end
 
 function et_Obituary(victim, killer, mod)
 	local v_teamid = et.gentity_get(victim, "sess.sessionTeam")
-        local k_teamid = et.gentity_get(killer, "sess.sessionTeam")
+    local k_teamid = et.gentity_get(killer, "sess.sessionTeam")
 	if victim ~= killer and killer ~= 1022 and killer ~= 1023 then
 		if has_value(assist_weapons, mod) then
 			local names = ""
+			local names_cens = ""
 			local killer_dmg = 0
 			local killer_hs = 0
 			local assist_dmg = {}
@@ -143,14 +146,34 @@ function et_Obituary(victim, killer, mod)
 				if names == "" then
 					if assist_hs[keyset[j]] == 0 then
 						names = et.gentity_get(keyset[j], "pers.netname") .. " ^z(^" .. C .. assist_dmg[keyset[j]] .. "^z)"
+						if et.gentity_get(keyset[j], "sess.sessionTeam") ~= k_teamid then
+							names_cens = "^" .. C .. "TEAMMATE ^z(^" .. C .. assist_dmg[keyset[j]] .. "^z)"
+						else
+							names_cens = names
+						end
 					else
 						names = et.gentity_get(keyset[j], "pers.netname") .. " ^z(^" .. C .. assist_dmg[keyset[j]] .. "^z, ^" .. C .. assist_hs[keyset[j]] .. " ^zHS)"
+						if et.gentity_get(keyset[j], "sess.sessionTeam") ~= k_teamid then
+							names_cens = "^" .. C .. "TEAMMATE ^z(^" .. C .. assist_dmg[keyset[j]] .. "^z, ^" .. C .. assist_hs[keyset[j]] .. " ^zHS)"
+						else
+							names_cens = names
+						end
 					end
 				else
 					if assist_hs[keyset[j]] == 0 then
 						names = names .. ", " .. et.gentity_get(keyset[j], "pers.netname") .. " ^z(^" .. C .. assist_dmg[keyset[j]] .. "^z)"
+						if et.gentity_get(keyset[j], "sess.sessionTeam") ~= k_teamid then
+							names_cens = names_cens .. ", ^" .. C .. "TEAMMATE ^z(^" .. C .. assist_dmg[keyset[j]] .. "^z)"
+						else
+							names_cens = names_cens .. ", " .. et.gentity_get(keyset[j], "pers.netname") .. " ^z(^" .. C .. assist_dmg[keyset[j]] .. "^z)"
+						end
 					else
 						names = names .. ", " .. et.gentity_get(keyset[j], "pers.netname") .. " ^z(^" .. C .. assist_dmg[keyset[j]] .. "^z, ^" .. C .. assist_hs[keyset[j]] .. " ^zHS)"
+						if et.gentity_get(keyset[j], "sess.sessionTeam") ~= k_teamid then
+							names_cens = names_cens .. ", ^" .. C .. "TEAMMATE ^z(^" .. C .. assist_dmg[keyset[j]] .. "^z, ^" .. C .. assist_hs[keyset[j]] .. " ^zHS)"
+						else
+							names_cens = names_cens .. ", " .. et.gentity_get(keyset[j], "pers.netname") .. " ^z(^" .. C .. assist_dmg[keyset[j]] .. "^z, ^" .. C .. assist_hs[keyset[j]] .. " ^zHS)"
+						end
 					end
 				end
 			end
@@ -158,6 +181,12 @@ function et_Obituary(victim, killer, mod)
 				if v_teamid ~= et.gentity_get(max_id, "sess.sessionTeam") and v_teamid ~= k_teamid then 
 					et.trap_SendServerCommand(killer, "bp \"^zKill stolen from: " .. et.gentity_get(max_id, "pers.netname") .. "\";")
 					et.trap_SendServerCommand(max_id, "bp \"^zKill stolen by: " .. et.gentity_get(killer, "pers.netname") .. "\";")
+				end
+			else
+				if names ~= "" then
+					if v_teamid ~= k_teamid then
+						et.trap_SendServerCommand(killer, "chat \"^zKill Assists: " .. names_cens .. "\";")
+					end
 				end
 			end
 			local C

@@ -1,6 +1,7 @@
 -- killassists.lua by x0rnn, shows kill assist information upon death (who all shot you, how much HP they took and how many HS they made)
 
 announce_hp = true -- announce HP and distance of killer upon dying
+announce_killer = true -- announce kill assists to the killer
 hitters = {}
 assists = {}
 killsteals = {}
@@ -291,12 +292,16 @@ function et_Obituary(victim, killer, mod)
 				if v_teamid ~= et.gentity_get(max_id, "sess.sessionTeam") and v_teamid ~= k_teamid then 
 					et.trap_SendServerCommand(killer, "bp \"^zKill stolen from: " .. et.gentity_get(max_id, "pers.netname") .. "\";")
 					et.trap_SendServerCommand(max_id, "bp \"^zKill stolen by: " .. et.gentity_get(killer, "pers.netname") .. "\";")
-					et.trap_SendServerCommand(killer, "chat \"^zKill Assists: " .. names_cens .. "\";")
+					if announce_killer == true then
+						et.trap_SendServerCommand(killer, "chat \"^zKill Assists: " .. names_cens .. "\";")
+					end
 				end
 			else
 				if names ~= "" then
 					if v_teamid ~= k_teamid then
-						et.trap_SendServerCommand(killer, "chat \"^zKill Assists: " .. names_cens .. "\";")
+						if announce_killer == true then
+							et.trap_SendServerCommand(killer, "chat \"^zKill Assists: " .. names_cens .. "\";")
+						end
 					end
 				end
 			end

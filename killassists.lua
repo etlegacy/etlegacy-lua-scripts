@@ -150,7 +150,7 @@ function et_Obituary(victim, killer, mod)
 			local assist_wpn = {}
 			local assist_wpns = {}
 			local ms = et.trap_Milliseconds()
-			for m=ms, ms-15000, -1 do
+			for m=ms, ms-1500, -1 do
 				if hitters[victim][m] then
 					if hitters[victim][m][1] == killer then
 						killer_dmg = killer_dmg + hitters[victim][m][2]

@@ -1,6 +1,6 @@
 -- killassists.lua by x0rnn, shows kill assist information upon death (who all shot you, how much HP they took and how many HS they made)
 
-hp_announce = true -- announce HP and distance of killer upon dying
+announce_hp = true -- announce HP and distance of killer upon dying
 hitters = {}
 assists = {}
 killsteals = {}

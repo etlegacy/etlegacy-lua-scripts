@@ -1,5 +1,4 @@
--- endstats.lua by x0rnn, shows some interesting game statistics at the end of a round (highest light weapon acc, highest hs acc, most dynamites planted, most pistol kills, kill/death stats vs. all opponents, etc.)
--- shows kill assist information upon death (who all shot you, how much HP they took and how many HS they made)
+-- endstats.lua by x0rnn, shows some interesting game statistics at the end of a round (most kill assists, most kill steals, highest light weapon acc, highest hs acc, most dynamites planted, most pistol kills, kill/death stats vs. all opponents, etc.)
 
 killing_sprees = {}
 death_sprees = {}
@@ -27,7 +26,8 @@ vsstats = {}
 vsstats_kills = {}
 vsstats_deaths = {}
 hitters = {}
-assist_weapons = {1,2,3,6,7,8,9,10,11,12,13,14,17,37,38,44,45,46,50,51,53,54,55,56,62,66}
+light_weapons = {1,2,3,5,6,7,8,9,10,11,12,13,14,17,37,38,44,45,46,50,51,53,54,55,56,61,62,66}
+explosives = {15,16,18,19,20,22,23,26,39,40,41,42,52,63,64}
 HR_HEAD = 0
 HR_ARMS = 1
 HR_BODY = 2
@@ -116,20 +116,22 @@ end
 
 function et_Damage(target, attacker, damage, damageFlags, meansOfDeath)
 	if target ~= attacker and attacker ~= 1022 and attacker ~= 1023 then
-		if has_value(assist_weapons, meansOfDeath) then
+		if has_value(light_weapons, meansOfDeath) or has_value(explosives, meansOfDeath) then
 			local hitType = hitType(attacker)
 			if hitType == HR_HEAD then
-				hitters[target][et.trap_Milliseconds()] = {[1]=attacker, [2]=damage, [3]=1}
+				if not has_value(explosives, meansOfDeath) then
+					hitters[target][et.trap_Milliseconds()] = {[1]=attacker, [2]=damage, [3]=meansOfDeath}
+				end
 			else
-				hitters[target][et.trap_Milliseconds()] = {[1]=attacker, [2]=damage, [3]=0}
+				hitters[target][et.trap_Milliseconds()] = {[1]=attacker, [2]=damage, [3]=meansOfDeath}
 			end
 		end
 	end
 end
 
 function topshots_f(id)
-	local max = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
-	local max_id = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+	local max = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+	local max_id = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 	local i = 0
 	for i=0, sv_maxclients-1 do
 		local team = tonumber(et.gentity_get(i, "sess.sessionTeam"))
@@ -371,6 +373,8 @@ function topshots_f(id)
 			if topshots[i][30] > max[40] then
 				max[40] = topshots[i][30]
 				max_id[40] = i
+							et.trap_SendServerCommand(-1,"chat \"^3fdsfdfsdfdsa\n\"")
+
 			end
 		end
 	end
@@ -729,13 +733,11 @@ function et_Obituary(victim, killer, mod)
                     checkKSpreeEnd(victim)
                     if mod == 33 then
                 	    death_sprees[victim] = death_sprees[victim] + 1
+						deaths[victim] = deaths[victim] + 1
                     end
             end
 
             killing_sprees[victim] = 0
-            if mod == 33 then
-				deaths[victim] = deaths[victim] + 1
-			end
 
 		else
        	if (v_teamid == k_teamid) then -- team kill
@@ -765,7 +767,7 @@ function et_Obituary(victim, killer, mod)
     	           checkDSpreeEnd(killer)
 
 				-- most lightweapons kills
-				if mod==6 or mod==7 or mod==8 or mod==9 or mod==10 or mod==12 or mod==45 or mod==53 or mod==54 or mod==55 or mod==56 or mod=66 then
+				if mod==6 or mod==7 or mod==8 or mod==9 or mod==10 or mod==12 or mod==45 or mod==53 or mod==54 or mod==55 or mod==56 or mod==66 then
 					-- most pistol kills
 					if mod==6 or mod==7 or mod==12 or mod==45 or mod==53 or mod==54 or mod==55 or mod==56 then
 						topshots[killer][2] = topshots[killer][2] + 1
@@ -828,29 +830,23 @@ function et_Obituary(victim, killer, mod)
              death_sprees[killer] = 0
            end
            
-           if has_value(assist_weapons, mod) then
-			local names = ""
-			local names_cens = ""
+		if has_value(light_weapons, mod) or has_value(explosives, mod) then
 			local killer_dmg = 0
-			local killer_hs = 0
 			local assist_dmg = {}
-			local assist_hs = {}
+			local last_assist_wpn = {}
 			local ms = et.trap_Milliseconds()
-			for m=ms, ms-1500, -1 do
+			for m=ms, ms-15000, -1 do
 				if hitters[victim][m] then
 					if hitters[victim][m][1] == killer then
 						killer_dmg = killer_dmg + hitters[victim][m][2]
-						killer_hs = killer_hs + hitters[victim][m][3]
 					else
 						if assist_dmg[hitters[victim][m][1]] == nil then
 							assist_dmg[hitters[victim][m][1]] = hitters[victim][m][2]
 						else
 							assist_dmg[hitters[victim][m][1]] = assist_dmg[hitters[victim][m][1]] + hitters[victim][m][2]
 						end
-						if assist_hs[hitters[victim][m][1]] == nil then
-							assist_hs[hitters[victim][m][1]] = hitters[victim][m][3]
-						else
-							assist_hs[hitters[victim][m][1]] = assist_hs[hitters[victim][m][1]] + hitters[victim][m][3]
+						if not last_assist_wpn[hitters[victim][m][1]] then
+							last_assist_wpn[hitters[victim][m][1]] = hitters[victim][m][3]
 						end
 					end
 				end
@@ -861,101 +857,21 @@ function et_Obituary(victim, killer, mod)
 				n=n+1
 				keyset[n]=k
 			end
-			local max = 0
-			local max_id = 0
 			for j=1,#keyset do
 				if v_teamid ~= et.gentity_get(keyset[j], "sess.sessionTeam") then
 					topshots[keyset[j]][29] = topshots[keyset[j]][29] + 1
 				end
 				if assist_dmg[keyset[j]] > killer_dmg then
-					if v_teamid ~= et.gentity_get(keyset[j], "sess.sessionTeam") and v_teamid ~= k_teamid then 
-						topshots[killer][30] = topshots[killer][30] + 1
-					end
-					if assist_dmg[keyset[j]] > max then
-						max = assist_dmg[keyset[j]]
-						max_id = keyset[j]
-					end
-				end
-				local C
-				if et.gentity_get(keyset[j], "sess.sessionTeam") == 1 then
-					C = 1
-				else
-					C = 4
-				end
-				if names == "" then
-					if assist_hs[keyset[j]] == 0 then
-						names = et.gentity_get(keyset[j], "pers.netname") .. " ^z(^" .. C .. assist_dmg[keyset[j]] .. "^z)"
-						if et.gentity_get(keyset[j], "sess.sessionTeam") ~= k_teamid then
-							names_cens = "^" .. C .. "TEAMMATE ^z(^" .. C .. assist_dmg[keyset[j]] .. "^z)"
-						else
-							names_cens = names
-						end
-					else
-						names = et.gentity_get(keyset[j], "pers.netname") .. " ^z(^" .. C .. assist_dmg[keyset[j]] .. "^z, ^" .. C .. assist_hs[keyset[j]] .. " ^zHS)"
-						if et.gentity_get(keyset[j], "sess.sessionTeam") ~= k_teamid then
-							names_cens = "^" .. C .. "TEAMMATE ^z(^" .. C .. assist_dmg[keyset[j]] .. "^z, ^" .. C .. assist_hs[keyset[j]] .. " ^zHS)"
-						else
-							names_cens = names
-						end
-					end
-				else
-					if assist_hs[keyset[j]] == 0 then
-						names = names .. ", " .. et.gentity_get(keyset[j], "pers.netname") .. " ^z(^" .. C .. assist_dmg[keyset[j]] .. "^z)"
-						if et.gentity_get(keyset[j], "sess.sessionTeam") ~= k_teamid then
-							names_cens = names_cens .. ", ^" .. C .. "TEAMMATE ^z(^" .. C .. assist_dmg[keyset[j]] .. "^z)"
-						else
-							names_cens = names_cens .. ", " .. et.gentity_get(keyset[j], "pers.netname") .. " ^z(^" .. C .. assist_dmg[keyset[j]] .. "^z)"
-						end
-					else
-						names = names .. ", " .. et.gentity_get(keyset[j], "pers.netname") .. " ^z(^" .. C .. assist_dmg[keyset[j]] .. "^z, ^" .. C .. assist_hs[keyset[j]] .. " ^zHS)"
-						if et.gentity_get(keyset[j], "sess.sessionTeam") ~= k_teamid then
-							names_cens = names_cens .. ", ^" .. C .. "TEAMMATE ^z(^" .. C .. assist_dmg[keyset[j]] .. "^z, ^" .. C .. assist_hs[keyset[j]] .. " ^zHS)"
-						else
-							names_cens = names_cens .. ", " .. et.gentity_get(keyset[j], "pers.netname") .. " ^z(^" .. C .. assist_dmg[keyset[j]] .. "^z, ^" .. C .. assist_hs[keyset[j]] .. " ^zHS)"
+					if not has_value(explosives, mod) and not has_value(explosives, last_assist_wpn[keyset[j]]) then
+						if v_teamid ~= et.gentity_get(keyset[j], "sess.sessionTeam") and v_teamid ~= k_teamid then 
+							topshots[killer][30] = topshots[killer][30] + 1
 						end
 					end
 				end
 			end
-			if max > 0 then
-				if v_teamid ~= et.gentity_get(max_id, "sess.sessionTeam") and v_teamid ~= k_teamid then 
-					et.trap_SendServerCommand(killer, "bp \"^zKill stolen from: " .. et.gentity_get(max_id, "pers.netname") .. "\";")
-					et.trap_SendServerCommand(max_id, "bp \"^zKill stolen by: " .. et.gentity_get(killer, "pers.netname") .. "\";")
-				end
-			else
-				if names ~= "" then
-					if v_teamid ~= k_teamid then
-						et.trap_SendServerCommand(killer, "chat \"^zKill Assists: " .. names_cens .. "\";")
-					end
-				end
-			end
-			local C
-			if k_teamid == 1 then
-				C = 1
-			else
-				C = 4
-			end
-			if v_teamid ~= k_teamid then
-				if names == "" then
-					if killer_hs == 0 then
-						et.trap_SendServerCommand(victim, "cp \"^zDamage received last 1.5s: " .. et.gentity_get(killer, "pers.netname") .. "^z(^" .. C .. killer_dmg .. "^z)\";")
-						et.trap_SendServerCommand(victim, "chat \"^zDamage received last 1.5s: " .. et.gentity_get(killer, "pers.netname") .. "^z(^" .. C .. killer_dmg .. "^z)\";")
-					else
-						et.trap_SendServerCommand(victim, "cp \"^zDamage received last 1.5s: " .. et.gentity_get(killer, "pers.netname") .. "^z(^" .. C .. killer_dmg .. "^z, ^" .. C .. killer_hs .. " ^zHS)\";")
-						et.trap_SendServerCommand(victim, "chat \"^zDamage received last 1.5s: " .. et.gentity_get(killer, "pers.netname") .. "^z(^" .. C .. killer_dmg .. "^z, ^" .. C .. killer_hs .. " ^zHS)\";")
-					end
-				else
-					if killer_hs == 0 then
-						et.trap_SendServerCommand(victim, "cp \"^zKill Assists: " .. et.gentity_get(killer, "pers.netname") .. " ^z(^" .. C .. killer_dmg .. "^z)\n" .. names .. "\";")
-						et.trap_SendServerCommand(victim, "chat \"^zKill Assists: " .. et.gentity_get(killer, "pers.netname") .. " ^z(^" .. C .. killer_dmg .. "^z), " .. names .. "\";")
-					else
-						et.trap_SendServerCommand(victim, "cp \"^zKill Assists: " .. et.gentity_get(killer, "pers.netname") .. " ^z(^" .. C .. killer_dmg .. "^z, ^" .. C .. killer_hs .. " ^zHS)\n" .. names .. "\";")
-						et.trap_SendServerCommand(victim, "chat \"^zKill Assists: " .. et.gentity_get(killer, "pers.netname") .. " ^z(^" .. C .. killer_dmg .. "^z, ^" .. C .. killer_hs .. " ^zHS), " .. names .. "\";")
-					end
-				end
-			end
-		end
-           
         end
+	end
+
     end -- gamestate
 end
 
@@ -985,6 +901,7 @@ function et_RunFrame(levelTime)
 			topshots_f(-2)
 	    end
 	end
+	gamestate = tonumber(et.trap_Cvar_Get("gamestate"))
 end
 
 function et_ClientBegin(id)

@@ -1,7 +1,7 @@
 -- killassists.lua by x0rnn, shows kill assist information upon death (who all shot you, how much HP they took and how many HS they made)
 
-announce_hp = true -- announce HP and distance of killer upon dying
-announce_killer = true -- announce kill assists to the killer
+announce_hp = false -- announce HP and distance of killer upon dying
+announce_killer = false -- announce kill assists to the killer also
 hitters = {}
 assists = {}
 killsteals = {}
@@ -14,6 +14,7 @@ HR_LEGS = 3
 HR_NONE = -1
 HR_TYPES = {HR_HEAD, HR_ARMS, HR_BODY, HR_LEGS}
 hitRegionsData = {}
+gamestate   = -1
 
 mod_weapons = {
 [1]=	"MG",
@@ -135,7 +136,14 @@ function roundNum(num, n)
 	return math.floor(num * mult + 0.5) / mult
 end
 
+function et_RunFrame(levelTime)
+    if math.fmod(levelTime, 1000) ~= 0 then return end
+
+	gamestate = tonumber(et.trap_Cvar_Get("gamestate"))
+end
+
 function et_Obituary(victim, killer, mod)
+	if gamestate == 0 then
 	local v_teamid = et.gentity_get(victim, "sess.sessionTeam")
     local k_teamid = et.gentity_get(killer, "sess.sessionTeam")
 	if victim ~= killer and killer ~= 1022 and killer ~= 1023 then
@@ -150,6 +158,7 @@ function et_Obituary(victim, killer, mod)
 			local assist_hs = {}
 			local assist_wpn = {}
 			local assist_wpns = {}
+			local last_assist_wpn = {}
 			local ms = et.trap_Milliseconds()
 			for m=ms, ms-1500, -1 do
 				if hitters[victim][m] then
@@ -179,6 +188,9 @@ function et_Obituary(victim, killer, mod)
 						if not assist_wpns[hitters[victim][m][1]] then
 							assist_wpns[hitters[victim][m][1]] = {}
 						end
+						if not last_assist_wpn[hitters[victim][m][1]] then
+							last_assist_wpn[hitters[victim][m][1]] = hitters[victim][m][4]
+						end
 						if not has_value(assist_wpns[hitters[victim][m][1]], assist_wpn[hitters[victim][m][1]]) then
 							table.insert(assist_wpns[hitters[victim][m][1]], assist_wpn[hitters[victim][m][1]])
 						end
@@ -198,7 +210,7 @@ function et_Obituary(victim, killer, mod)
 					assists[keyset[j]] = assists[keyset[j]] + 1
 				end
 				if assist_dmg[keyset[j]] > killer_dmg then
-					if not has_value(explosives, mod) and not has_value(explosives, assist_wpn[keyset[j]]) then
+					if not has_value(explosives, mod) and not has_value(explosives, last_assist_wpn[keyset[j]]) then
 						if v_teamid ~= et.gentity_get(keyset[j], "sess.sessionTeam") and v_teamid ~= k_teamid then 
 							killsteals[killer] = killsteals[killer] + 1
 						end
@@ -432,6 +444,7 @@ function et_Obituary(victim, killer, mod)
 				end
 			end
 		end
+	end
 	end
 end
 

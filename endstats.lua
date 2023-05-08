@@ -373,8 +373,6 @@ function topshots_f(id)
 			if topshots[i][30] > max[40] then
 				max[40] = topshots[i][30]
 				max_id[40] = i
-							et.trap_SendServerCommand(-1,"chat \"^3fdsfdfsdfdsa\n\"")
-
 			end
 		end
 	end
@@ -835,7 +833,7 @@ function et_Obituary(victim, killer, mod)
 			local assist_dmg = {}
 			local last_assist_wpn = {}
 			local ms = et.trap_Milliseconds()
-			for m=ms, ms-15000, -1 do
+			for m=ms, ms-1500, -1 do
 				if hitters[victim][m] then
 					if hitters[victim][m][1] == killer then
 						killer_dmg = killer_dmg + hitters[victim][m][2]

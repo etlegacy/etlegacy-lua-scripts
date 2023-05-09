@@ -2,6 +2,7 @@
 
 announce_hp = false -- announce HP and distance of killer upon dying
 announce_killer = false -- announce kill assists to the killer also
+announce_steal = true -- announce "kill stolen from/by" to the killer and to the player stolen from
 hitters = {}
 assists = {}
 killsteals = {}
@@ -302,8 +303,10 @@ function et_Obituary(victim, killer, mod)
 			end
 			if max > 0 then
 				if v_teamid ~= et.gentity_get(max_id, "sess.sessionTeam") and v_teamid ~= k_teamid then 
-					et.trap_SendServerCommand(killer, "bp \"^zKill stolen from: " .. et.gentity_get(max_id, "pers.netname") .. "\";")
-					et.trap_SendServerCommand(max_id, "bp \"^zKill stolen by: " .. et.gentity_get(killer, "pers.netname") .. "\";")
+					if announce_steal == true then
+						et.trap_SendServerCommand(killer, "bp \"^zKill stolen from: " .. et.gentity_get(max_id, "pers.netname") .. "\";")
+						et.trap_SendServerCommand(max_id, "bp \"^zKill stolen by: " .. et.gentity_get(killer, "pers.netname") .. "\";")
+					end
 					if announce_killer == true then
 						et.trap_SendServerCommand(killer, "chat \"^zKill Assists: " .. names_cens .. "\";")
 					end

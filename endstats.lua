@@ -1,4 +1,4 @@
--- endstats.lua by x0rnn, shows some interesting game statistics at the end of a round (most kill assists, most kill steals, highest light weapon acc, highest hs acc, most dynamites planted, most pistol kills, kill/death stats vs. all opponents, etc.)
+-- endstats.lua by x0rnn, shows some interesting game statistics at the end of a round (most kill assists, most kill steals, most headshot kills, highest light weapon acc, highest hs acc, most dynamites planted, most pistol kills, kill/death stats vs. all opponents, etc.)
 
 killing_sprees = {}
 death_sprees = {}
@@ -36,7 +36,7 @@ HR_NONE = -1
 HR_TYPES = {HR_HEAD, HR_ARMS, HR_BODY, HR_LEGS}
 hitRegionsData = {}
 
-topshot_names = { [1]="Most damage given", [2]="Most damage received", [3]="Most team damage given", [4]="Most team damage received", [5]="Most teamkills", [6]="Most selfkills", [7]="Most deaths", [8]="Most kills per minute", [9]="Quickest multikill w/ light weapons", [11]="Farthest riflenade kill", [12]="Most light weapon kills", [13]="Most pistol kills", [14]="Most rifle kills", [15]="Most riflenade kills", [16]="Most sniper kills", [17]="Most knife kills", [18]="Most air support kills", [19]="Most mine kills", [20]="Most grenade kills", [21]="Most panzer kills", [22]="Most mortar kills", [23]="Most panzer deaths", [24]="Mortarmagnet", [25]="Most multikills", [26]="Most MG42 kills", [27]="Most MG42 deaths", [28]="Most revives", [29]="Most revived", [30]="Best K/D ratio", [31]="Most dynamites planted", [32]="Most dynamites defused", [33]="Most doublekills", [34]="Longest killing spree", [35]="Longest death spree", [36]="Most objectives stolen", [37]="Most objectives returned", [38]="Most corpse gibs", [39]="Most kill assists", [40]="Most killsteals"}
+topshot_names = { [1]="Most damage given", [2]="Most damage received", [3]="Most team damage given", [4]="Most team damage received", [5]="Most teamkills", [6]="Most selfkills", [7]="Most deaths", [8]="Most kills per minute", [9]="Quickest multikill w/ light weapons", [11]="Farthest riflenade kill", [12]="Most light weapon kills", [13]="Most pistol kills", [14]="Most rifle kills", [15]="Most riflenade kills", [16]="Most sniper kills", [17]="Most knife kills", [18]="Most air support kills", [19]="Most mine kills", [20]="Most grenade kills", [21]="Most panzer kills", [22]="Most mortar kills", [23]="Most panzer deaths", [24]="Mortarmagnet", [25]="Most multikills", [26]="Most MG42 kills", [27]="Most MG42 deaths", [28]="Most revives", [29]="Most revived", [30]="Best K/D ratio", [31]="Most dynamites planted", [32]="Most dynamites defused", [33]="Most doublekills", [34]="Longest killing spree", [35]="Longest death spree", [36]="Most objectives stolen", [37]="Most objectives returned", [38]="Most corpse gibs", [39]="Most kill assists", [40]="Most killsteals", [41]="Most headshot kills"}
 
 function et_InitGame(levelTime, randomSeed, restart)
 
@@ -48,7 +48,7 @@ function et_InitGame(levelTime, randomSeed, restart)
         killing_sprees[i] = 0
         death_sprees[i] = 0
         kmulti[i] = { [1]=0, [2]=0, }
-        topshots[i] = { [1]=0, [2]=0, [3]=0, [4]=0, [5]=0, [6]=0, [7]=0, [8]=0, [9]=0, [10]=0, [11]=0, [12]=0, [13]=0, [14]=0, [15]=0, [16]=0, [17]=0, [18]=0, [19]=0, [20]=0, [21]=0, [22]=0, [23]=0, [24]=0, [25]=0, [26]=0, [27]=0, [28]=0, [29]=0, [30]=0}
+        topshots[i] = { [1]=0, [2]=0, [3]=0, [4]=0, [5]=0, [6]=0, [7]=0, [8]=0, [9]=0, [10]=0, [11]=0, [12]=0, [13]=0, [14]=0, [15]=0, [16]=0, [17]=0, [18]=0, [19]=0, [20]=0, [21]=0, [22]=0, [23]=0, [24]=0, [25]=0, [26]=0, [27]=0, [28]=0, [29]=0, [30]=0, [31]=0}
 		vsstats[i]={[0]=0,[1]=0,[2]=0,[3]=0,[4]=0,[5]=0,[6]=0,[7]=0,[8]=0,[9]=0,[10]=0,[11]=0,[12]=0,[13]=0,[14]=0,[15]=0,[16]=0,[17]=0,[18]=0,[19]=0,[20]=0,[21]=0,[22]=0,[23]=0,[24]=0,[25]=0,[26]=0,[27]=0,[28]=0,[29]=0,[30]=0,[31]=0,[32]=0,[33]=0,[34]=0,[35]=0,[36]=0,[37]=0,[38]=0,[39]=0,[40]=0,[41]=0,[42]=0,[43]=0,[44]=0,[45]=0,[46]=0,[47]=0,[48]=0,[49]=0,[50]=0,[51]=0,[52]=0,[53]=0,[54]=0,[55]=0,[56]=0,[57]=0,[58]=0,[59]=0,[60]=0,[61]=0,[62]=0,[63]=0}
 		vsstats_kills[i]={[0]=0,[1]=0,[2]=0,[3]=0,[4]=0,[5]=0,[6]=0,[7]=0,[8]=0,[9]=0,[10]=0,[11]=0,[12]=0,[13]=0,[14]=0,[15]=0,[16]=0,[17]=0,[18]=0,[19]=0,[20]=0,[21]=0,[22]=0,[23]=0,[24]=0,[25]=0,[26]=0,[27]=0,[28]=0,[29]=0,[30]=0,[31]=0,[32]=0,[33]=0,[34]=0,[35]=0,[36]=0,[37]=0,[38]=0,[39]=0,[40]=0,[41]=0,[42]=0,[43]=0,[44]=0,[45]=0,[46]=0,[47]=0,[48]=0,[49]=0,[50]=0,[51]=0,[52]=0,[53]=0,[54]=0,[55]=0,[56]=0,[57]=0,[58]=0,[59]=0,[60]=0,[61]=0,[62]=0,[63]=0}
 		vsstats_deaths[i]={[0]=0,[1]=0,[2]=0,[3]=0,[4]=0,[5]=0,[6]=0,[7]=0,[8]=0,[9]=0,[10]=0,[11]=0,[12]=0,[13]=0,[14]=0,[15]=0,[16]=0,[17]=0,[18]=0,[19]=0,[20]=0,[21]=0,[22]=0,[23]=0,[24]=0,[25]=0,[26]=0,[27]=0,[28]=0,[29]=0,[30]=0,[31]=0,[32]=0,[33]=0,[34]=0,[35]=0,[36]=0,[37]=0,[38]=0,[39]=0,[40]=0,[41]=0,[42]=0,[43]=0,[44]=0,[45]=0,[46]=0,[47]=0,[48]=0,[49]=0,[50]=0,[51]=0,[52]=0,[53]=0,[54]=0,[55]=0,[56]=0,[57]=0,[58]=0,[59]=0,[60]=0,[61]=0,[62]=0,[63]=0}
@@ -117,10 +117,18 @@ end
 function et_Damage(target, attacker, damage, damageFlags, meansOfDeath)
 	if target ~= attacker and attacker ~= 1022 and attacker ~= 1023 then
 		if has_value(light_weapons, meansOfDeath) or has_value(explosives, meansOfDeath) then
+			local v_team = et.gentity_get(target, "sess.sessionTeam")
+			local k_team = et.gentity_get(attacker, "sess.sessionTeam")
+			local v_health = et.gentity_get(target, "health")
 			local hitType = hitType(attacker)
 			if hitType == HR_HEAD then
 				if not has_value(explosives, meansOfDeath) then
 					hitters[target][et.trap_Milliseconds()] = {[1]=attacker, [2]=damage, [3]=meansOfDeath}
+					if v_team ~= k_team then
+						if damage >= v_health then
+							topshots[attacker][31] = topshots[attacker][31] + 1
+						end
+					end
 				end
 			else
 				hitters[target][et.trap_Milliseconds()] = {[1]=attacker, [2]=damage, [3]=meansOfDeath}
@@ -130,8 +138,8 @@ function et_Damage(target, attacker, damage, damageFlags, meansOfDeath)
 end
 
 function topshots_f(id)
-	local max = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
-	local max_id = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+	local max = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+	local max_id = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 	local i = 0
 	for i=0, sv_maxclients-1 do
 		local team = tonumber(et.gentity_get(i, "sess.sessionTeam"))
@@ -374,6 +382,11 @@ function topshots_f(id)
 				max[40] = topshots[i][30]
 				max_id[40] = i
 			end
+			--most headshot kills
+			if topshots[i][31] > max[41] then
+				max[41] = topshots[i][31]
+				max_id[41] = i
+			end
 		end
 	end
 	if id == -2 then
@@ -410,7 +423,7 @@ function topshots_f(id)
 		end
 		local j = 1
 		local players = {}
-		for j=1, 40 do
+		for j=1, 41 do
 			if max[j] > 1 then
 				if j ~= 10 and j ~= 25 and j ~= 33 then
 					if j == 8 then
@@ -931,7 +944,7 @@ end
 function et_ClientDisconnect(id)
     killing_sprees[id] = 0
     death_sprees[id] = 0
-    topshots[id] = { [1]=0, [2]=0, [3]=0, [4]=0, [5]=0, [6]=0, [7]=0, [8]=0, [9]=0, [10]=0, [11]=0, [12]=0, [13]=0, [14]=0, [15]=0, [16]=0, [17]=0, [18]=0, [19]=0, [20]=0, [21]=0, [22]=0, [23]=0, [24]=0, [25]=0, [26]=0, [27]=0, [28]=0, [29]=0, [30]=0}
+    topshots[id] = { [1]=0, [2]=0, [3]=0, [4]=0, [5]=0, [6]=0, [7]=0, [8]=0, [9]=0, [10]=0, [11]=0, [12]=0, [13]=0, [14]=0, [15]=0, [16]=0, [17]=0, [18]=0, [19]=0, [20]=0, [21]=0, [22]=0, [23]=0, [24]=0, [25]=0, [26]=0, [27]=0, [28]=0, [29]=0, [30]=0, [31]=0}
     axis_time[id] = 0
     allies_time[id] = 0
     mkps[id] = { [1]=0, [2]=0, [3]=0 }

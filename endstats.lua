@@ -740,14 +740,11 @@ function et_Obituary(victim, killer, mod)
 
         if (victim == killer) then -- suicide
 
-            if mod == 33 or mod == 59 then
-                    checkKSpreeEnd(victim)
-                    if mod == 33 then
-                	    death_sprees[victim] = death_sprees[victim] + 1
-						deaths[victim] = deaths[victim] + 1
-                    end
-            end
-
+            if mod ~= 59 then
+				death_sprees[victim] = death_sprees[victim] + 1
+			end
+            checkKSpreeEnd(victim)
+            death_sprees[victim] = death_sprees[victim] + 1
             killing_sprees[victim] = 0
 
 		else

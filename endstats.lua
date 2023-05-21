@@ -826,6 +826,7 @@ function et_Obituary(victim, killer, mod)
 					topshots[victim][19] = topshots[victim][19] + 1
 				end
              else
+				 deaths[victim] = deaths[victim] + 1
                  checkKSpreeEnd(victim)
              end
 			 death_sprees[victim] = death_sprees[victim] + 1

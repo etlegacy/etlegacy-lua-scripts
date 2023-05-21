@@ -757,22 +757,19 @@ function et_Obituary(victim, killer, mod)
    	    else -- nomal kill
    	        if killer ~= 1022 and killer ~= 1023 then -- no world / unknown kills
 
-      	         killing_sprees[killer] = killing_sprees[killer] + 1
- 	              death_sprees[victim] = death_sprees[victim] + 1
+				killing_sprees[killer] = killing_sprees[killer] + 1
+				vsstats[killer][victim] = vsstats[killer][victim] + 1
+				kills[killer] = kills[killer] + 1
+				deaths[victim] = deaths[victim] + 1
+				worst_enemy[victim][killer] = worst_enemy[victim][killer] + 1
+				easiest_prey[killer][victim] = easiest_prey[killer][victim] + 1 
+				local posk = et.gentity_get(victim, "ps.origin")
+				local posv = et.gentity_get(killer, "ps.origin")
+				local killdist = dist(posk, posv)
 
-					vsstats[killer][victim] = vsstats[killer][victim] + 1
-        	       kills[killer] = kills[killer] + 1
-    	           deaths[victim] = deaths[victim] + 1
-    	           worst_enemy[victim][killer] = worst_enemy[victim][killer] + 1
-   	            easiest_prey[killer][victim] = easiest_prey[killer][victim] + 1 
-      	         local posk = et.gentity_get(victim, "ps.origin")
-				    local posv = et.gentity_get(killer, "ps.origin")
-     	          local killdist = dist(posk, posv)
-
-      	         checkMultiKill(killer, mod)
-
-    	           checkKSpreeEnd(victim)
-    	           checkDSpreeEnd(killer)
+				checkMultiKill(killer, mod)
+				checkKSpreeEnd(victim)
+				checkDSpreeEnd(killer)
 
 				-- most lightweapons kills
 				if mod==6 or mod==7 or mod==8 or mod==9 or mod==10 or mod==12 or mod==45 or mod==53 or mod==54 or mod==55 or mod==56 or mod==66 then
@@ -830,10 +827,8 @@ function et_Obituary(victim, killer, mod)
 				end
              else
                  checkKSpreeEnd(victim)
-                 if killer ~= 1022 then
-					 death_sprees[victim] = death_sprees[victim] + 1
-                 end
              end
+			 death_sprees[victim] = death_sprees[victim] + 1
              killing_sprees[victim] = 0
              death_sprees[killer] = 0
            end

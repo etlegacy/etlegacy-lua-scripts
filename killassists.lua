@@ -146,7 +146,10 @@ end
 function et_Obituary(victim, killer, mod)
 	if gamestate == 0 then
 	local v_teamid = et.gentity_get(victim, "sess.sessionTeam")
-    local k_teamid = et.gentity_get(killer, "sess.sessionTeam")
+    	local k_teamid
+	if killer ~= 1022 and killer ~= 1023 then
+		k_teamid = et.gentity_get(killer, "sess.sessionTeam")
+	end
 	if victim ~= killer and killer ~= 1022 and killer ~= 1023 then
 		if has_value(light_weapons, mod) or has_value(explosives, mod) then
 			local names = ""

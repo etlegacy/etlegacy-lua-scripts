@@ -45,12 +45,12 @@ Author         = "[ETW-FZ] Mad@Mat"
 ETWsk_putspec = 1                -- number of sk's needed for setting a client
                                  -- to spectators
 ETWsk_kick = 99                  -- number of sk's needed for kicking a client
-ETWsk_kicklen = 20               -- duration of kick
+ETWsk_kicklen = 20*60               -- duration of kick
 -- benny -----------------------------------------------------------------------
 ETWsk_persistentoffender = 1     -- enable punishment 4 persistent spawn killers
 ETWsk_POThreshold = 2            -- if players has been kicked before, he will
                                  -- be temp banned with his XX spawn kill
-ETWsk_banval = 30                -- (ETWsk_banval * 4 ^ kicksb4) = ban
+ETWsk_banval = 30*60                -- (ETWsk_banval * 4 ^ kicksb4) = ban
                                  -- If ETWsk_banval = 30, he'll be kicked 4
                                  -- 120 minutes, next is 480, 1920, 7680, ...
 ETWsk_pofile = "ETWsk_PO.txt"    -- save to /etpro/ETWsk_PO.txt

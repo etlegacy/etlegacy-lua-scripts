@@ -8,8 +8,6 @@ eomap_done = false
 eomaptime = 0
 gamestate   = -1
 topshots = {}
-axis_time = {}
-allies_time = {}
 mkps = {}
 weaponstats = {}
 endplayers = {}
@@ -37,8 +35,23 @@ HR_TYPES = {HR_HEAD, HR_ARMS, HR_BODY, HR_LEGS}
 hitRegionsData = {}
 death_time = {}
 death_time_total = {}
+players = {}
+ltm2 = 0
+redspawn = 0
+bluespawn = 0
+redspawn2 = 0
+bluespawn2 = 0
+spawns = {}
+redflag = false
+blueflag = false
+redlimbo1 = 0
+bluelimbo1 = 0
+redlimbo2 = 0
+bluelimbo2 = 0
+changedred = false
+changedblue = false
 
-topshot_names = { [1]="Most damage given", [2]="Most damage received", [3]="Most team damage given", [4]="Most team damage received", [5]="Most teamkills", [6]="Most selfkills", [7]="Most deaths", [8]="Most kills per minute", [9]="Quickest multikill w/ light weapons", [11]="Farthest riflenade kill", [12]="Most light weapon kills", [13]="Most pistol kills", [14]="Most rifle kills", [15]="Most riflenade kills", [16]="Most sniper kills", [17]="Most knife kills", [18]="Most air support kills", [19]="Most mine kills", [20]="Most grenade kills", [21]="Most panzer kills", [22]="Most mortar kills", [23]="Most panzer deaths", [24]="Mortarmagnet", [25]="Most multikills", [26]="Most MG42 kills", [27]="Most MG42 deaths", [28]="Most revives", [29]="Most revived", [30]="Best K/D ratio", [31]="Most dynamites planted", [32]="Most dynamites defused", [33]="Most doublekills", [34]="Longest killing spree", [35]="Longest death spree", [36]="Most objectives stolen", [37]="Most objectives returned", [38]="Most corpse gibs", [39]="Most kill assists", [40]="Most killsteals", [41]="Most headshot kills", [42]="Full respawn king", [43]="Least time dead (What spawn?)"}
+topshot_names = { [1]="Most damage given", [2]="Most damage received", [3]="Most team damage given", [4]="Most team damage received", [5]="Most teamkills", [6]="Most selfkills", [7]="Most deaths", [8]="Most kills per minute", [9]="Quickest multikill w/ light weapons", [11]="Farthest riflenade kill", [12]="Most light weapon kills", [13]="Most pistol kills", [14]="Most rifle kills", [15]="Most riflenade kills", [16]="Most sniper kills", [17]="Most knife kills", [18]="Most air support kills", [19]="Most mine kills", [20]="Most grenade kills", [21]="Most panzer kills", [22]="Most mortar kills", [23]="Most panzer deaths", [24]="Mortarmagnet", [25]="Most multikills", [26]="Most MG42 kills", [27]="Most MG42 deaths", [28]="Most revives", [29]="Most revived", [30]="Best K/D ratio", [31]="Most dynamites planted", [32]="Most dynamites defused", [33]="Most doublekills", [34]="Longest killing spree", [35]="Longest death spree", [36]="Most objectives stolen", [37]="Most objectives returned", [38]="Most corpse gibs", [39]="Most kill assists", [40]="Most killsteals", [41]="Most headshot kills", [42]="Most damage per minute", [43]="Tank/Meatshield (Refuses to die)", [44]="Most useful kills (>Half respawn time left)", [45]="Full respawn king", [46]="Least time dead (What spawn?)"}
 
 function et_InitGame(levelTime, randomSeed, restart)
 
@@ -50,20 +63,20 @@ function et_InitGame(levelTime, randomSeed, restart)
         killing_sprees[i] = 0
         death_sprees[i] = 0
         kmulti[i] = { [1]=0, [2]=0, }
-        topshots[i] = { [1]=0, [2]=0, [3]=0, [4]=0, [5]=0, [6]=0, [7]=0, [8]=0, [9]=0, [10]=0, [11]=0, [12]=0, [13]=0, [14]=0, [15]=0, [16]=0, [17]=0, [18]=0, [19]=0, [20]=0, [21]=0, [22]=0, [23]=0, [24]=0, [25]=0, [26]=0, [27]=0, [28]=0, [29]=0, [30]=0, [31]=0, [32]=0, [33]=0}
+        topshots[i] = { [1]=0, [2]=0, [3]=0, [4]=0, [5]=0, [6]=0, [7]=0, [8]=0, [9]=0, [10]=0, [11]=0, [12]=0, [13]=0, [14]=0, [15]=0, [16]=0, [17]=0, [18]=0, [19]=0, [20]=0, [21]=0, [22]=0, [23]=0, [24]=0, [25]=0, [26]=0, [27]=0, [28]=0, [29]=0, [30]=0, [31]=0, [32]=0, [33]=0, [34]=0}
 		vsstats[i]={[0]=0,[1]=0,[2]=0,[3]=0,[4]=0,[5]=0,[6]=0,[7]=0,[8]=0,[9]=0,[10]=0,[11]=0,[12]=0,[13]=0,[14]=0,[15]=0,[16]=0,[17]=0,[18]=0,[19]=0,[20]=0,[21]=0,[22]=0,[23]=0,[24]=0,[25]=0,[26]=0,[27]=0,[28]=0,[29]=0,[30]=0,[31]=0,[32]=0,[33]=0,[34]=0,[35]=0,[36]=0,[37]=0,[38]=0,[39]=0,[40]=0,[41]=0,[42]=0,[43]=0,[44]=0,[45]=0,[46]=0,[47]=0,[48]=0,[49]=0,[50]=0,[51]=0,[52]=0,[53]=0,[54]=0,[55]=0,[56]=0,[57]=0,[58]=0,[59]=0,[60]=0,[61]=0,[62]=0,[63]=0}
 		vsstats_kills[i]={[0]=0,[1]=0,[2]=0,[3]=0,[4]=0,[5]=0,[6]=0,[7]=0,[8]=0,[9]=0,[10]=0,[11]=0,[12]=0,[13]=0,[14]=0,[15]=0,[16]=0,[17]=0,[18]=0,[19]=0,[20]=0,[21]=0,[22]=0,[23]=0,[24]=0,[25]=0,[26]=0,[27]=0,[28]=0,[29]=0,[30]=0,[31]=0,[32]=0,[33]=0,[34]=0,[35]=0,[36]=0,[37]=0,[38]=0,[39]=0,[40]=0,[41]=0,[42]=0,[43]=0,[44]=0,[45]=0,[46]=0,[47]=0,[48]=0,[49]=0,[50]=0,[51]=0,[52]=0,[53]=0,[54]=0,[55]=0,[56]=0,[57]=0,[58]=0,[59]=0,[60]=0,[61]=0,[62]=0,[63]=0}
 		vsstats_deaths[i]={[0]=0,[1]=0,[2]=0,[3]=0,[4]=0,[5]=0,[6]=0,[7]=0,[8]=0,[9]=0,[10]=0,[11]=0,[12]=0,[13]=0,[14]=0,[15]=0,[16]=0,[17]=0,[18]=0,[19]=0,[20]=0,[21]=0,[22]=0,[23]=0,[24]=0,[25]=0,[26]=0,[27]=0,[28]=0,[29]=0,[30]=0,[31]=0,[32]=0,[33]=0,[34]=0,[35]=0,[36]=0,[37]=0,[38]=0,[39]=0,[40]=0,[41]=0,[42]=0,[43]=0,[44]=0,[45]=0,[46]=0,[47]=0,[48]=0,[49]=0,[50]=0,[51]=0,[52]=0,[53]=0,[54]=0,[55]=0,[56]=0,[57]=0,[58]=0,[59]=0,[60]=0,[61]=0,[62]=0,[63]=0}
 		worst_enemy[i]={[0]=0,[1]=0,[2]=0,[3]=0,[4]=0,[5]=0,[6]=0,[7]=0,[8]=0,[9]=0,[10]=0,[11]=0,[12]=0,[13]=0,[14]=0,[15]=0,[16]=0,[17]=0,[18]=0,[19]=0,[20]=0,[21]=0,[22]=0,[23]=0,[24]=0,[25]=0,[26]=0,[27]=0,[28]=0,[29]=0,[30]=0,[31]=0,[32]=0,[33]=0,[34]=0,[35]=0,[36]=0,[37]=0,[38]=0,[39]=0,[40]=0,[41]=0,[42]=0,[43]=0,[44]=0,[45]=0,[46]=0,[47]=0,[48]=0,[49]=0,[50]=0,[51]=0,[52]=0,[53]=0,[54]=0,[55]=0,[56]=0,[57]=0,[58]=0,[59]=0,[60]=0,[61]=0,[62]=0,[63]=0}
 		easiest_prey[i]={[0]=0,[1]=0,[2]=0,[3]=0,[4]=0,[5]=0,[6]=0,[7]=0,[8]=0,[9]=0,[10]=0,[11]=0,[12]=0,[13]=0,[14]=0,[15]=0,[16]=0,[17]=0,[18]=0,[19]=0,[20]=0,[21]=0,[22]=0,[23]=0,[24]=0,[25]=0,[26]=0,[27]=0,[28]=0,[29]=0,[30]=0,[31]=0,[32]=0,[33]=0,[34]=0,[35]=0,[36]=0,[37]=0,[38]=0,[39]=0,[40]=0,[41]=0,[42]=0,[43]=0,[44]=0,[45]=0,[46]=0,[47]=0,[48]=0,[49]=0,[50]=0,[51]=0,[52]=0,[53]=0,[54]=0,[55]=0,[56]=0,[57]=0,[58]=0,[59]=0,[60]=0,[61]=0,[62]=0,[63]=0}
         mkps[i] = { [1]=0, [2]=0, [3]=0 }
-        axis_time[i] = 0
-        allies_time[i] = 0
         kills[i] = 0
         deaths[i] = 0
         hitters[i] = {nil, nil, nil, nil}
         death_time[i] = 0
         death_time_total[i] = 0
+		players[i] = nil
+        spawns[i] = nil
     end
 end
 
@@ -142,22 +155,23 @@ function et_Damage(target, attacker, damage, damageFlags, meansOfDeath)
 end
 
 function topshots_f(id)
-	local max = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 0, 100}
-	local max_id = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+	local max = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 0, 100}
+	local max_id = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 	local i = 0
 	for i=0, sv_maxclients-1 do
 		local team = tonumber(et.gentity_get(i, "sess.sessionTeam"))
 		if team == 1 or team == 2 then
 			local dg = tonumber(et.gentity_get(i, "sess.damage_given"))
 			local dr = tonumber(et.gentity_get(i, "sess.damage_received"))
-			local tdg = tonumber(et.gentity_get(i, "sess.team_damage_given"))
-			local tdr = tonumber(et.gentity_get(i, "sess.team_damage_received"))
+			local tdg = tonumber(et.gentity_get(i, "sess.team_damage"))
+			local tdr = tonumber(et.gentity_get(i, "sess.team_received"))
 			local tk = tonumber(et.gentity_get(i, "sess.team_kills"))
 			local sk = tonumber(et.gentity_get(i, "sess.self_kills"))
 			local d = tonumber(et.gentity_get(i, "sess.deaths"))
 			local k = tonumber(et.gentity_get(i, "sess.kills"))
 			local gibs = tonumber(et.gentity_get(i, "sess.gibs"))
 			local kd = 0
+			local kr = 0
 			local timeplayed = tonumber(et.gentity_get(i, "sess.time_axis")) + tonumber(et.gentity_get(i, "sess.time_allies"))
 			if death_time[i] ~= 0 then
 				local diff = et.trap_Milliseconds() - death_time[i]
@@ -206,21 +220,16 @@ function topshots_f(id)
 				max_id[7] = i
 			end
 			-- kills per minute
-			if team == 1 then
-				if k > 10 then
-					local kpm = k/(((eomaptime - axis_time[i])/1000)/60)
-					if kpm > max[8] then
-						max[8] = kpm
-						max_id[8] = i
-					end
+			if k > 10 then
+				local kpm = 0
+				if eomaptime == 0 then
+					kpm = k/(((et.trap_Milliseconds() - timeplayed)/1000)/60)
+				else
+					kpm = k/(((eomaptime - timeplayed)/1000)/60)
 				end
-			elseif team == 2 then
-				if k > 10 then
-					local kpm = k/(((eomaptime - allies_time[i])/1000)/60)
-					if kpm > max[8] then
-						max[8] = kpm
-						max_id[8] = i
-					end
+				if kpm > max[8] then
+					max[8] = kpm
+					max_id[8] = i
 				end
 			end
 			-- quickest lightweapon multikill
@@ -397,20 +406,51 @@ function topshots_f(id)
 				max[41] = topshots[i][31]
 				max_id[41] = i
 			end
-			-- most time dead
-			if timeplayed > 600000 or timeplayed == et.trap_Cvar_Get("timelimit") * 60 * 1000 then
-				if (death_time_total[i] / timeplayed) * 100 > max[42] then
-					max[42] = (death_time_total[i] / timeplayed) * 100
+			--damage per minute
+			if dg > 1400 then
+				local dpm = 0
+				if eomaptime == 0 then
+					dpm = dg/(((et.trap_Milliseconds() - timeplayed)/1000)/60)
+				else
+					dpm = dg/(((eomaptime - timeplayed)/1000)/60)
+				end
+				if dpm > max[42] then
+					max[42] = dpm
 					max_id[42] = i
-					max[44] = death_time_total[i]
+				end
+			end
+			--tank (damage received/deaths)
+			if dr > 2000 then
+				local drdr = 0
+				if d ~= 0 then
+					drdr = (dr / d) / 130
+				else
+					drdr = (dr + 1) / 130
+				end
+				if drdr > 3 then
+					max[43] = drdr
+					max_id[43] = i
+				end
+			end
+			--most useful kills
+			if topshots[i][34] > max[44] then
+				max[44] = topshots[i][34]
+				max_id[44] = i
+			end
+			--most time dead
+			if timeplayed > 600000 or timeplayed == et.trap_Cvar_Get("timelimit") then
+				if (death_time_total[i] / timeplayed) * 100 > max[45] then
+					max[45] = (death_time_total[i] / timeplayed) * 100
+					max_id[45] = i
+					max[47] = death_time_total[i]
 				end
 			end
 			-- least time dead
-			if timeplayed > 600000  or timeplayed == et.trap_Cvar_Get("timelimit") * 60 * 1000 then
-				if (death_time_total[i] / timeplayed) * 100 < max[43] then
-					max[43] = (death_time_total[i] / timeplayed) * 100
-					max_id[43] = i
-					max[45] = death_time_total[i]
+			if timeplayed > 600000 or timeplayed == et.trap_Cvar_Get("timelimit") then
+				if (death_time_total[i] / timeplayed) * 100 < max[46] then
+					max[46] = (death_time_total[i] / timeplayed) * 100
+					max_id[46] = i
+					max[48] = death_time_total[i]
 				end
 			end
 		end
@@ -448,13 +488,28 @@ function topshots_f(id)
 			end
 		end
 		local j = 1
-		local players = {}
-		for j=1, 43 do
-			if max[j] > 1 or (j == 43 and max[j] == 0) then
-				if j ~= 10 and j ~= 25 and j ~= 33 then
-					if j == 8 then
+		local plyrs = {}
+		for j=1, 46 do
+			if max[j] > 1 and (j ~= 46 or (j == 46 and max[j] ~= 100)) then
+				if j ~= 10 and j ~= 25 and j ~= 33 and j~= 42 then
+					if j == 1 then
+						--topshot_sayClients("^z" .. topshot_names[j] .. ": " .. et.gentity_get(max_id[j], "pers.netname") .. " ^z- ^1" .. max[j] .. "\"\n")
+						table.insert(plyrs, {
+							topshot_names[j],
+							et.gentity_get(max_id[j], "pers.netname"),
+							max[j]
+						})
+						if max[42] > 1 then
+							--topshot_sayClients("^z" .. topshot_names[42] .. ": " .. et.gentity_get(max_id[42], "pers.netname") .. " ^z- ^1" .. max[42] .. "\"\n")
+							table.insert(plyrs, {
+								topshot_names[42],
+								et.gentity_get(max_id[42], "pers.netname"),
+								max[42]
+							})
+						end
+					elseif j == 8 then
 						--et.trap_SendServerCommand(-1, "chat \"^z" .. topshot_names[j] .. ": " .. et.gentity_get(max_id[j], "pers.netname") .. " ^z- ^1" .. roundNum(max[j], 2) .. "\"\n")
-						table.insert(players, {
+						table.insert(plyrs, {
 							topshot_names[j],
 							et.gentity_get(max_id[j], "pers.netname"),
 							roundNum(max[j], 2)
@@ -463,7 +518,7 @@ function topshots_f(id)
 						-- dirty "fix" instead of reordering all indexes lol
 						if max[33] > 1 then
 							--et.trap_SendServerCommand(-1, "chat \"^z" .. topshot_names[33] .. ": " .. et.gentity_get(max_id[33], "pers.netname") .. " ^z- ^1" .. max[33] .. "\"\n")
-							table.insert(players, {
+							table.insert(plyrs, {
 							topshot_names[33],
 							et.gentity_get(max_id[33], "pers.netname"),
 							max[33]
@@ -471,33 +526,40 @@ function topshots_f(id)
 						end
 						--et.trap_SendServerCommand(-1, "chat \"^z" .. topshot_names[25] .. ": " .. et.gentity_get(max_id[25], "pers.netname") .. " ^z- ^1" .. max[25] .. "\"\n")
 						--et.trap_SendServerCommand(-1, "chat \"^z" .. topshot_names[j] .. ": " .. et.gentity_get(max_id[j], "pers.netname") .. " ^z- ^1" .. max[j] .. " ^zkills in ^1" .. roundNum(max[10]/1000, 3) .. " ^zseconds\"\n")
-						table.insert(players, {
+						table.insert(plyrs, {
 							topshot_names[25],
 							et.gentity_get(max_id[25], "pers.netname"),
 							max[25]
 						})
-						table.insert(players, {
+						table.insert(plyrs, {
 							topshot_names[j],
 							et.gentity_get(max_id[j], "pers.netname"),
 							max[j] .. " ^7kills in " .. roundNum(max[10]/1000, 2) .. "s"
 						})
 					elseif j == 11 then
 						--et.trap_SendServerCommand(-1, "chat \"^z" .. topshot_names[j] .. ": " .. et.gentity_get(max_id[j], "pers.netname") .. " ^z- ^1" .. roundNum(max[j], 2) .. " ^zm\"\n")
-						table.insert(players, {
+						table.insert(plyrs, {
 							topshot_names[j],
 							et.gentity_get(max_id[j], "pers.netname"),
 							roundNum(max[j], 2) .. " ^7m"
 						})
-					elseif j == 42 or j == 43 then
+					elseif j == 43 then
+						--et.trap_SendServerCommand(-1, "chat \"^z" .. topshot_names[j] .. ": " .. et.gentity_get(max_id[j], "pers.netname") .. " ^z- ^1" .. roundNum(max[j], 2) .. " ^zpercent\"\n")
+						table.insert(plyrs, {
+							topshot_names[j],
+							et.gentity_get(max_id[j], "pers.netname"),
+							"^7Damage received vs death ratio: " .. roundNum(max[j], 2) .. "^7x"
+						})
+					elseif j == 45 or j == 46 then
 						--et.trap_SendServerCommand(-1, "chat \"^z" .. topshot_names[j] .. ": " .. et.gentity_get(max_id[j], "pers.netname") .. " ^z- ^1" .. roundNum(max[j], 2) .. " ^zpercent, ^1" .. roundNum((max[j+2] / 60000), 2) .. " ^zmin\"\n")
-						table.insert(players, {
+						table.insert(plyrs, {
 							topshot_names[j],
 							et.gentity_get(max_id[j], "pers.netname"),
 							roundNum(max[j], 2) .. " ^7percent, " .. roundNum((max[j+2] / 60000), 2) .. " ^7min"
 						})
 					else
 						--et.trap_SendServerCommand(-1, "chat \"^z" .. topshot_names[j] .. ": " .. et.gentity_get(max_id[j], "pers.netname") .. " ^z- ^1" .. max[j] .. "\"\n")
-						table.insert(players, {
+						table.insert(plyrs, {
 							topshot_names[j],
 							et.gentity_get(max_id[j], "pers.netname"),
 							max[j]
@@ -511,28 +573,28 @@ function topshots_f(id)
 			if ws_max[z] > 1 then
 				if z == 1 then
 					--et.trap_SendServerCommand(-1, "chat \"^zHighest light weapons accuracy: " .. et.gentity_get(ws_max_id[z], "pers.netname") .. " ^z- ^1" .. roundNum(ws_max[z], 2) .. " ^zpercent\"\n")
-					table.insert(players, {
+					table.insert(plyrs, {
 						"Highest light weapons accuracy",
 						et.gentity_get(ws_max_id[z], "pers.netname"),
 						roundNum(ws_max[z], 2) .. " percent"
 					})
 				elseif z == 2 then
 					--et.trap_SendServerCommand(-1, "chat \"^zHighest headshot accuracy: " .. et.gentity_get(ws_max_id[z], "pers.netname") .. " ^z- ^1" .. roundNum(ws_max[z], 2) .. " ^zpercent\"\n")
-					table.insert(players, {
+					table.insert(plyrs, {
 						"Highest headshot accuracy",
 						et.gentity_get(ws_max_id[z], "pers.netname"),
 						roundNum(ws_max[z], 2) .. " percent"
 					})
 				elseif z == 3 then
 					--et.trap_SendServerCommand(-1, "chat \"^zMost headshots: " .. et.gentity_get(ws_max_id[z], "pers.netname") .. " ^z- ^1" .. ws_max[z] .. "\"\n")
-					table.insert(players, {
+					table.insert(plyrs, {
 						"Most headshots",
 						et.gentity_get(ws_max_id[z], "pers.netname"),
 						ws_max[z]
 					})
 				elseif z == 4 then
 					--et.trap_SendServerCommand(-1, "chat \"^zMost bullets fired: " .. et.gentity_get(ws_max_id[z], "pers.netname") .. " ^z- ^1" .. ws_max[z] .. "\"\n")
-					table.insert(players, {
+					table.insert(plyrs, {
 						"Most bullets fired",
 						et.gentity_get(ws_max_id[z], "pers.netname"),
 						ws_max[z]
@@ -544,7 +606,7 @@ function topshots_f(id)
 			{name = "Award"                 },
 			{name = "Player",  align = "right"},
 			{name = "Value", align = "right"},
-		}, players)
+		}, plyrs)
 		local p = 0
 		for p=0, sv_maxclients-1 do
 			local t = tonumber(et.gentity_get(p, "sess.sessionTeam"))
@@ -804,6 +866,16 @@ function et_Obituary(victim, killer, mod)
 				local posv = et.gentity_get(killer, "ps.origin")
 				local killdist = dist(posk, posv)
 
+				if v_teamid == 1 then
+					if redspawn + redlimbo1 / 1000 - ltm2 >= (redlimbo1/1000)/2 and redspawn + redlimbo1 / 1000 - ltm2 > 0 then
+						topshots[killer][34] = topshots[killer][34] + 1
+					end
+				elseif v_teamid == 2 then
+					if bluespawn + bluelimbo1 / 1000 - ltm2 >= (bluelimbo1/1000)/2 and bluespawn + bluelimbo1 / 1000 - ltm2 > 0 then
+						topshots[killer][34] = topshots[killer][34] + 1
+					end
+				end
+
 				checkMultiKill(killer, mod)
 				checkKSpreeEnd(victim)
 				checkDSpreeEnd(killer)
@@ -943,33 +1015,115 @@ function et_RunFrame(levelTime)
 	    end
 	end
 	gamestate = tonumber(et.trap_Cvar_Get("gamestate"))
+	
+    if math.fmod(levelTime, 1000) ~= 0 then return end
+    if gamestate == 0 then
+		redlimbo1 = tonumber(et.trap_Cvar_Get("g_redlimbotime"))
+		bluelimbo1 = tonumber(et.trap_Cvar_Get("g_bluelimbotime"))
+		if redlimbo2 == 0 then
+			redlimbo2 = redlimbo1
+			bluelimbo2 = bluelimbo1
+		end
+		if redlimbo1 ~= redlimbo2 or bluelimbo1 ~= bluelimbo2 then
+			if redlimbo1 ~= redlimbo2 then
+				changedred = true
+				redflag = false
+				redlimbo2 = redlimbo1
+			elseif bluelimbo1 ~= bluelimbo2 then
+				changedblue = true
+				blueflag = false
+				bluelimbo2 = bluelimbo1
+			end
+		end
+		ltm2 = os.time()
+		if redflag == true then
+			if ltm2 == redspawn + redlimbo1 / 1000 then
+				redspawn = ltm2
+			end
+		end
+		if blueflag == true then
+			if ltm2 == bluespawn + bluelimbo1 / 1000 then
+				bluespawn = ltm2
+			end
+		end
+	end
 end
 
 function et_ClientBegin(id)
     local team = tonumber(et.gentity_get(id, "sess.sessionTeam"))
-    if team == 1 then
-    	axis_time[id] = et.trap_Milliseconds()
-    elseif team == 2 then
-    	allies_time[id] = et.trap_Milliseconds()
+	if players[id] == nil then
+		players[id] = team
+	end
+end
+
+function et_ClientUserinfoChanged(clientNum)
+    local team = tonumber(et.gentity_get(clientNum, "sess.sessionTeam"))
+	if players[clientNum] == nil then
+		players[clientNum] = team
+	end
+    if players[clientNum] ~= team then
+       spawns[clientNum] = nil
     end
+    players[clientNum] = team
 end
 
 function et_ClientSpawn(id, revived)
 	killing_sprees[id] = 0
 	local team = tonumber(et.gentity_get(id, "sess.sessionTeam"))
 	if revived ~= 1 then
-		if team == 1 and axis_time[id] == 0 then
-			axis_time[id] = et.trap_Milliseconds()
-		elseif team == 2 and allies_time[id] == 0 then
-			allies_time[id] = et.trap_Milliseconds()
-		elseif team == 3 then
-			axis_time[id] = 0
-			allies_time[id] = 0
+		local health = tonumber(et.gentity_get(id, "health"))
+		local team = tonumber(et.gentity_get(id, "sess.sessionTeam"))
+		if team == 1 then
+			if health > 0 then
+				if redflag == false then
+					if spawns[id] == nil then
+						spawns[id] = 1
+					else
+						spawns[id] = spawns[id] + 1
+					end
+					if spawns[id] == 2 then
+						redflag = true
+						redspawn = os.time()
+					end
+					if changedred == true then
+						redflag = true
+						redspawn = os.time()
+						changedred = false
+					end
+				end
+				redspawn2 = os.time()
+				if redspawn ~= 0 and redspawn ~= redspawn2 then
+					redspawn = redspawn2
+				end
+			end
+		elseif team == 2 then
+			if health > 0 then
+				if blueflag == false then
+					if spawns[id] == nil then
+						spawns[id] = 1
+					else
+						spawns[id] = spawns[id] + 1
+					end
+					if spawns[id] == 2 then
+						blueflag = true
+						bluespawn = os.time()
+					end
+					if changedblue == true then
+						blueflag = true
+						bluespawn = os.time()
+						changedblue = false
+					end
+				end
+				bluespawn2 = os.time()
+				if bluespawn ~= 0 and bluespawn ~= bluespawn2 then
+					bluespawn = bluespawn2
+				end
+			end
 		end
 	end
 	hitters[id] = {nil, nil, nil, nil}
 	hitRegionsData[id] = getAllHitRegions(id)
-	if team == 2 or team == 3 then
+	if team == 1 or team == 2 then
 		if death_time[id] ~= 0 then
 			local diff = et.trap_Milliseconds() - death_time[id]
 			death_time_total[id] = death_time_total[id] + diff
@@ -981,9 +1135,7 @@ end
 function et_ClientDisconnect(id)
     killing_sprees[id] = 0
     death_sprees[id] = 0
-    topshots[id] = { [1]=0, [2]=0, [3]=0, [4]=0, [5]=0, [6]=0, [7]=0, [8]=0, [9]=0, [10]=0, [11]=0, [12]=0, [13]=0, [14]=0, [15]=0, [16]=0, [17]=0, [18]=0, [19]=0, [20]=0, [21]=0, [22]=0, [23]=0, [24]=0, [25]=0, [26]=0, [27]=0, [28]=0, [29]=0, [30]=0, [31]=0, [32]=0, [33]=0}
-    axis_time[id] = 0
-    allies_time[id] = 0
+    topshots[id] = { [1]=0, [2]=0, [3]=0, [4]=0, [5]=0, [6]=0, [7]=0, [8]=0, [9]=0, [10]=0, [11]=0, [12]=0, [13]=0, [14]=0, [15]=0, [16]=0, [17]=0, [18]=0, [19]=0, [20]=0, [21]=0, [22]=0, [23]=0, [24]=0, [25]=0, [26]=0, [27]=0, [28]=0, [29]=0, [30]=0, [31]=0, [32]=0, [33]=0, [34]=0}
     mkps[id] = { [1]=0, [2]=0, [3]=0 }
     vsstats[id]={[0]=0,[1]=0,[2]=0,[3]=0,[4]=0,[5]=0,[6]=0,[7]=0,[8]=0,[9]=0,[10]=0,[11]=0,[12]=0,[13]=0,[14]=0,[15]=0,[16]=0,[17]=0,[18]=0,[19]=0,[20]=0,[21]=0,[22]=0,[23]=0,[24]=0,[25]=0,[26]=0,[27]=0,[28]=0,[29]=0,[30]=0,[31]=0,[32]=0,[33]=0,[34]=0,[35]=0,[36]=0,[37]=0,[38]=0,[39]=0,[40]=0,[41]=0,[42]=0,[43]=0,[44]=0,[45]=0,[46]=0,[47]=0,[48]=0,[49]=0,[50]=0,[51]=0,[52]=0,[53]=0,[54]=0,[55]=0,[56]=0,[57]=0,[58]=0,[59]=0,[60]=0,[61]=0,[62]=0,[63]=0}
     vsstats_kills[id]={[0]=0,[1]=0,[2]=0,[3]=0,[4]=0,[5]=0,[6]=0,[7]=0,[8]=0,[9]=0,[10]=0,[11]=0,[12]=0,[13]=0,[14]=0,[15]=0,[16]=0,[17]=0,[18]=0,[19]=0,[20]=0,[21]=0,[22]=0,[23]=0,[24]=0,[25]=0,[26]=0,[27]=0,[28]=0,[29]=0,[30]=0,[31]=0,[32]=0,[33]=0,[34]=0,[35]=0,[36]=0,[37]=0,[38]=0,[39]=0,[40]=0,[41]=0,[42]=0,[43]=0,[44]=0,[45]=0,[46]=0,[47]=0,[48]=0,[49]=0,[50]=0,[51]=0,[52]=0,[53]=0,[54]=0,[55]=0,[56]=0,[57]=0,[58]=0,[59]=0,[60]=0,[61]=0,[62]=0,[63]=0}
@@ -1003,6 +1155,8 @@ function et_ClientDisconnect(id)
 	hitters[id] = {nil, nil, nil, nil}
 	death_time[id] = 0
 	death_time_total[id] = 0
+	players[id] = nil
+	spawns[id] = nil
 end
 
 --- Sends a nice table to a client.

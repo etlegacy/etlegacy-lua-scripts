@@ -50,6 +50,7 @@ redlimbo2 = 0
 bluelimbo2 = 0
 changedred = false
 changedblue = false
+paused = false
 
 topshot_names = { [1]="Most damage given", [2]="Most damage received", [3]="Most team damage given", [4]="Most team damage received", [5]="Most teamkills", [6]="Most selfkills", [7]="Most deaths", [8]="Most kills per minute", [9]="Quickest multikill w/ light weapons", [11]="Farthest riflenade kill", [12]="Most light weapon kills", [13]="Most pistol kills", [14]="Most rifle kills", [15]="Most riflenade kills", [16]="Most sniper kills", [17]="Most knife kills", [18]="Most air support kills", [19]="Most mine kills", [20]="Most grenade kills", [21]="Most panzer kills", [22]="Most mortar kills", [23]="Most panzer deaths", [24]="Mortarmagnet", [25]="Most multikills", [26]="Most MG42 kills", [27]="Most MG42 deaths", [28]="Most revives", [29]="Most revived", [30]="Best K/D ratio", [31]="Most dynamites planted", [32]="Most dynamites defused", [33]="Most doublekills", [34]="Longest killing spree", [35]="Longest death spree", [36]="Most objectives stolen", [37]="Most objectives returned", [38]="Most corpse gibs", [39]="Most kill assists", [40]="Most killsteals", [41]="Most headshot kills", [42]="Most damage per minute", [43]="Tank/Meatshield (Refuses to die)", [44]="Most useful kills (>Half respawn time left)", [45]="Full respawn king", [46]="Least time dead (What spawn?)"}
 
@@ -1005,6 +1006,22 @@ function checkDSpreeEnd(id)
 end
 
 function et_RunFrame(levelTime)
+	if math.fmod(levelTime, 100) ~= 0 then return end
+	local cs = tonumber(et.trap_GetConfigstring(et.CS_SERVERTOGGLES))
+	if paused == false then
+		if (1 << 4 & cs) == 1 then
+			paused = true
+			changedred = true
+			redflag = false
+			changedblue = true
+			blueflag = false
+		end
+	elseif paused = true then
+		if (1 << 4 & cs) == 0 then
+			paused = false
+		end
+	end
+
     if math.fmod(levelTime, 500) ~= 0 then return end
 
     local ltm = et.trap_Milliseconds()

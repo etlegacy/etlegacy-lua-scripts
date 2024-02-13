@@ -1016,7 +1016,7 @@ function et_RunFrame(levelTime)
 			changedblue = true
 			blueflag = false
 		end
-	elseif paused = true then
+	elseif paused == true then
 		if (1 << 4 & cs) == 0 then
 			paused = false
 		end

@@ -223,11 +223,7 @@ function topshots_f(id)
 			-- kills per minute
 			if k > 10 then
 				local kpm = 0
-				if eomaptime == 0 then
-					kpm = k/((timeplayed/1000)/60)
-				else
-					kpm = k/((timeplayed/1000)/60)
-				end
+				kpm = k/((timeplayed/1000)/60)
 				if kpm > max[8] then
 					max[8] = kpm
 					max_id[8] = i

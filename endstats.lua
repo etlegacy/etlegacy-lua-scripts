@@ -224,9 +224,9 @@ function topshots_f(id)
 			if k > 10 then
 				local kpm = 0
 				if eomaptime == 0 then
-					kpm = k/(((et.trap_Milliseconds() - timeplayed)/1000)/60)
+					kpm = k/((timeplayed/1000)/60)
 				else
-					kpm = k/(((eomaptime - timeplayed)/1000)/60)
+					kpm = k/((timeplayed/1000)/60)
 				end
 				if kpm > max[8] then
 					max[8] = kpm

@@ -406,11 +406,7 @@ function topshots_f(id)
 			--damage per minute
 			if dg > 1400 then
 				local dpm = 0
-				if eomaptime == 0 then
-					dpm = dg/(((et.trap_Milliseconds() - timeplayed)/1000)/60)
-				else
-					dpm = dg/(((eomaptime - timeplayed)/1000)/60)
-				end
+				dpm = dg/((timeplayed/1000)/60)
 				if dpm > max[42] then
 					max[42] = dpm
 					max_id[42] = i

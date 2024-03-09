@@ -44,13 +44,13 @@ Author         = "[ETW-FZ] Mad@Mat"
 --------------------------------------------------------------------------------
 ETWsk_putspec = 1                -- number of sk's needed for setting a client
                                  -- to spectators
-ETWsk_kick = 99                  -- number of sk's needed for kicking a client
-ETWsk_kicklen = 20*60               -- duration of kick
+ETWsk_kick = 3                  -- number of sk's needed for kicking a client
+ETWsk_kicklen = 5               -- duration of kick
 -- benny -----------------------------------------------------------------------
 ETWsk_persistentoffender = 1     -- enable punishment 4 persistent spawn killers
 ETWsk_POThreshold = 2            -- if players has been kicked before, he will
                                  -- be temp banned with his XX spawn kill
-ETWsk_banval = 30*60                -- (ETWsk_banval * 4 ^ kicksb4) = ban
+ETWsk_banval = 30                -- (ETWsk_banval * 4 ^ kicksb4) = ban
                                  -- If ETWsk_banval = 30, he'll be kicked 4
                                  -- 120 minutes, next is 480, 1920, 7680, ...
 ETWsk_pofile = "ETWsk_PO.txt"    -- save to /etpro/ETWsk_PO.txt
@@ -285,6 +285,10 @@ function getConfig(map)
         c.spawns[5] = {name = "Allied Entrance", state = PROTECT_ALLIES, pos = {-857, -8050, 328}, radius2 = 870}
         c.spawns[10] = {name = "Tunnel Spawn", state = NO_PROTECT, pos = {-6165, -1288, 344}, radius2 = 300}
         c.spawns[11] = {name = "Axis Fuel Dump Lower Exit", state = PROTECT_AXIS, pos = {-8977, -7310, 232}, radius2 = 200}
+        c.spawns[12] = {name = "Axis Garage", state = PROTECT_AXIS, pos = {-10614, -6452, 232}, radius2 = 250}
+        c.spawns[13] = {name = "Axis Garage2", state = PROTECT_AXIS, pos = {-10792, -6416, 232}, radius2 = 120}
+		c.spawns[14] = {name = "Axis Garage3", state = PROTECT_AXIS, pos = {-10622, -6575, 408}, radius2 = 80}
+		c.spawns[15] = {name = "Axis Garage2", state = PROTECT_AXIS, pos = {-10819, -6576, 408}, radius2 = 150}
         c.actions[1] = {spawn = 1, newstate = PROTECT_ALLIES, trigger = "breached the Tunnel Doors"}
         c.actions[2] = {spawn = 6, newstate = PROTECT_ALLIES, trigger = "breached the Tunnel Doors"}
         c.actions[3] = {spawn = 7, newstate = PROTECT_ALLIES, trigger = "breached the Tunnel Doors"}
@@ -320,6 +324,14 @@ function getConfig(map)
         c.spawns[13] = {name = "Axis Roof3", state = PROTECT_AXIS, pos = {-1277, -386, 296}, radius2 = 400}
         c.spawns[14] = {name = "Axis Roof4", state = PROTECT_AXIS, pos = {-1701, -149, 296}, radius2 = 200}
 
+	elseif map =="et_operation_b3" then
+		c.spawns[1] = {name = "Axis Main Spawn", state = PROTECT_AXIS, pos = {2307, -3920, 80}, radius2 = 400}
+        c.spawns[2] = {name = "Axis Garage Spawns", state = PROTECT_AXIS, pos = {3075, -3874, -195}, radius2 = 400}
+        c.spawns[3] = {name = "Allied North Hut", state = PROTECT_ALLIES, pos = {6787, -2102, 80}, radius2 = 260}
+        c.spawns[4] = {name = "Allied South Hut", state = PROTECT_ALLIES, pos = {6621, -2710, 80}, radius2 = 230}
+        c.spawns[5] = {name = "Allied South Hut2", state = PROTECT_ALLIES, pos = {6600, -2778, 80}, radius2 = 200}
+
+
 -- Braundorf B4 16.11.2008
         elseif map == "braundorf_b4" or map == "braundorf_final" then
         c.spawns[1] = {name = "Factory District", state = NO_PROTECT, pos = {3505, -2355, 320}, radius2 = 375}
@@ -349,6 +361,8 @@ function getConfig(map)
         c.spawns[4] = {name = "Allied Camp Base", state = PROTECT_ALLIES, pos = {1250, 2760, -400}, radius2 = 1140}
         c.spawns[5] = {name = "Allied Camp Water Pump", state = NO_PROTECT, pos = {2584, 2144, -592}, radius2 = 1000}
         c.spawns[6] = {name = "Axis Garrison Above", state = PROTECT_AXIS, pos = {7378, 4090, -199}, radius2 = 190}
+		c.spawns[7] = {name = "Axis Garrison Above2", state = PROTECT_AXIS, pos = {7151, 4289, -143}, radius2 = 230}
+		c.spawns[8] = {name = "Axis Garrison Above3", state = PROTECT_AXIS, pos = {7050, 4815, -143}, radius2 = 200}
         c.actions[1] = {spawn = 2, newstate = PROTECT_ALLIES, trigger = "breached the Old City wall"}
         c.actions[2] = {spawn = 4, newstate = NO_PROTECT, trigger = "Allies have built the Oasis Water"}
         c.actions[3] = {spawn = 5, newstate = PROTECT_ALLIES, trigger = "Allies have built the Oasis Water"}
@@ -356,7 +370,7 @@ function getConfig(map)
         c.actions[5] = {spawn = 5, newstate = NO_PROTECT, trigger = "Axis have damaged the Oasis Water"}
 -- Goldrush 25.11.2008
 -- Goldrush 05.10.2018 - disabled Allied spawnroof protection when truck with gold is near truck barrier #2
-        elseif map == "goldrush" or map == "sw_goldrush_te" or map == "uje_goldrush" then
+        elseif map == "goldrush" or map == "sw_goldrush_te" or map == "uje_goldrush" or map == "goldrush-gals" then
         c.spawns[1] = {name = "Tank Depot Main Exit", state = PROTECT_AXIS, pos = {-79, 3005, 320}, radius2 = 250}
         c.spawns[4] = {name = "Tank Depot Alternate Exit", state = PROTECT_AXIS, pos = {-664, 3541, 386}, radius2 = 420}
         c.spawns[5] = {name = "Tank Depot Room", state = PROTECT_AXIS, pos = {-48, 3649, 344}, radius2 = 550}
@@ -855,7 +869,7 @@ function printSpawns(cno)
         et.trap_SendServerCommand(cno,"chat \"^3ATTENTION:^7 Mapname: ^3"..mapname.."\n\"")
     end
     for i,spawn in pairs(c.spawns) do
-        if cno == -1 then et.G_Print(string.format("ETWsk> Spawn %d \"%s\" %s \n", i, spawn.name, protect[spawn.state]))
+        if cno == -1 then et.G_Print(string.format("ETWsk> Spawn %d \"%s\" %s \n", i, spawn.name, protect[spawn.state])) 
         else et.trap_SendServerCommand(cno, "chat \"^3ATTENTION:^7 Spawn ^3"..i.."^7 "..spawn.name.." "..protect[spawn.state].."\n\"")
         end
     end
@@ -971,19 +985,19 @@ function ClientSpawnkill(victim, killer, isheavy)
         local kicksb4 = isPO(killer)
 
         if kicksb4 > 0 then
-            et.trap_DropClient(killer, "temp ban - "..kicksb4.." former kicks for spawn killing!", (ETWsk_banval * math.pow(1,kicksb4)))
             et.trap_SendServerCommand(-1, "chat \"^3ATTENTION: ^7"..killername..
                 " ^2has been temp banned - repeated spawn killing!\"\n")
             spawnkills[killer] = nil
             addPO (killer)
             savePO(ETWsk_pofile)
+            et.trap_DropClient(killer, "temp ban - "..kicksb4.." former kicks for spawn killing!", (ETWsk_banval * math.pow(1,kicksb4)))
+            et.G_LogPrint("LUA event: temp SK ban for " .. killername .. " - ".. kicksb4 .. " former kicks for spawn killing\n")
             return
         end
     end
 
-    et.trap_SendServerCommand(-1, "chat \"^3ATTENTION: ^1WARNING: ^2Spawn kill (#"..
-        numsk..") by ^7"..killername.."\"\n" )
-    et.trap_SendServerCommand(killer, "cp \""..killername.." : ^1DO NOT SPAWN KILL!!! \"\n")
+    --et.trap_SendServerCommand(-1, "chat \"^3ATTENTION: ^1WARNING: ^2Spawn kill (#"..numsk..") by ^7"..killername.."\"\n" )
+    --et.trap_SendServerCommand(killer, "cp \""..killername.." : ^1DO NOT SPAWN KILL!!! \"\n")
 
     if(numsk >= ETWsk_putspec and numsk < ETWsk_kick) then
         et.trap_SendConsoleCommand(et.EXEC_APPEND, putspec(killer))
@@ -991,13 +1005,15 @@ function ClientSpawnkill(victim, killer, isheavy)
         et.trap_SendServerCommand(-1, "chat \"^3ATTENTION: ^7"..killername..
             " ^2was set to Spectators - too many Spawnkills!\"\n")
         et.trap_SendServerCommand( killer,
-            "bp \"^3ATTENTION: ^1WARNING: ^2You were set to Spectator \"\n")
+            "cpm \"^3ATTENTION: ^1WARNING: ^2You were set to Spectator \"\n")
+            et.G_LogPrint("LUA event: " .. killername .. " sent to spectators for spawnkilling (" .. numsk .. " SK)\n")
     elseif(numsk == ETWsk_kick) then
-        et.trap_DropClient(killer, "too many spawn kills!", ETWsk_kicklen)
         et.trap_SendServerCommand(-1, "chat \"^3ATTENTION: ^7"..killername..
             " ^2has been kicked - too many spawn kills!\"\n")
         addPO(killer)
         savePO(ETWsk_pofile)
+        et.trap_DropClient(killer, "too many spawn kills!", ETWsk_kicklen)
+        et.G_LogPrint("LUA event: temp SK ban for " .. killername .. "\n")
     elseif(numsk > ETWsk_kick) then
         -- do nothing you dumb shit
     else

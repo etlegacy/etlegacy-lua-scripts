@@ -133,23 +133,25 @@ function hitType(clientNum)
 end
 
 function et_Damage(target, attacker, damage, damageFlags, meansOfDeath)
-	if target ~= attacker and attacker ~= 1022 and attacker ~= 1023 then
-		if has_value(light_weapons, meansOfDeath) or has_value(explosives, meansOfDeath) then
-			local v_team = et.gentity_get(target, "sess.sessionTeam")
-			local k_team = et.gentity_get(attacker, "sess.sessionTeam")
-			local v_health = et.gentity_get(target, "health")
-			local hitType = hitType(attacker)
-			if hitType == HR_HEAD then
-				if not has_value(explosives, meansOfDeath) then
-					hitters[target][et.trap_Milliseconds()] = {[1]=attacker, [2]=damage, [3]=meansOfDeath}
-					if v_team ~= k_team then
-						if damage >= v_health then
-							topshots[attacker][31] = topshots[attacker][31] + 1
+	if gamestate == 0 then
+		if target ~= attacker and attacker ~= 1022 and attacker ~= 1023 then
+			if has_value(light_weapons, meansOfDeath) or has_value(explosives, meansOfDeath) then
+				local v_team = et.gentity_get(target, "sess.sessionTeam")
+				local k_team = et.gentity_get(attacker, "sess.sessionTeam")
+				local v_health = et.gentity_get(target, "health")
+				local hitType = hitType(attacker)
+				if hitType == HR_HEAD then
+					if not has_value(explosives, meansOfDeath) then
+						hitters[target][et.trap_Milliseconds()] = {[1]=attacker, [2]=damage, [3]=meansOfDeath}
+						if v_team ~= k_team then
+							if damage >= v_health then
+								topshots[attacker][31] = topshots[attacker][31] + 1
+							end
 						end
 					end
+				else
+					hitters[target][et.trap_Milliseconds()] = {[1]=attacker, [2]=damage, [3]=meansOfDeath}
 				end
-			else
-				hitters[target][et.trap_Milliseconds()] = {[1]=attacker, [2]=damage, [3]=meansOfDeath}
 			end
 		end
 	end

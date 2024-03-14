@@ -946,6 +946,9 @@ function et_Obituary(victim, killer, meansOfDeath)
     local isheavy = false
     for k,v in pairs(heavyweapons) do
         if (meansOfDeath == v) then isheavy = true end
+        if mapname == "goldrush" or mapname == "goldrush-gals" then -- don't punish tank mg
+       	if (meansOfDeath == 3) then isheavy = false end
+        end
     end
     -- protected spawn?
     local vpos = et.gentity_get(victim, "r.currentOrigin")

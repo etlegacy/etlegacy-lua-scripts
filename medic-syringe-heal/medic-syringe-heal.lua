@@ -19,7 +19,7 @@
 ]]--
 
 local modname = "medic-syringe-heal"
-local version = "0.3"
+local version = "0.4"
 
 -- local constants
 
@@ -139,7 +139,7 @@ function checkMedicSyringeHeal(healer)
 	et.gentity_set(healee, "health", finalHealth)
 	et.G_Sound(healee, 8) -- GAMESOUND_MISC_REVIVE, todo: import?
 	et.gentity_set(healee, "pers.lasthealth_client", healer) 
-	et.G_AddSkillPoints(healer, et.SK_FIRST_AID, SKILL_POINTS_ADD)
+	et.G_AddSkillPoints(healer, et.SK_FIRST_AID, SKILL_POINTS_ADD, "healing")
 	return 1
 end
 

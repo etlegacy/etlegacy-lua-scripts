@@ -313,6 +313,7 @@ function et_Obituary(victim, killer, mod)
 					if announce_killer == true then
 						et.trap_SendServerCommand(killer, "chat \"^zKill Assists: " .. names_cens .. "\";")
 					end
+					et.G_AddSkillPoints(max_id, et.SK_BATTLE_SENSE, 1, "KillAssist")
 				end
 			else
 				if names ~= "" then

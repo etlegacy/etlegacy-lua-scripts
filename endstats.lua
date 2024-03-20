@@ -134,7 +134,7 @@ end
 
 function et_Damage(target, attacker, damage, damageFlags, meansOfDeath)
 	if gamestate == 0 then
-		if target ~= attacker and attacker ~= 1022 and attacker ~= 1023 then
+		if target ~= attacker and attacker ~= 1022 and attacker ~= 1023 and not (tonumber(target) < 0) and not (tonumber(target) > tonumber(et.trap_Cvar_Get("sv_maxclients"))) then
 			if has_value(light_weapons, meansOfDeath) or has_value(explosives, meansOfDeath) then
 				local v_team = et.gentity_get(target, "sess.sessionTeam")
 				local k_team = et.gentity_get(attacker, "sess.sessionTeam")
